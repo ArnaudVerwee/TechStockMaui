@@ -1,0 +1,23 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.DeleteSupplierPage"
+             Title="Supprimer un fournisseur"
+             BackgroundColor="White">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Supprimer un fournisseur" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+
+            <Label Text="Êtes-vous sûr de vouloir supprimer ce fournisseur ?" TextColor="Red" FontAttributes="Italic" />
+
+            <Frame BorderColor="Gray" Padding="10">
+                <Label x:Name="NameLabel" FontSize="18" TextColor="Black" />
+            </Frame>
+
+            <Button Text="Supprimer" BackgroundColor="Red" TextColor="White" Clicked="OnDeleteClicked" />
+            <Button Text="Annuler" BackgroundColor="#6c757d" TextColor="White" Clicked="OnCancelClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,36 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.DeleteProductPage"
+             Title="Supprimer un produit"
+             BackgroundColor="White">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Supprimer un produit" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+            <Label Text="Êtes-vous sûr de vouloir supprimer ce produit ?" FontAttributes="Italic" />
+
+            <!-- Affichage des données -->
+            <Frame BackgroundColor="#f8f9fa" Padding="10" CornerRadius="10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Nom :" FontAttributes="Bold" />
+                    <Label x:Name="NameLabel" />
+
+                    <Label Text="Numéro de série :" FontAttributes="Bold" />
+                    <Label x:Name="SerialLabel" />
+
+                    <Label Text="Type :" FontAttributes="Bold" />
+                    <Label x:Name="TypeLabel" />
+
+                    <Label Text="Fournisseur :" FontAttributes="Bold" />
+                    <Label x:Name="SupplierLabel" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Boutons -->
+            <Button Text="Supprimer" BackgroundColor="#dc3545" TextColor="White" Clicked="OnDeleteClicked" />
+            <Button Text="Retour à la liste" BackgroundColor="#6c757d" TextColor="White" Clicked="OnBackToListClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

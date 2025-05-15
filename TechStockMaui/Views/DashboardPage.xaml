@@ -1,0 +1,49 @@
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TechStockMaui.Views.DashboardPage"
+    BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Barre du haut -->
+        <HorizontalStackLayout 
+            Grid.Row="0"
+            Padding="20,10"
+            BackgroundColor="White"
+            VerticalOptions="Start"
+            HorizontalOptions="FillAndExpand"
+            Spacing="{OnPlatform Android=10, WinUI=30, Default=20}">
+
+            <!-- Logo / Titre -->
+            <Label Text="TechStock"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   VerticalOptions="Center" />
+
+            <!-- Espace qui pousse les icônes à droite -->
+            <BoxView WidthRequest="0" HorizontalOptions="FillAndExpand" />
+
+            <!-- Icônes dans un ScrollView horizontal pour éviter qu'ils soient coupés sur Android -->
+            <ScrollView Orientation="Horizontal"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="20"
+                                       Padding="0"
+                                       VerticalOptions="Center">
+                    <ImageButton Source="home.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    <ImageButton Source="warehouse.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    <ImageButton Source="laptop_windows.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    <ImageButton Source="truck.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    <ImageButton Source="my_assigned_products.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    <ImageButton Source="users.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    <ImageButton Source="logout.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                </HorizontalStackLayout>
+            </ScrollView>
+
+        </HorizontalStackLayout>
+
+        <!-- Contenu principal -->
+        <!-- <ScrollView Grid.Row="1"> ... </ScrollView> -->
+    </Grid>
+</ContentPage>

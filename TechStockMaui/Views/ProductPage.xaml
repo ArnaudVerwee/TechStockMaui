@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.ProductPage"
+             Title="ProductPage">
+    <VerticalStackLayout Padding="10">
+
+        <!-- Formulaire de recherche -->
+        <VerticalStackLayout Spacing="10">
+            <Entry x:Name="NameEntry" Placeholder="Nom..." />
+            <Entry x:Name="SerialEntry" Placeholder="Numéro de série..." />
+            <Picker x:Name="TypePicker" Title="Type" />
+            <Picker x:Name="SupplierPicker" Title="Fournisseur" />
+            <Picker x:Name="UserPicker" Title="Utilisateur" />
+
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Rechercher" Clicked="OnSearchClicked" />
+                <Button Text="Réinitialiser" Clicked="OnResetClicked" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- Liste des produits -->
+        <CollectionView x:Name="ProductList" ItemsSource="{Binding Products}" Margin="0,20,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BorderColor="Gray" Padding="10" Margin="0,5">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" FontAttributes="Bold" />
+                            <Label Text="{Binding SerialNumber}" />
+                            <Label Text="{Binding TypeName}" />
+                            <Label Text="{Binding SupplierName}" />
+                            <Label Text="{Binding AssignedUserName, StringFormat='Affecté à : {0}'}"
+                                   IsVisible="{Binding IsAssigned}" />
+                            <Label Text="Non affecté" TextColor="Gray"
+                                   IsVisible="{Binding IsAssigned, Converter={StaticResource InverseBoolConverter}}" />
+
+                            <HorizontalStackLayout Spacing="10" Margin="0,5">
+                                <Button Text="Modifier" Clicked="OnEditClicked" CommandParameter="{Binding .}" />
+                                <Button Text="Détails" Clicked="OnDetailsClicked" CommandParameter="{Binding .}" />
+                                <Button Text="Assigner"
+                                        IsVisible="{Binding IsAssigned, Converter={StaticResource InverseBoolConverter}}"
+                                        Clicked="OnAssignClicked" CommandParameter="{Binding .}" />
+                                <Button Text="Désassigner"
+                                        IsVisible="{Binding IsAssigned}"
+                                        Clicked="OnUnassignClicked" CommandParameter="{Binding .}" />
+                                <Button Text="Supprimer" BackgroundColor="Red" TextColor="White"
+                                        Clicked="OnDeleteClicked" CommandParameter="{Binding .}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

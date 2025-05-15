@@ -1,0 +1,22 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.SupplierDetailsPage"
+             Title="Détails du fournisseur"
+             BackgroundColor="White">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Détails du fournisseur" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+
+            <Frame BorderColor="Gray" Padding="15">
+                <Label Text="Nom" FontAttributes="Bold" />
+                <Label x:Name="NameLabel" FontSize="18" TextColor="Black" />
+            </Frame>
+
+            <Button Text="Modifier" BackgroundColor="#007bff" TextColor="White" Clicked="OnEditClicked" />
+            <Button Text="Retour à la liste" BackgroundColor="#6c757d" TextColor="White" Clicked="OnBackToListClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

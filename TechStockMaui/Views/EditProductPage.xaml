@@ -1,0 +1,31 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.EditProductPage"
+             Title="Modifier un produit">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Label Text="Modifier un produit" FontSize="24" FontAttributes="Bold" />
+
+            <!-- Nom -->
+            <Label Text="Nom :" />
+            <Entry x:Name="NameEntry" Placeholder="Nom du produit" />
+
+            <!-- Numéro de série -->
+            <Label Text="Numéro de série :" />
+            <Entry x:Name="SerialNumberEntry" Placeholder="Numéro de série" />
+
+            <!-- Type -->
+            <Label Text="Type :" />
+            <Picker x:Name="TypePicker" Title="Sélectionner un type" />
+
+            <!-- Fournisseur -->
+            <Label Text="Fournisseur :" />
+            <Picker x:Name="SupplierPicker" Title="Sélectionner un fournisseur" />
+
+            <!-- Boutons -->
+            <Button Text="Enregistrer" BackgroundColor="#007bff" TextColor="White" Clicked="OnSaveClicked" />
+            <Button Text="Retour à la liste" BackgroundColor="#6c757d" TextColor="White" Clicked="OnBackClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
