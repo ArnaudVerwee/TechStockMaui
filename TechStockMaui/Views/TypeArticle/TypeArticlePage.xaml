@@ -1,0 +1,28 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.TypeArticlePage"
+             Title="Types de produits"
+             BackgroundColor="White">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <Label Text="Types de produits" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+
+        <Button Text="Créer un nouveau type" BackgroundColor="#28a745" TextColor="White" Clicked="OnCreateClicked" />
+
+        <CollectionView x:Name="TypeArticleList" Margin="0,10,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="0,5" BorderColor="LightGray" CornerRadius="10">
+                        <Grid ColumnDefinitions="*, Auto, Auto, Auto" VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontSize="18" Grid.Column="0" VerticalOptions="Center" />
+
+                            <Button Text="✏️" Grid.Column="1" BackgroundColor="Transparent" Clicked="OnEditClicked" CommandParameter="{Binding .}" />
+                            <Button Text="👁️" Grid.Column="2" BackgroundColor="Transparent" Clicked="OnDetailsClicked" CommandParameter="{Binding .}" />
+                            <Button Text="🗑️" Grid.Column="3" BackgroundColor="Transparent" Clicked="OnDeleteClicked" CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.MaterialManagements.AssignProductPage">
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Assigner un produit à un utilisateur" FontAttributes="Bold" FontSize="20" />
+
+        <Label>
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Produit : " />
+                    <Span Text="{Binding Product.Name}" FontAttributes="Bold" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+
+        <Label>
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Numéro de série : " />
+                    <Span Text="{Binding Product.SerialNumber}" FontAttributes="Bold" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+
+        <Label Text="Sélectionnez un utilisateur :" />
+        <Picker Title="Sélectionner un utilisateur"
+                ItemsSource="{Binding Users}"
+                ItemDisplayBinding="{Binding UserName}"
+                SelectedItem="{Binding SelectedUser}" />
+
+        <Label Text="Sélectionnez l'état du produit :" />
+        <Picker Title="Sélectionner un état"
+                ItemsSource="{Binding States}"
+                ItemDisplayBinding="{Binding Status}"
+                SelectedItem="{Binding SelectedState}" />
+
+        <Button Text="Assigner" Command="{Binding AssignCommand}" />
+
+        <Button Text="Retour à la liste" Clicked="OnBackClicked" />
+
+    </VerticalStackLayout>
+</ContentPage>

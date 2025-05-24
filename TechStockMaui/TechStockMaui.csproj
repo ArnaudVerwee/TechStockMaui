@@ -68,34 +68,67 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\CreateProductPage.xaml">
+	  <MauiXaml Update="Views\MaterialManagements\AssignedProductsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\CreateSupplierPage.xaml">
+	  <MauiXaml Update="Views\MaterialManagements\AssignProductPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\MaterialManagements\SignProductPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Product\CreateProductPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Supplier\CreateSupplierPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\DashboardPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\DeleteProductPage.xaml">
+	  <MauiXaml Update="Views\Product\DeleteProductPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\EditProductPage.xaml">
+	  <MauiXaml Update="Views\Product\EditProductPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\LoginPage.xaml">
+	  <MauiXaml Update="Views\Supplier\EditSupplierPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\DeleteSupplierPage.xaml">
+	  <MauiXaml Update="Views\Shared\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\ProductDetailsPage.xaml">
+	  <MauiXaml Update="Views\Supplier\DeleteSupplierPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\ProductPage.xaml">
+	  <MauiXaml Update="Views\Product\DetailsProductPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\SupplierDetailsPage.xaml">
+	  <MauiXaml Update="Views\Product\ProductPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Supplier\DetailsSupplierPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\TypeArticle\CreateTypeArticlePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\TypeArticle\DeleteTypeArticlePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\TypeArticle\DetailsTypeArticlePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\TypeArticle\EditTypeArticlePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\TypeArticle\TypeArticlePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Users\ManageRolesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Users\ManagementUserPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
@@ -105,8 +138,17 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Compile Update="Views\DeleteSupplierPage.xaml.cs">
+	  <Compile Update="Views\Supplier\DeleteSupplierPage.xaml.cs">
 	    <DependentUpon>DeleteSupplierPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Supplier\DetailsSupplierPage.xaml.cs">
+	    <DependentUpon>DetailsSupplierPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Product\DetailsProductPage.xaml.cs">
+	    <DependentUpon>DetailsProductPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Users\ManagementUserPage.xaml.cs">
+	    <DependentUpon>ManagementUserPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

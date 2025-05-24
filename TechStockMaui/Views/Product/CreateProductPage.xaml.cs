@@ -1,7 +1,7 @@
 using TechStockMaui.Services;
-using TechStockWeb.Models;
-using Microsoft.Maui.Controls;
 using TechStockMaui.Models;
+
+
 
 namespace TechStockMaui.Views
 {
@@ -22,8 +22,8 @@ namespace TechStockMaui.Views
             {
                 Name = NameEntry.Text,
                 SerialNumber = SerialNumberEntry.Text,
-                TypeId = (TypePicker.SelectedItem as TypeArticle)?.Id ?? 0, // Assure-toi que tu as les données nécessaires
-                SupplierId = (SupplierPicker.SelectedItem as Supplier)?.Id ?? 0
+                TypeId = (TypePicker.SelectedItem as TechStockMaui.Models.TypeArticle.TypeArticle)?.Id ?? 0,
+                SupplierId = (SupplierPicker.SelectedItem as TechStockMaui.Models.Supplier.Supplier)?.Id ?? 0
             };
 
             bool result = await _productService.CreateProductAsync(newProduct);

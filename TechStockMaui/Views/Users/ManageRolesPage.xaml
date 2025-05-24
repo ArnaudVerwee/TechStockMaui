@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.Users.ManageRolesPage">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+        <Label Text="{Binding UserName}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+
+        <Label Text="Sélectionner les rôles :" FontSize="16" />
+
+        <CollectionView ItemsSource="{Binding AllRoles}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="5">
+                        <CheckBox IsChecked="{Binding IsSelected}" />
+                        <Label Text="{Binding Name}" VerticalOptions="Center" Margin="10,0,0,0"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Text="Enregistrer" Command="{Binding SaveCommand}" BackgroundColor="Green" TextColor="White" />
+        <Button Text="Annuler" Command="{Binding CancelCommand}" BackgroundColor="Gray" TextColor="White" />
+    </VerticalStackLayout>
+</ContentPage>

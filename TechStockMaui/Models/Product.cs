@@ -1,15 +1,27 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TechStockMaui.Models
 {
     public class Product
     {
+        [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string SerialNumber { get; set; }
 
-        public int TypeId { get; set; }
-        public string? TypeName { get; set; } 
+        [Display(Name = "Name")]
+        public required string Name { get; set; }
 
-        public int SupplierId { get; set; }
-        public string? SupplierName { get; set; } 
+        [Display(Name = "SerialNumber")]
+        public required string SerialNumber { get; set; }
+
+        [Display(Name = "Item Types")]
+        [ForeignKey("TypeArticle")]
+        public required int TypeId { get; set; }
+        public TypeArticle.TypeArticle TypeArticle { get; set; } = null!;
+
+        [Display(Name = "Supplier")]
+        [ForeignKey("Supplier")]
+        public required int SupplierId { get; set; }
+        public Supplier.Supplier Supplier { get; set; } = null!;
     }
 }

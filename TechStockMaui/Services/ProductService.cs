@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using TechStockMaui.Models; // <-- Ajoute ce using si ce n’est pas déjà fait
+using TechStockMaui.Models; 
 
 namespace TechStockMaui.Services
 {
