@@ -4,13 +4,36 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:TechStockMaui"
-    xmlns:views="clr-namespace:TechStockMaui.Views"
+    xmlns:shared="clr-namespace:TechStockMaui.Views.Shared"
+    xmlns:products="clr-namespace:TechStockMaui.Views"
+    xmlns:typeArticle="clr-namespace:TechStockMaui.Views"
+    xmlns:materialMgmt="clr-namespace:TechStockMaui.Views.MaterialManagements"
+    xmlns:users="clr-namespace:TechStockMaui.Views.Users"
     Shell.FlyoutBehavior="Disabled"
     Title="TechStockMaui">
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate views:ProductPage}"
+        ContentTemplate="{DataTemplate shared:DashboardPage}"
         Route="DashboardPage" />
 
+    <ShellContent
+        Title="Products"
+        ContentTemplate="{DataTemplate products:ProductPage}"
+        Route="ProductPage" />
+
+    <ShellContent
+        Title="TypeArticle"
+        ContentTemplate="{DataTemplate typeArticle:TypeArticlePage}"
+        Route="TypeArticlePage" />
+
+    <ShellContent
+        Title="AssignedProducts"
+        ContentTemplate="{DataTemplate materialMgmt:AssignedProductsPage}"
+        Route="AssignedProductsPage" />
+
+    <ShellContent
+        Title="ManagementUser"
+        ContentTemplate="{DataTemplate users:ManagementUserPage}"
+        Route="ManagementUserPage" />
 </Shell>

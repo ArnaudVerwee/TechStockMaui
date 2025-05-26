@@ -1,7 +1,7 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="TechStockMaui.Views.DashboardPage"
+    x:Class="TechStockMaui.Views.Shared.DashboardPage"
     BackgroundColor="White">
 
     <Grid RowDefinitions="Auto,*">
@@ -32,11 +32,31 @@
                                        Padding="0"
                                        VerticalOptions="Center">
                     <ImageButton Source="home.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
-                    <ImageButton Source="warehouse.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
-                    <ImageButton Source="laptop_windows.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    <ImageButton Source="warehouse.png" 
+                                 BackgroundColor="Transparent" 
+                                 HeightRequest="24" 
+                                 WidthRequest="24"
+                                 Clicked="OnWarehouseClicked" />
+                    
+                    <ImageButton Source="laptop_windows.png" 
+                                 BackgroundColor="Transparent" 
+                                 HeightRequest="24" 
+                                 WidthRequest="24"
+                                 Clicked="OnLaptopClicked" />
                     <ImageButton Source="truck.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
-                    <ImageButton Source="my_assigned_products.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
-                    <ImageButton Source="users.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                    
+                    <ImageButton Source="my_assigned_products.png" 
+                                 BackgroundColor="Transparent" 
+                                 HeightRequest="24" 
+                                 WidthRequest="24"
+                                 Clicked="OnAssignedProductsClicked" />
+
+                    <ImageButton Source="users.png" 
+                                 BackgroundColor="Transparent" 
+                                 HeightRequest="24" 
+                                 WidthRequest="24"
+                                 Clicked="OnUsersClicked" />
+                    
                     <ImageButton Source="logout.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
                 </HorizontalStackLayout>
             </ScrollView>

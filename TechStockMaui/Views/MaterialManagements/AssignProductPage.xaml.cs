@@ -2,7 +2,7 @@ using TechStockMaui.Models;
 using TechStockMaui.Services;
 using System.Collections.ObjectModel;
 
-namespace TechStockMaui.Views;
+namespace TechStockMaui.Views.MaterialManagements;
 
 public partial class AssignProductPage : ContentPage
 {
@@ -30,10 +30,7 @@ public partial class AssignProductPage : ContentPage
         LoadUsersAndStates();
     }
 
-    private void InitializeComponent()
-    {
-        throw new NotImplementedException();
-    }
+    
 
     private async void LoadUsersAndStates()
     {
@@ -71,4 +68,5 @@ public partial class AssignProductPage : ContentPage
     {
         await Navigation.PopAsync();
     }
+   
 }

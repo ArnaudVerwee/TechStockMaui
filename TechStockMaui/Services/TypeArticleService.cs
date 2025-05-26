@@ -10,7 +10,7 @@ namespace TechStockMaui.Services
     public class TypeArticleService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7237/api/TypeArticle";
+        private const string BaseUrl = "https://localhost:7237/api/TypeArticles";
 
         public TypeArticleService()
         {

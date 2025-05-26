@@ -23,5 +23,7 @@ namespace TechStockMaui.Models
         [ForeignKey("Supplier")]
         public required int SupplierId { get; set; }
         public Supplier.Supplier Supplier { get; set; } = null!;
+        public string? AssignedUserName { get; set; }
+
     }
 }

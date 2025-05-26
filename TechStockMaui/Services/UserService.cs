@@ -9,7 +9,7 @@ namespace TechStockMaui.Services
     public class UserService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7237/api/Users";
+        private const string BaseUrl = "https://localhost:7237/api/User";
 
         public UserService()
         {

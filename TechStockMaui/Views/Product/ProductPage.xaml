@@ -5,52 +5,130 @@
              Title="ProductPage">
     <VerticalStackLayout Padding="10">
 
-        <!-- Formulaire de recherche -->
-        <VerticalStackLayout Spacing="10">
-            <Entry x:Name="NameEntry" Placeholder="Nom..." />
-            <Entry x:Name="SerialEntry" Placeholder="Numéro de série..." />
-            <Picker x:Name="TypePicker" Title="Type" />
-            <Picker x:Name="SupplierPicker" Title="Fournisseur" />
-            <Picker x:Name="UserPicker" Title="Utilisateur" />
+        <!-- Formulaire de recherche (identique à votre ASP.NET) -->
+        <Frame BorderColor="LightGray" Padding="10" Margin="0,0,0,10">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Recherche et Filtres" FontAttributes="Bold" FontSize="16" />
 
-            <HorizontalStackLayout Spacing="10">
-                <Button Text="Rechercher" Clicked="OnSearchClicked" />
-                <Button Text="Réinitialiser" Clicked="OnResetClicked" />
-            </HorizontalStackLayout>
-        </VerticalStackLayout>
+                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*">
+                    <!-- Ligne 1 -->
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5" Padding="0,0,5,0">
+                        <Label Text="Nom" />
+                        <Entry x:Name="NameEntry" Placeholder="Nom du produit..." />
+                    </VerticalStackLayout>
 
-        <!-- Liste des produits -->
-        <CollectionView x:Name="ProductList" ItemsSource="{Binding Products}" Margin="0,20,0,0">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame BorderColor="Gray" Padding="10" Margin="0,5">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Name}" FontAttributes="Bold" />
-                            <Label Text="{Binding SerialNumber}" />
-                            <Label Text="{Binding TypeName}" />
-                            <Label Text="{Binding SupplierName}" />
-                            <Label Text="{Binding AssignedUserName, StringFormat='Affecté à : {0}'}"
-                                   IsVisible="{Binding IsAssigned}" />
-                            <Label Text="Non affecté" TextColor="Gray"
-                                   IsVisible="{Binding IsAssigned, Converter={StaticResource InverseBoolConverter}}" />
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5" Padding="5,0,0,0">
+                        <Label Text="Numéro de série" />
+                        <Entry x:Name="SerialEntry" Placeholder="Numéro de série..." />
+                    </VerticalStackLayout>
 
-                            <HorizontalStackLayout Spacing="10" Margin="0,5">
-                                <Button Text="Modifier" Clicked="OnEditClicked" CommandParameter="{Binding .}" />
-                                <Button Text="Détails" Clicked="OnDetailsClicked" CommandParameter="{Binding .}" />
-                                <Button Text="Assigner"
-                                        IsVisible="{Binding IsAssigned, Converter={StaticResource InverseBoolConverter}}"
-                                        Clicked="OnAssignClicked" CommandParameter="{Binding .}" />
-                                <Button Text="Désassigner"
-                                        IsVisible="{Binding IsAssigned}"
-                                        Clicked="OnUnassignClicked" CommandParameter="{Binding .}" />
-                                <Button Text="Supprimer" BackgroundColor="Red" TextColor="White"
-                                        Clicked="OnDeleteClicked" CommandParameter="{Binding .}" />
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                    <!-- Ligne 2 -->
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="5" Padding="0,0,5,0">
+                        <Label Text="Type" />
+                        <Picker x:Name="TypePicker" Title="Tous les types" />
+                    </VerticalStackLayout>
 
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="5" Padding="5,0,0,0">
+                        <Label Text="Fournisseur" />
+                        <Picker x:Name="SupplierPicker" Title="Tous les fournisseurs" />
+                    </VerticalStackLayout>
+
+                    <!-- Ligne 3 -->
+                    <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="5" Padding="0,0,5,0">
+                        <Label Text="Utilisateur" />
+                        <Picker x:Name="UserPicker" Title="Tous les utilisateurs" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <HorizontalStackLayout Spacing="10" Margin="0,10,0,0">
+                    <Button Text="🔍 Rechercher" Clicked="OnSearchClicked" BackgroundColor="#007bff" TextColor="White" />
+                    <Button Text="🔄 Réinitialiser" Clicked="OnResetClicked" BackgroundColor="#6c757d" TextColor="White" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Liste des produits (reproduit exactement votre tableau ASP.NET) -->
+        <ScrollView>
+            <CollectionView x:Name="ProductList">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray" Padding="15" Margin="0,2">
+                            <VerticalStackLayout>
+                                <!-- Informations du produit (comme les colonnes de votre tableau) -->
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="100,*">
+                                    <Label Grid.Row="0" Grid.Column="0" Text="Nom:" FontAttributes="Bold" />
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />
+
+                                    <Label Grid.Row="1" Grid.Column="0" Text="Série:" FontAttributes="Bold" />
+                                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding SerialNumber}" />
+
+                                    <Label Grid.Row="2" Grid.Column="0" Text="Type:" FontAttributes="Bold" />
+                                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding TypeName}" />
+
+                                    <Label Grid.Row="3" Grid.Column="0" Text="Fournisseur:" FontAttributes="Bold" />
+                                    <Label Grid.Row="3" Grid.Column="1" Text="{Binding SupplierName}" />
+
+                                    <Label Grid.Row="4" Grid.Column="0" Text="Utilisateur:" FontAttributes="Bold" />
+                                    <Label Grid.Row="4" Grid.Column="1" Text="{Binding AssignedUserName}" 
+                                           TextColor="{Binding IsAssigned, Converter={StaticResource InverseBoolConverter}}" />
+                                </Grid>
+
+                                <!-- Actions (identiques à votre ASP.NET) -->
+                                <ScrollView Orientation="Horizontal" Margin="0,10,0,0">
+                                    <StackLayout Orientation="Horizontal" Spacing="5">
+                                        <!-- Modifier (Edit) -->
+                                        <Button Text="✏️" 
+                                                Clicked="OnEditClicked" 
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#ffc107" 
+                                                TextColor="Black"
+                                                FontSize="12"
+                                                Padding="8,4" />
+
+                                        <!-- Détails -->
+                                        <Button Text="👁️" 
+                                                Clicked="OnDetailsClicked" 
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#17a2b8" 
+                                                TextColor="White"
+                                                FontSize="12"
+                                                Padding="8,4" />
+
+                                        <!-- Assigner (visible seulement si non assigné) -->
+                                        <Button Text="👤➕" 
+                                                IsVisible="{Binding IsAssigned, Converter={StaticResource InverseBoolConverter}}"
+                                                Clicked="OnAssignClicked" 
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#007bff" 
+                                                TextColor="White"
+                                                FontSize="12"
+                                                Padding="8,4" />
+
+                                        <!-- Désassigner (visible seulement si assigné) -->
+                                        <Button Text="👤➖" 
+                                                IsVisible="{Binding IsAssigned}"
+                                                Clicked="OnUnassignClicked" 
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#6c757d" 
+                                                TextColor="White"
+                                                FontSize="12"
+                                                Padding="8,4" />
+
+                                        <!-- Supprimer -->
+                                        <Button Text="🗑️" 
+                                                Clicked="OnDeleteClicked" 
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#dc3545" 
+                                                TextColor="White"
+                                                FontSize="12"
+                                                Padding="8,4" />
+                                    </StackLayout>
+                                </ScrollView>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
     </VerticalStackLayout>
 </ContentPage>

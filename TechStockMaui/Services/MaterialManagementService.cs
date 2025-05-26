@@ -43,7 +43,7 @@ namespace TechStockMaui.Services
  
         public async Task<List<User>> GetUsersAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<User>>("https://localhost:7237/api/Users");
+            return await _httpClient.GetFromJsonAsync<List<User>>("https://localhost:7237/api/User");
         }
 
         public async Task<List<States>> GetStatesAsync()

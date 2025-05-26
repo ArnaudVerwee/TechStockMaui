@@ -83,7 +83,7 @@
 	  <MauiXaml Update="Views\Supplier\CreateSupplierPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\DashboardPage.xaml">
+	  <MauiXaml Update="Views\Shared\DashboardPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Product\DeleteProductPage.xaml">
