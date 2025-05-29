@@ -1,20 +1,32 @@
-
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TechStockMaui.Views.TypeArticle.CreateTypeArticlePage">
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+             x:Class="TechStockMaui.Views.CreateTypeArticlePage"
+             Title="Créer un Type d'Article"
+             BackgroundColor="White">
 
-            <Label Text="Créer un type de produit" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+    <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- Nom -->
-            <Label Text="Nom" />
-            <Entry x:Name="NameEntry" Placeholder="Entrez le nom du type" />
+        <Label Text="Créer un nouveau type d'article" 
+               FontSize="24" 
+               FontAttributes="Bold" />
 
-            <!-- Boutons -->
-            <Button Text="Créer" BackgroundColor="#007bff" TextColor="White" Clicked="OnCreateClicked" />
-            <Button Text="Retour à la liste" BackgroundColor="#6c757d" TextColor="White" Clicked="OnBackToListClicked" />
+        <Label Text="Nom du type :" 
+               FontAttributes="Bold" />
 
-        </VerticalStackLayout>
-    </ScrollView>
-    </ContentPage>
+        <!-- IMPORTANT: Cette ligne avec x:Name="NameEntry" -->
+        <Entry x:Name="NameEntry" 
+               Placeholder="Entrez le nom du type d'article" />
+
+        <Button Text="Enregistrer" 
+                Clicked="OnSaveClicked"
+                BackgroundColor="#28a745"
+                TextColor="White" />
+
+        <Button Text="Annuler" 
+                Clicked="OnCancelClicked"
+                BackgroundColor="#6c757d"
+                TextColor="White" />
+
+    </VerticalStackLayout>
+</ContentPage>

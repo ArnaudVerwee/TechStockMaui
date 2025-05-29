@@ -2,68 +2,324 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="TechStockMaui.Views.Shared.DashboardPage"
-    BackgroundColor="White">
+    BackgroundColor="#f8f9fa">
 
     <Grid RowDefinitions="Auto,*">
-        <!-- Barre du haut -->
-        <HorizontalStackLayout 
-            Grid.Row="0"
-            Padding="20,10"
-            BackgroundColor="White"
-            VerticalOptions="Start"
-            HorizontalOptions="FillAndExpand"
-            Spacing="{OnPlatform Android=10, WinUI=30, Default=20}">
+        <!-- Barre du haut avec ombre -->
+        <Frame Grid.Row="0" 
+               BackgroundColor="White" 
+               HasShadow="True"
+               CornerRadius="0"
+               Padding="0"
+               Margin="0">
+            <HorizontalStackLayout 
+                Padding="20,15"
+                VerticalOptions="Center"
+                HorizontalOptions="FillAndExpand"
+                Spacing="{OnPlatform Android=10, WinUI=30, Default=20}">
 
-            <!-- Logo / Titre -->
-            <Label Text="TechStock"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   TextColor="Black"
-                   VerticalOptions="Center" />
-
-            <!-- Espace qui pousse les icônes à droite -->
-            <BoxView WidthRequest="0" HorizontalOptions="FillAndExpand" />
-
-            <!-- Icônes dans un ScrollView horizontal pour éviter qu'ils soient coupés sur Android -->
-            <ScrollView Orientation="Horizontal"
-                        HorizontalOptions="End"
-                        VerticalOptions="Center">
-                <HorizontalStackLayout Spacing="20"
-                                       Padding="0"
-                                       VerticalOptions="Center">
-                    <ImageButton Source="home.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
-                    <ImageButton Source="warehouse.png" 
-                                 BackgroundColor="Transparent" 
-                                 HeightRequest="24" 
-                                 WidthRequest="24"
-                                 Clicked="OnWarehouseClicked" />
-                    
-                    <ImageButton Source="laptop_windows.png" 
-                                 BackgroundColor="Transparent" 
-                                 HeightRequest="24" 
-                                 WidthRequest="24"
-                                 Clicked="OnLaptopClicked" />
-                    <ImageButton Source="truck.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
-                    
-                    <ImageButton Source="my_assigned_products.png" 
-                                 BackgroundColor="Transparent" 
-                                 HeightRequest="24" 
-                                 WidthRequest="24"
-                                 Clicked="OnAssignedProductsClicked" />
-
-                    <ImageButton Source="users.png" 
-                                 BackgroundColor="Transparent" 
-                                 HeightRequest="24" 
-                                 WidthRequest="24"
-                                 Clicked="OnUsersClicked" />
-                    
-                    <ImageButton Source="logout.png" BackgroundColor="Transparent" HeightRequest="24" WidthRequest="24" />
+                <!-- Logo / Titre avec icône -->
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="📦" FontSize="28" VerticalOptions="Center" />
+                    <Label Text="TechStock"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
                 </HorizontalStackLayout>
-            </ScrollView>
 
-        </HorizontalStackLayout>
+                <!-- Espace qui pousse les icônes à droite -->
+                <BoxView WidthRequest="0" HorizontalOptions="FillAndExpand" />
 
-        <!-- Contenu principal -->
-        <!-- <ScrollView Grid.Row="1"> ... </ScrollView> -->
+                <!-- Icônes de navigation avec tooltips visuels -->
+                <ScrollView Orientation="Horizontal"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center">
+                    <HorizontalStackLayout Spacing="15"
+                                           Padding="0"
+                                           VerticalOptions="Center">
+
+                        <!-- Home avec effet hover -->
+                        <Frame BackgroundColor="Transparent" 
+                               Padding="8" 
+                               HasShadow="False"
+                               CornerRadius="8">
+                            <ImageButton Source="home.png" 
+                                         BackgroundColor="Transparent" 
+                                         HeightRequest="28" 
+                                         WidthRequest="28" />
+                        </Frame>
+
+                        <!-- Warehouse (Produits) -->
+                        <Frame BackgroundColor="Transparent" 
+                               Padding="8" 
+                               HasShadow="False"
+                               CornerRadius="8">
+                            <ImageButton Source="warehouse.png" 
+                                         BackgroundColor="Transparent" 
+                                         HeightRequest="28" 
+                                         WidthRequest="28"
+                                         Clicked="OnWarehouseClicked" />
+                        </Frame>
+
+                        <!-- Laptop -->
+                        <Frame BackgroundColor="Transparent" 
+                               Padding="8" 
+                               HasShadow="False"
+                               CornerRadius="8">
+                            <ImageButton Source="laptop_windows.png" 
+                                         BackgroundColor="Transparent" 
+                                         HeightRequest="28" 
+                                         WidthRequest="28"
+                                         Clicked="OnLaptopClicked" />
+                        </Frame>
+
+                        <!-- Truck (Suppliers) - NOUVEAU -->
+                        <Frame BackgroundColor="Transparent" 
+                               Padding="8" 
+                               HasShadow="False"
+                               CornerRadius="8">
+                            <ImageButton Source="truck.png" 
+                                         BackgroundColor="Transparent" 
+                                         HeightRequest="28" 
+                                         WidthRequest="28"
+                                         Clicked="OnTruckClicked" />
+                        </Frame>
+
+                        <!-- Assigned Products -->
+                        <Frame BackgroundColor="Transparent" 
+                               Padding="8" 
+                               HasShadow="False"
+                               CornerRadius="8">
+                            <ImageButton Source="my_assigned_products.png" 
+                                         BackgroundColor="Transparent" 
+                                         HeightRequest="28" 
+                                         WidthRequest="28"
+                                         Clicked="OnAssignedProductsClicked" />
+                        </Frame>
+
+                        <!-- Users -->
+                        <Frame BackgroundColor="Transparent" 
+                               Padding="8" 
+                               HasShadow="False"
+                               CornerRadius="8">
+                            <ImageButton Source="users.png" 
+                                         BackgroundColor="Transparent" 
+                                         HeightRequest="28" 
+                                         WidthRequest="28"
+                                         Clicked="OnUsersClicked" />
+                        </Frame>
+
+                        <!-- Logout -->
+                        <Frame BackgroundColor="Transparent" 
+                               Padding="8" 
+                               HasShadow="False"
+                               CornerRadius="8">
+                            <ImageButton Source="logout.png" 
+                                         BackgroundColor="Transparent" 
+                                         HeightRequest="28" 
+                                         WidthRequest="28"
+                                         Clicked="OnLogoutClicked" />
+                        </Frame>
+                    </HorizontalStackLayout>
+                </ScrollView>
+            </HorizontalStackLayout>
+        </Frame>
+
+        <!-- Contenu principal avec dashboard cards -->
+        <ScrollView Grid.Row="1" Padding="20,10">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Message de bienvenue -->
+                <Frame BackgroundColor="White" 
+                       HasShadow="True" 
+                       CornerRadius="12"
+                       Padding="20">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Bienvenue sur TechStock" 
+                               FontSize="22" 
+                               FontAttributes="Bold"
+                               TextColor="#2c3e50"
+                               HorizontalOptions="Center" />
+                        <Label Text="Gérez votre inventaire technologique facilement" 
+                               FontSize="14" 
+                               TextColor="#7f8c8d"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Cartes d'accès rapide -->
+                <Label Text="Accès rapide" 
+                       FontSize="18" 
+                       FontAttributes="Bold"
+                       TextColor="#2c3e50"
+                       Margin="0,10,0,5" />
+
+                <Grid RowDefinitions="Auto,Auto" 
+                      ColumnDefinitions="*,*" 
+                      RowSpacing="15" 
+                      ColumnSpacing="15">
+
+                    <!-- Card Produits -->
+                    <Frame Grid.Row="0" Grid.Column="0"
+                           BackgroundColor="White"
+                           HasShadow="True"
+                           CornerRadius="12"
+                           Padding="20">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnWarehouseClicked" />
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Image Source="warehouse.png" 
+                                   WidthRequest="40" 
+                                   HeightRequest="40" />
+                            <Label Text="Produits" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold"
+                                   TextColor="#3498db"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Gérer l'inventaire" 
+                                   FontSize="12" 
+                                   TextColor="#7f8c8d"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Card Fournisseurs -->
+                    <Frame Grid.Row="0" Grid.Column="1"
+                           BackgroundColor="White"
+                           HasShadow="True"
+                           CornerRadius="12"
+                           Padding="20">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTruckClicked" />
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Image Source="truck.png" 
+                                   WidthRequest="40" 
+                                   HeightRequest="40" />
+                            <Label Text="Fournisseurs" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold"
+                                   TextColor="#e74c3c"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Gérer les contacts" 
+                                   FontSize="12" 
+                                   TextColor="#7f8c8d"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Card Utilisateurs -->
+                    <Frame Grid.Row="1" Grid.Column="0"
+                           BackgroundColor="White"
+                           HasShadow="True"
+                           CornerRadius="12"
+                           Padding="20">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnUsersClicked" />
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Image Source="users.png" 
+                                   WidthRequest="40" 
+                                   HeightRequest="40" />
+                            <Label Text="Utilisateurs" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold"
+                                   TextColor="#2ecc71"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Gérer les accès" 
+                                   FontSize="12" 
+                                   TextColor="#7f8c8d"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Card Mes Produits -->
+                    <Frame Grid.Row="1" Grid.Column="1"
+                           BackgroundColor="White"
+                           HasShadow="True"
+                           CornerRadius="12"
+                           Padding="20">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnAssignedProductsClicked" />
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Image Source="my_assigned_products.png" 
+                                   WidthRequest="40" 
+                                   HeightRequest="40" />
+                            <Label Text="Mes Produits" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold"
+                                   TextColor="#f39c12"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Produits assignés" 
+                                   FontSize="12" 
+                                   TextColor="#7f8c8d"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Statistiques rapides (optionnel) -->
+                <Label Text="Aperçu" 
+                       FontSize="18" 
+                       FontAttributes="Bold"
+                       TextColor="#2c3e50"
+                       Margin="0,20,0,5" />
+
+                <Frame BackgroundColor="White" 
+                       HasShadow="True" 
+                       CornerRadius="12"
+                       Padding="20">
+                    <Grid RowDefinitions="Auto" 
+                          ColumnDefinitions="*,*,*" 
+                          ColumnSpacing="20">
+
+                        <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                            <Label Text="🔢" FontSize="24" HorizontalOptions="Center" />
+                            <Label Text="Total" 
+                                   FontSize="12" 
+                                   TextColor="#7f8c8d"
+                                   HorizontalOptions="Center" />
+                            <Label x:Name="TotalProductsLabel"
+                                   Text="0" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"
+                                   TextColor="#3498db"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                            <Label Text="✅" FontSize="24" HorizontalOptions="Center" />
+                            <Label Text="Assignés" 
+                                   FontSize="12" 
+                                   TextColor="#7f8c8d"
+                                   HorizontalOptions="Center" />
+                            <Label x:Name="AssignedProductsLabel"
+                                   Text="0" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"
+                                   TextColor="#2ecc71"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                            <Label Text="📋" FontSize="24" HorizontalOptions="Center" />
+                            <Label Text="Libres" 
+                                   FontSize="12" 
+                                   TextColor="#7f8c8d"
+                                   HorizontalOptions="Center" />
+                            <Label x:Name="FreeProductsLabel"
+                                   Text="0" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"
+                                   TextColor="#e74c3c"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

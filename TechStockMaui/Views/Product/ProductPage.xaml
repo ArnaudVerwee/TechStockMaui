@@ -5,6 +5,30 @@
              Title="ProductPage">
     <VerticalStackLayout Padding="10">
 
+
+        <Button Text="🏠"
+                Clicked="OnBackToDashboardClicked"
+                BackgroundColor="Transparent" 
+                TextColor="#6f42c1"
+                FontSize="24"
+                Padding="10"
+                Margin="0,0,0,10"
+                HorizontalOptions="Start"
+                WidthRequest="50"
+                HeightRequest="50" />
+
+
+        <!-- Bouton Créer un produit - NOUVEAU -->
+        <Button Text="➕ Créer un produit" 
+                Clicked="OnCreateClicked"
+                BackgroundColor="#007bff" 
+                TextColor="White"
+                FontSize="16"
+                Padding="15,10"
+                Margin="0,0,0,10"
+                HorizontalOptions="Fill" />
+       
+
         <!-- Formulaire de recherche (identique à votre ASP.NET) -->
         <Frame BorderColor="LightGray" Padding="10" Margin="0,0,0,10">
             <VerticalStackLayout Spacing="10">

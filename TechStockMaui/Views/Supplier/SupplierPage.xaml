@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechStockMaui.Views.Supplier.SupplierPage"
+             Title="Fournisseurs">
+
+    <VerticalStackLayout Padding="10">
+
+        <!-- Icône Home pour retour Dashboard -->
+        <Button Text="🏠" 
+                Clicked="OnBackToDashboardClicked"
+                BackgroundColor="Transparent" 
+                TextColor="#6f42c1"
+                FontSize="24"
+                Padding="10"
+                Margin="0,0,0,10"
+                HorizontalOptions="Start"
+                WidthRequest="50"
+                HeightRequest="50" />
+
+        <!-- Titre de la page -->
+        <Label Text="Fournisseurs" 
+               FontSize="28" 
+               FontAttributes="Bold" 
+               Margin="0,0,0,15"
+               HorizontalOptions="Start" />
+
+        <!-- Bouton Créer nouveau fournisseur -->
+        <Button Text="➕ Créer nouveau" 
+                Clicked="OnCreateClicked"
+                BackgroundColor="#28a745" 
+                TextColor="White"
+                FontSize="16"
+                Padding="15,10"
+                Margin="0,0,0,15"
+                HorizontalOptions="Fill" />
+
+        <!-- Liste des fournisseurs -->
+        <ScrollView>
+            <CollectionView x:Name="SupplierList">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray" 
+                               Padding="15" 
+                               Margin="0,2"
+                               BackgroundColor="White">
+                            <Grid ColumnDefinitions="*,Auto">
+
+                                <!-- Nom du fournisseur -->
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" 
+                                           FontSize="18" 
+                                           FontAttributes="Bold"
+                                           TextColor="Black" />
+                                </VerticalStackLayout>
+
+                                <!-- Actions -->
+                                <HorizontalStackLayout Grid.Column="1" 
+                                                     Spacing="5" 
+                                                     VerticalOptions="Center">
+
+                                    <!-- Modifier -->
+                                    <Button Text="✏️" 
+                                            Clicked="OnEditClicked" 
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#ffc107" 
+                                            TextColor="Black"
+                                            FontSize="14"
+                                            Padding="8,6"
+                                            WidthRequest="40"
+                                            HeightRequest="40" />
+
+                                    <!-- Détails -->
+                                    <Button Text="👁️" 
+                                            Clicked="OnDetailsClicked" 
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#17a2b8" 
+                                            TextColor="White"
+                                            FontSize="14"
+                                            Padding="8,6"
+                                            WidthRequest="40"
+                                            HeightRequest="40" />
+
+                                    <!-- Supprimer -->
+                                    <Button Text="🗑️" 
+                                            Clicked="OnDeleteClicked" 
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#dc3545" 
+                                            TextColor="White"
+                                            FontSize="14"
+                                            Padding="8,6"
+                                            WidthRequest="40"
+                                            HeightRequest="40" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+        <!-- Message si aucun fournisseur -->
+        <Label x:Name="NoSuppliersLabel"
+               Text="Aucun fournisseur trouvé"
+               FontSize="16"
+               TextColor="Gray"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               IsVisible="False"
+               Margin="0,50,0,0" />
+
+    </VerticalStackLayout>
+</ContentPage>

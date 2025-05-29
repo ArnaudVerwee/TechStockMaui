@@ -1,6 +1,7 @@
 using TechStockMaui.Models;
 using TechStockMaui.Services;
 using TechStockMaui.Views.MaterialManagements;
+using TechStockMaui.Views.Shared;
 
 namespace TechStockMaui.Views;
 
@@ -122,14 +123,14 @@ public partial class ProductPage : ContentPage
 
     private async void OnResetClicked(object sender, EventArgs e)
     {
-        // Réinitialiser les filtres
+        
         NameEntry.Text = string.Empty;
         SerialEntry.Text = string.Empty;
         TypePicker.SelectedItem = null;
         SupplierPicker.SelectedItem = null;
         UserPicker.SelectedItem = null;
 
-        // Recharger tous les produits
+        
         await LoadProducts();
     }
 
@@ -197,7 +198,7 @@ public partial class ProductPage : ContentPage
                 if (success)
                 {
                     await DisplayAlert("Succès", $"Produit {product.Name} supprimé", "OK");
-                    await LoadProducts(); 
+                    await LoadProducts();
                 }
                 else
                 {
@@ -205,5 +206,22 @@ public partial class ProductPage : ContentPage
                 }
             }
         }
+    }
+        
+
+        private async void OnCreateClicked(object sender, EventArgs e)
+         {
+        try
+        {
+            await Navigation.PushAsync(new CreateProductPage());
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", $"Impossible d'ouvrir la page de création: {ex.Message}", "OK");
+        }
+    }
+    private async void OnBackToDashboardClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new DashboardPage());
     }
 }

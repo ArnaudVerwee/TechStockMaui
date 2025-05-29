@@ -23,7 +23,7 @@ namespace TechStockMaui.Services
 
         public async Task<List<Product>> GetProductsFilterAsync(string name = null, string serialNumber = null, int? typeId = null, int? supplierId = null, string userName = null)
         {
-            var allProducts = await GetProductsAsync(); // Récupère tous les produits
+            var allProducts = await GetProductsAsync(); 
 
             var filtered = allProducts.AsQueryable();
 

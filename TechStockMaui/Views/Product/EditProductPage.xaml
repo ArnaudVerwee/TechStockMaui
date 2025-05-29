@@ -2,30 +2,39 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechStockMaui.Views.EditProductPage"
              Title="Modifier un produit">
-
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
             <Label Text="Modifier un produit" FontSize="24" FontAttributes="Bold" />
 
             <!-- Nom -->
             <Label Text="Nom :" />
-            <Entry x:Name="NameEntry" Placeholder="Nom du produit" />
+            <Entry x:Name="NameEntry" Placeholder="Nom du produit" Text="{Binding Name}" />
 
             <!-- Numéro de série -->
             <Label Text="Numéro de série :" />
-            <Entry x:Name="SerialNumberEntry" Placeholder="Numéro de série" />
+            <Entry x:Name="SerialNumberEntry" Placeholder="Numéro de série" Text="{Binding SerialNumber}" />
 
             <!-- Type -->
             <Label Text="Type :" />
-            <Picker x:Name="TypePicker" Title="Sélectionner un type" />
+            <Picker x:Name="TypePicker" 
+                    Title="Sélectionner un type"
+                    ItemDisplayBinding="{Binding Name}" />
 
             <!-- Fournisseur -->
             <Label Text="Fournisseur :" />
-            <Picker x:Name="SupplierPicker" Title="Sélectionner un fournisseur" />
+            <Picker x:Name="SupplierPicker" 
+                    Title="Sélectionner un fournisseur"
+                    ItemDisplayBinding="{Binding Name}" />
 
             <!-- Boutons -->
-            <Button Text="Enregistrer" BackgroundColor="#007bff" TextColor="White" Clicked="OnSaveClicked" />
-            <Button Text="Retour à la liste" BackgroundColor="#6c757d" TextColor="White" Clicked="OnBackClicked" />
+            <Button Text="Enregistrer" 
+                    BackgroundColor="#007bff" 
+                    TextColor="White" 
+                    Clicked="OnSaveClicked" />
+            <Button Text="Retour à la liste" 
+                    BackgroundColor="#6c757d" 
+                    TextColor="White" 
+                    Clicked="OnBackClicked" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

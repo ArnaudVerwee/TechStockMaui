@@ -1,30 +1,72 @@
-using Microsoft.Maui.Controls;
+using TechStockMaui.Services;
 using TypeArticleModel = TechStockMaui.Models.TypeArticle.TypeArticle;
 
-namespace TechStockMaui.Views.TypeArticle;
-
-public partial class DetailsTypeArticlePage : ContentPage
+namespace TechStockMaui.Views.TypeArticle
 {
-    private TypeArticleModel _typeArticle;
-    public DetailsTypeArticlePage(TypeArticleModel typeArticle)
+    public partial class DetailsTypeArticlePage : ContentPage
     {
-        InitializeComponent();
-        _typeArticle = typeArticle;
-    }
+        private TypeArticleModel _typeArticle;
+        private TypeArticleService _typeArticleService;
 
-    private async void OnEditClicked(object sender, EventArgs e)
-    {
-        // Logique lors du clic sur Modifier
-        // Par exemple, naviguer vers la page d'édition en passant l'objet actuel
+        public DetailsTypeArticlePage(TypeArticleModel typeArticle)
+        {
+            InitializeComponent();
+            _typeArticle = typeArticle;
+            _typeArticleService = new TypeArticleService();
 
-        // Supposons que tu as un TypeArticle courant, tu peux passer ses données à la page Edit
-        // await Navigation.PushAsync(new EditTypeArticlePage(currentTypeArticle));
+            // Charger les données du type d'article
+            LoadTypeArticleDetails();
+        }
 
-        await DisplayAlert("Modifier", "Bouton Modifier cliqué.", "OK");
-    }
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
 
-    private async void OnBackClicked(object sender, EventArgs e)
-    {
-        await Navigation.PopAsync();
+            // Recharger les données depuis l'API au cas où elles auraient été modifiées
+            await RefreshTypeArticleDetails();
+        }
+
+        private void LoadTypeArticleDetails()
+        {
+            if (_typeArticle != null)
+            {
+                NameLabel.Text = _typeArticle.Name ?? "Non défini";
+            }
+        }
+
+        private async Task RefreshTypeArticleDetails()
+        {
+            try
+            {
+                var updatedTypeArticle = await _typeArticleService.GetByIdAsync(_typeArticle.Id);
+                if (updatedTypeArticle != null)
+                {
+                    _typeArticle = updatedTypeArticle;
+                    LoadTypeArticleDetails();
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erreur", $"Impossible de recharger les détails: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnEditClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                // Naviguer vers la page de modification en passant le type d'article
+                await Navigation.PushAsync(new EditTypeArticlePage(_typeArticle));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erreur", $"Impossible d'ouvrir la page de modification: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnBackClicked(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
+        }
     }
 }
