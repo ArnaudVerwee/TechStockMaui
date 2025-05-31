@@ -1,25 +1,59 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TechStockMaui.Views.Users.ManageRolesPage">
+             x:Class="TechStockMaui.Views.Users.ManageRolesPage"
+             Title="Gestion des rôles">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
-        <Label Text="{Binding UserName}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+    <ScrollView>
+        <StackLayout Margin="20">
 
-        <Label Text="Sélectionner les rôles :" FontSize="16" />
+            <!-- En-tête utilisateur -->
+            <Label Text="{Binding UserName, StringFormat='Utilisateur: {0}'}" 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   Margin="0,0,0,20"/>
 
-        <CollectionView ItemsSource="{Binding AllRoles}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Padding="5">
-                        <CheckBox IsChecked="{Binding IsSelected}" />
-                        <Label Text="{Binding Name}" VerticalOptions="Center" Margin="10,0,0,0"/>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <!-- Message de test -->
+            <Label Text="Page de gestion des rôles" 
+                   FontSize="16" 
+                   Margin="0,0,0,20"/>
 
-        <Button Text="Enregistrer" Command="{Binding SaveCommand}" BackgroundColor="Green" TextColor="White" />
-        <Button Text="Annuler" Command="{Binding CancelCommand}" BackgroundColor="Gray" TextColor="White" />
-    </VerticalStackLayout>
+            <!-- Indicateur de chargement -->
+            <ActivityIndicator IsVisible="{Binding IsLoading}" 
+                              IsRunning="{Binding IsLoading}"
+                              Margin="0,0,0,20"/>
+
+            <!-- Liste simple des rôles -->
+            <Label Text="Rôles disponibles:" FontSize="16" FontAttributes="Bold" Margin="0,0,0,10"/>
+
+            <CollectionView ItemsSource="{Binding AvailableRoles}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Orientation="Horizontal" Padding="10">
+                            <Label Text="{Binding RoleName}" 
+                                   FontSize="16" 
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="StartAndExpand"/>
+                            <Switch IsToggled="{Binding IsSelected}" 
+                                    VerticalOptions="Center"/>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Boutons -->
+            <Button Text="Sauvegarder" 
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="Green"
+                    TextColor="White"
+                    Margin="0,20,0,10"/>
+
+            <Button Text="Annuler" 
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Red"
+                    TextColor="White"/>
+
+        </StackLayout>
+    </ScrollView>
+
 </ContentPage>

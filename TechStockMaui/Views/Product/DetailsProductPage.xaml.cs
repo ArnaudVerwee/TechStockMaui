@@ -1,55 +1,47 @@
-using TechStockMaui.Models;
+﻿using TechStockMaui.Models;
 using TechStockMaui.Services;
 
 namespace TechStockMaui.Views
 {
     public partial class ProductDetailsPage : ContentPage
     {
-        private Product _product; // Stocker le produit comme champ
-        private ProductService _productService;
+        private Product _product;
 
         public ProductDetailsPage(Product product)
         {
             InitializeComponent();
-            _product = product; // Sauvegarder le produit
-            _productService = new ProductService();
-            BindingContext = product;
+            _product = product;
+            BindingContext = product; // Le produit du tableau a déjà TypeName et SupplierName !
+
+            // ✅ Debug pour voir ce qu'on reçoit
+            System.Diagnostics.Debug.WriteLine($"🔍 Product reçu: Name={product.Name}, TypeName={product.TypeName}, SupplierName={product.SupplierName}");
         }
 
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-
-            // Recharger le produit depuis l'API chaque fois que la page appara�t
-            await RefreshProduct();
-        }
-
-        private async Task RefreshProduct()
-        {
-            try
-            {
-                var updatedProduct = await _productService.GetProductByIdAsync(_product.Id);
-                if (updatedProduct != null)
-                {
-                    _product = updatedProduct;
-                    BindingContext = _product; // Re-assigner le BindingContext avec les nouvelles donn�es
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Erreur", $"Impossible de recharger le produit: {ex.Message}", "OK");
-            }
-        }
+        // ✅ PAS de OnAppearing ni RefreshProduct - le produit vient du tableau avec toutes les infos !
 
         private async void OnEditClicked(object sender, EventArgs e)
         {
-            // Passer _product au lieu de sender
-            await Navigation.PushAsync(new EditProductPage(_product));
+            try
+            {
+                await Navigation.PushAsync(new EditProductPage(_product));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur navigation Edit: {ex.Message}");
+                await DisplayAlert("Erreur", "Impossible d'ouvrir la page d'édition", "OK");
+            }
         }
 
         private async void OnBackClicked(object sender, EventArgs e)
         {
-            await Navigation.PopAsync();
+            try
+            {
+                await Navigation.PopAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur retour: {ex.Message}");
+            }
         }
     }
 }

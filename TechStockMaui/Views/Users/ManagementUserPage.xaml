@@ -3,25 +3,140 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechStockMaui.Views.Users.ManagementUserPage"
              x:Name="UserManagementPage"
-             Title="UserManagement">
+             Title="👥 Gestion des utilisateurs"
+             BackgroundColor="#f8f9fa">
 
-    <CollectionView ItemsSource="{Binding Users}" Margin="10">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Frame BorderColor="LightGray" Padding="10" Margin="5" CornerRadius="10">
-                    <VerticalStackLayout>
-                        <Label Text="{Binding UserName}" FontSize="18" FontAttributes="Bold" />
-                        <Label Text="{Binding RolesAsString}" FontSize="14" TextColor="Gray" />
+    <Grid>
+        <ScrollView>
+            <StackLayout Margin="15">
 
-                        <Button Text="Gérer les rôles"
-                                Command="{Binding BindingContext.ManageRolesCommand, Source={x:Reference UserManagementPage}}"
-                                CommandParameter="{Binding UserName}"
-                                BackgroundColor="#007bff"
+                <!-- En-tête avec bouton actualiser -->
+                <Frame BackgroundColor="White" 
+                       HasShadow="True" 
+                       CornerRadius="12" 
+                       Padding="15"
+                       Margin="0,0,0,15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackLayout Grid.Column="0">
+                            <Label Text="Utilisateurs" 
+                                   FontSize="24" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#2c3e50"/>
+                            <Label Text="{Binding Users.Count, StringFormat='{0} utilisateur(s) trouvé(s)'}" 
+                                   FontSize="14" 
+                                   TextColor="#7f8c8d"/>
+                        </StackLayout>
+
+                        <Button Grid.Column="1"
+                                Text="🔄" 
+                                Command="{Binding RefreshCommand}"
+                                BackgroundColor="#3498db"
                                 TextColor="White"
-                                Margin="0,10,0,0"/>
-                    </VerticalStackLayout>
+                                WidthRequest="50"
+                                HeightRequest="50"
+                                CornerRadius="25"
+                                FontSize="18"/>
+                    </Grid>
                 </Frame>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+
+                <!-- Indicateur de chargement stylé -->
+                <Frame IsVisible="{Binding IsLoading}"
+                       BackgroundColor="White" 
+                       HasShadow="True" 
+                       CornerRadius="12" 
+                       Padding="20"
+                       Margin="0,0,0,15">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                        <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                          Color="#3498db"
+                                          WidthRequest="25"
+                                          HeightRequest="25" />
+                        <Label Text="Chargement..." 
+                               FontSize="16" 
+                               TextColor="#7f8c8d"
+                               VerticalOptions="Center"
+                               Margin="10,0,0,0"/>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Liste des utilisateurs avec style moderne -->
+                <CollectionView ItemsSource="{Binding Users}" BackgroundColor="Transparent">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame BackgroundColor="White" 
+                                   HasShadow="True" 
+                                   CornerRadius="15" 
+                                   Padding="20" 
+                                   Margin="0,5,0,10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Avatar circulaire -->
+                                    <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                                           BackgroundColor="#3498db"
+                                           WidthRequest="45"
+                                           HeightRequest="45"
+                                           CornerRadius="23"
+                                           Padding="0"
+                                           HasShadow="False"
+                                           VerticalOptions="Start">
+                                        <Label Text="👤" 
+                                               FontSize="20" 
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"/>
+                                    </Frame>
+
+                                    <!-- Nom d'utilisateur -->
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding UserName}" 
+                                           FontSize="18" 
+                                           FontAttributes="Bold" 
+                                           TextColor="#2c3e50"
+                                           VerticalOptions="Center"/>
+
+                                    <!-- Rôles avec texte simple -->
+                                    <Label Grid.Row="1" Grid.Column="1"
+                                           Text="{Binding RolesAsString}" 
+                                           FontSize="14" 
+                                           TextColor="#7f8c8d"
+                                           Margin="0,5,0,0"/>
+
+                                    <!-- Bouton gérer avec style moderne -->
+                                    <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
+                                            Text="⚙"
+                                            Command="{Binding BindingContext.ManageRolesCommand, Source={x:Reference UserManagementPage}}"
+                                            CommandParameter="{Binding UserName}"
+                                            BackgroundColor="#e67e22"
+                                            TextColor="White"
+                                            WidthRequest="45"
+                                            HeightRequest="45"
+                                            CornerRadius="23"
+                                            FontSize="20"
+                                            Padding="0"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="Center"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+
 </ContentPage>

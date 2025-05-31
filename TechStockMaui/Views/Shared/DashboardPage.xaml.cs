@@ -85,12 +85,11 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
-                // TODO: Créer la page des produits assignés
-                await DisplayAlert("Info", "Page des produits assignés à implémenter", "OK");
+                await Navigation.PushAsync(new MaterialManagements.AssignedProductsPage());
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erreur", $"Erreur: {ex.Message}", "OK");
+                await DisplayAlert("Erreur", $"Impossible d'ouvrir la page des produits assignés: {ex.Message}", "OK");
             }
         }
 
@@ -98,8 +97,7 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
-                // TODO: Créer la page des utilisateurs
-                await DisplayAlert("Info", "Page des utilisateurs à implémenter", "OK");
+                await Navigation.PushAsync(new Views.Users.ManagementUserPage());
             }
             catch (Exception ex)
             {
@@ -114,13 +112,16 @@ namespace TechStockMaui.Views.Shared
                 bool confirm = await DisplayAlert("Déconnexion", "Êtes-vous sûr de vouloir vous déconnecter ?", "Oui", "Non");
                 if (confirm)
                 {
-                    // TODO: Implémenter la logique de déconnexion
-                    await DisplayAlert("Info", "Déconnexion à implémenter", "OK");
+                    var authService = new AuthService();
+                    await authService.LogoutAsync();
+
+                    // SOLUTION CORRECTE : Revenir à la structure initiale
+                    Application.Current.MainPage = new NavigationPage(new LoginPage());
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erreur", $"Erreur: {ex.Message}", "OK");
+                await DisplayAlert("Erreur", $"Erreur lors de la déconnexion: {ex.Message}", "OK");
             }
         }
     }

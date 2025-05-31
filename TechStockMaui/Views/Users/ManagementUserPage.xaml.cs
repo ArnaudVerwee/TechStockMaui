@@ -1,9 +1,17 @@
-namespace TechStockMaui.Views.Users;
+﻿using TechStockMaui.ViewModels;
 
-public partial class ManagementUserPage : ContentPage
+namespace TechStockMaui.Views.Users
 {
-	public ManagementUserPage()
-	{
-		InitializeComponent();
-	}
+    public partial class ManagementUserPage : ContentPage
+    {
+        public ManagementUserPage()
+        {
+            InitializeComponent();
+            System.Diagnostics.Debug.WriteLine("📄 ManagementUserPage créée");
+
+            BindingContext = new UserManagementViewModel();
+
+            System.Diagnostics.Debug.WriteLine("📄 BindingContext défini");
+        }
+    }
 }
