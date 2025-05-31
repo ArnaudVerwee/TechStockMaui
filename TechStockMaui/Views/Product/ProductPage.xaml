@@ -79,15 +79,32 @@
                                             WidthRequest="28" 
                                             HeightRequest="28" />
 
-                                    <!-- ✅ Bouton simple qui fonctionne toujours -->
-                                    <Button Text="👤" 
-                                            Clicked="OnAssignClicked" 
+                                    <!-- ✅ Bouton Assigner/Désassigner intelligent -->
+                                    <Button Clicked="OnAssignClicked" 
                                             CommandParameter="{Binding .}" 
-                                            BackgroundColor="#007bff" 
                                             TextColor="White" 
-                                            FontSize="10" 
-                                            WidthRequest="28" 
-                                            HeightRequest="28" />
+                                            FontSize="8" 
+                                            WidthRequest="55" 
+                                            HeightRequest="28">
+                                        <Button.Triggers>
+                                            <!-- Si AssignedUserName est vide ou null = Bouton ASSIGNER -->
+                                            <DataTrigger TargetType="Button" Binding="{Binding AssignedUserName}" Value="">
+                                                <Setter Property="Text" Value="👤 Assign" />
+                                                <Setter Property="BackgroundColor" Value="#007bff" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding AssignedUserName}" Value="{x:Null}">
+                                                <Setter Property="Text" Value="👤 Assign" />
+                                                <Setter Property="BackgroundColor" Value="#007bff" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                        <!-- Style par défaut = Si AssignedUserName a une valeur = Bouton DÉSASSIGNER -->
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Text" Value="🗑️ " />
+                                                <Setter Property="BackgroundColor" Value="Gray" />
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
 
                                     <!-- Bouton Delete -->
                                     <Button Text="🗑️" 
