@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechStockMaui.Views.LoginPage"
-             Title="Connexion"
+             Title="Login"
              BackgroundColor="#f8f9fa">
 
     <ScrollView>
@@ -11,12 +11,14 @@
             <!-- Logo et titre -->
             <VerticalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0,0,0,40">
                 <Label Text="📦" FontSize="64" HorizontalOptions="Center" />
-                <Label Text="TechStock" 
+                <Label x:Name="AppTitleLabel"
+                       Text="TechStock" 
                        FontSize="32" 
                        FontAttributes="Bold"
                        TextColor="#2c3e50"
                        HorizontalOptions="Center" />
-                <Label Text="Connectez-vous à votre compte" 
+                <Label x:Name="SubtitleLabel"
+                       Text="Connect to your account" 
                        FontSize="16" 
                        TextColor="#7f8c8d"
                        HorizontalOptions="Center" />
@@ -31,11 +33,12 @@
 
                     <!-- Email -->
                     <VerticalStackLayout Spacing="5">
-                        <Label Text="Email" 
+                        <Label x:Name="EmailLabel"
+                               Text="Email" 
                                FontAttributes="Bold" 
                                TextColor="#2c3e50" />
                         <Entry x:Name="EmailEntry" 
-                               Placeholder="votre.email@example.com"
+                               Placeholder="your.email@example.com"
                                Keyboard="Email"
                                BackgroundColor="#f8f9fa"
                                TextColor="#2c3e50" />
@@ -43,11 +46,12 @@
 
                     <!-- Mot de passe -->
                     <VerticalStackLayout Spacing="5">
-                        <Label Text="Mot de passe" 
+                        <Label x:Name="PasswordLabel"
+                               Text="Password" 
                                FontAttributes="Bold" 
                                TextColor="#2c3e50" />
                         <Entry x:Name="PasswordEntry" 
-                               Placeholder="Votre mot de passe"
+                               Placeholder="Your password"
                                IsPassword="True"
                                BackgroundColor="#f8f9fa"
                                TextColor="#2c3e50" />
@@ -56,14 +60,15 @@
                     <!-- Se souvenir de moi -->
                     <HorizontalStackLayout Spacing="10">
                         <CheckBox x:Name="RememberMeCheckBox" />
-                        <Label Text="Se souvenir de moi" 
+                        <Label x:Name="RememberMeLabel"
+                               Text="Remember me" 
                                TextColor="#7f8c8d"
                                VerticalOptions="Center" />
                     </HorizontalStackLayout>
 
                     <!-- Bouton de connexion -->
                     <Button x:Name="LoginButton"
-                            Text="Se connecter"
+                            Text="Login"
                             Clicked="OnLoginClicked"
                             BackgroundColor="#3498db"
                             TextColor="White"
@@ -82,7 +87,8 @@
 
             <!-- Liens supplémentaires -->
             <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
-                <Label Text="Mot de passe oublié ?" 
+                <Label x:Name="ForgotPasswordLabel"
+                       Text="Forgot password?" 
                        FontSize="14"
                        TextColor="#3498db"
                        HorizontalOptions="Center">
@@ -92,10 +98,12 @@
                 </Label>
 
                 <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
-                    <Label Text="Pas de compte ?" 
+                    <Label x:Name="NoAccountLabel"
+                           Text="No account?" 
                            FontSize="14" 
                            TextColor="#7f8c8d" />
-                    <Label Text="S'inscrire" 
+                    <Label x:Name="RegisterLabel"
+                           Text="Sign up" 
                            FontSize="14"
                            TextColor="#3498db"
                            FontAttributes="Bold">
@@ -105,6 +113,35 @@
                     </Label>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
+
+            <!-- Sélecteur de langue -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,20,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="EN" 
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -1,33 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechStockMaui.Views.CreateProductPage"
-             Title="Créer un produit"
+             Title="Create a product"
              BackgroundColor="White">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <Label Text="Créer un produit" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+            <!-- Titre principal -->
+            <Label x:Name="TitleLabel" 
+                   Text="Create a product" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="Black" 
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10" />
 
             <!-- Nom -->
-            <Label Text="Nom" />
-            <Entry x:Name="NameEntry" Placeholder="Entrez le nom du produit" />
+            <Label x:Name="NameLabel" 
+                   Text="Name" 
+                   FontAttributes="Bold"
+                   TextColor="#2c3e50" />
+            <Entry x:Name="NameEntry" 
+                   Placeholder="Enter product name"
+                   BackgroundColor="#f8f9fa"
+                   TextColor="#2c3e50" />
 
             <!-- Numéro de série -->
-            <Label Text="Numéro de série" />
-            <Entry x:Name="SerialNumberEntry" Placeholder="Entrez le numéro de série" />
+            <Label x:Name="SerialNumberLabel" 
+                   Text="Serial Number" 
+                   FontAttributes="Bold"
+                   TextColor="#2c3e50" />
+            <Entry x:Name="SerialNumberEntry" 
+                   Placeholder="Enter serial number"
+                   BackgroundColor="#f8f9fa"
+                   TextColor="#2c3e50" />
 
             <!-- Type -->
-            <Label Text="Type" />
-            <Picker x:Name="TypePicker" Title="Sélectionner un type" />
+            <Label x:Name="TypeLabel" 
+                   Text="Type" 
+                   FontAttributes="Bold"
+                   TextColor="#2c3e50" />
+            <Picker x:Name="TypePicker" 
+                    Title="-- Select a type --"
+                    BackgroundColor="#f8f9fa"
+                    TextColor="#2c3e50" />
 
             <!-- Fournisseur -->
-            <Label Text="Fournisseur" />
-            <Picker x:Name="SupplierPicker" Title="Sélectionner un fournisseur" />
+            <Label x:Name="SupplierLabel" 
+                   Text="Supplier" 
+                   FontAttributes="Bold"
+                   TextColor="#2c3e50" />
+            <Picker x:Name="SupplierPicker" 
+                    Title="-- Select a supplier --"
+                    BackgroundColor="#f8f9fa"
+                    TextColor="#2c3e50" />
 
             <!-- Boutons -->
-            <Button Text="Créer" BackgroundColor="#007bff" TextColor="White" Clicked="OnCreateClicked" />
-            <Button Text="Retour à la liste" BackgroundColor="#6c757d" TextColor="White" Clicked="OnBackToListClicked" />
+            <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
+                <Button x:Name="CreateButton"
+                        Text="Create" 
+                        BackgroundColor="#007bff" 
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8"
+                        Clicked="OnCreateClicked" />
+
+                <Button x:Name="BackButton"
+                        Text="Back to list" 
+                        BackgroundColor="#6c757d" 
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8"
+                        Clicked="OnBackToListClicked" />
+            </VerticalStackLayout>
+
+            <!-- Sélecteur de langue (optionnel) -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,30,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="EN" 
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>

@@ -2,7 +2,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="TechStockMaui.Views.Shared.DashboardPage"
-    BackgroundColor="#f8f9fa">
+    BackgroundColor="#f8f9fa"
+    Title="Dashboard">
 
     <Grid RowDefinitions="Auto,*">
         <!-- Barre du haut avec ombre -->
@@ -12,6 +13,7 @@
                CornerRadius="0"
                Padding="0"
                Margin="0">
+
             <HorizontalStackLayout 
                 Padding="20,15"
                 VerticalOptions="Center"
@@ -21,7 +23,8 @@
                 <!-- Logo / Titre avec icône -->
                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                     <Label Text="📦" FontSize="28" VerticalOptions="Center" />
-                    <Label Text="TechStock"
+                    <Label x:Name="AppTitleLabel"
+                           Text="TechStock"
                            FontSize="24"
                            FontAttributes="Bold"
                            TextColor="#2c3e50"
@@ -31,7 +34,23 @@
                 <!-- Espace qui pousse les icônes à droite -->
                 <BoxView WidthRequest="0" HorizontalOptions="FillAndExpand" />
 
-                <!-- Icônes de navigation avec tooltips visuels -->
+                <!-- ✅ Sélecteur de langue simple (FR/EN/NL) -->
+                <Label x:Name="LanguageFlag" 
+                       Text="FR" 
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#2c3e50"
+                       BackgroundColor="#F5F5F5"
+                       Padding="8,4"
+                       Margin="0,0,15,0"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <!-- Icônes de navigation -->
                 <ScrollView Orientation="Horizontal"
                             HorizontalOptions="End"
                             VerticalOptions="Center">
@@ -39,7 +58,7 @@
                                            Padding="0"
                                            VerticalOptions="Center">
 
-                        <!-- Home avec effet hover -->
+                        <!-- Home -->
                         <Frame BackgroundColor="Transparent" 
                                Padding="8" 
                                HasShadow="False"
@@ -74,7 +93,7 @@
                                          Clicked="OnLaptopClicked" />
                         </Frame>
 
-                        <!-- Truck (Suppliers) - NOUVEAU -->
+                        <!-- Truck (Suppliers) -->
                         <Frame BackgroundColor="Transparent" 
                                Padding="8" 
                                HasShadow="False"
@@ -136,12 +155,14 @@
                        CornerRadius="12"
                        Padding="20">
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Bienvenue sur TechStock" 
+                        <Label x:Name="WelcomeLabel"
+                               Text="Bienvenue sur TechStock" 
                                FontSize="22" 
                                FontAttributes="Bold"
                                TextColor="#2c3e50"
                                HorizontalOptions="Center" />
-                        <Label Text="Gérez votre inventaire technologique facilement" 
+                        <Label x:Name="WelcomeSubLabel"
+                               Text="Gérez votre inventaire technologique facilement" 
                                FontSize="14" 
                                TextColor="#7f8c8d"
                                HorizontalOptions="Center" />
@@ -149,7 +170,8 @@
                 </Frame>
 
                 <!-- Cartes d'accès rapide -->
-                <Label Text="Accès rapide" 
+                <Label x:Name="QuickAccessLabel"
+                       Text="Accès rapide" 
                        FontSize="18" 
                        FontAttributes="Bold"
                        TextColor="#2c3e50"
@@ -173,12 +195,14 @@
                             <Image Source="warehouse.png" 
                                    WidthRequest="40" 
                                    HeightRequest="40" />
-                            <Label Text="Produits" 
+                            <Label x:Name="ProductsCardLabel"
+                                   Text="Produits" 
                                    FontSize="16" 
                                    FontAttributes="Bold"
                                    TextColor="#3498db"
                                    HorizontalOptions="Center" />
-                            <Label Text="Gérer l'inventaire" 
+                            <Label x:Name="ProductsCardSubLabel"
+                                   Text="Gérer l'inventaire" 
                                    FontSize="12" 
                                    TextColor="#7f8c8d"
                                    HorizontalOptions="Center" />
@@ -198,12 +222,14 @@
                             <Image Source="truck.png" 
                                    WidthRequest="40" 
                                    HeightRequest="40" />
-                            <Label Text="Fournisseurs" 
+                            <Label x:Name="SuppliersCardLabel"
+                                   Text="Fournisseurs" 
                                    FontSize="16" 
                                    FontAttributes="Bold"
                                    TextColor="#e74c3c"
                                    HorizontalOptions="Center" />
-                            <Label Text="Gérer les contacts" 
+                            <Label x:Name="SuppliersCardSubLabel"
+                                   Text="Gérer les contacts" 
                                    FontSize="12" 
                                    TextColor="#7f8c8d"
                                    HorizontalOptions="Center" />
@@ -223,12 +249,14 @@
                             <Image Source="users.png" 
                                    WidthRequest="40" 
                                    HeightRequest="40" />
-                            <Label Text="Utilisateurs" 
+                            <Label x:Name="UsersCardLabel"
+                                   Text="Utilisateurs" 
                                    FontSize="16" 
                                    FontAttributes="Bold"
                                    TextColor="#2ecc71"
                                    HorizontalOptions="Center" />
-                            <Label Text="Gérer les accès" 
+                            <Label x:Name="UsersCardSubLabel"
+                                   Text="Gérer les accès" 
                                    FontSize="12" 
                                    TextColor="#7f8c8d"
                                    HorizontalOptions="Center" />
@@ -248,12 +276,14 @@
                             <Image Source="my_assigned_products.png" 
                                    WidthRequest="40" 
                                    HeightRequest="40" />
-                            <Label Text="Mes Produits" 
+                            <Label x:Name="MyProductsCardLabel"
+                                   Text="Mes Produits" 
                                    FontSize="16" 
                                    FontAttributes="Bold"
                                    TextColor="#f39c12"
                                    HorizontalOptions="Center" />
-                            <Label Text="Produits assignés" 
+                            <Label x:Name="MyProductsCardSubLabel"
+                                   Text="Produits assignés" 
                                    FontSize="12" 
                                    TextColor="#7f8c8d"
                                    HorizontalOptions="Center" />
@@ -261,8 +291,9 @@
                     </Frame>
                 </Grid>
 
-                <!-- Statistiques rapides (optionnel) -->
-                <Label Text="Aperçu" 
+                <!-- Statistiques rapides -->
+                <Label x:Name="OverviewLabel"
+                       Text="Aperçu" 
                        FontSize="18" 
                        FontAttributes="Bold"
                        TextColor="#2c3e50"
@@ -278,7 +309,8 @@
 
                         <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
                             <Label Text="🔢" FontSize="24" HorizontalOptions="Center" />
-                            <Label Text="Total" 
+                            <Label x:Name="TotalLabel"
+                                   Text="Total" 
                                    FontSize="12" 
                                    TextColor="#7f8c8d"
                                    HorizontalOptions="Center" />
@@ -292,7 +324,8 @@
 
                         <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
                             <Label Text="✅" FontSize="24" HorizontalOptions="Center" />
-                            <Label Text="Assignés" 
+                            <Label x:Name="AssignedLabel"
+                                   Text="Assignés" 
                                    FontSize="12" 
                                    TextColor="#7f8c8d"
                                    HorizontalOptions="Center" />
@@ -306,7 +339,8 @@
 
                         <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
                             <Label Text="📋" FontSize="24" HorizontalOptions="Center" />
-                            <Label Text="Libres" 
+                            <Label x:Name="AvailableLabel"
+                                   Text="Libres" 
                                    FontSize="12" 
                                    TextColor="#7f8c8d"
                                    HorizontalOptions="Center" />

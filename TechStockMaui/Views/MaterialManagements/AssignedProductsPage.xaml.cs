@@ -1,5 +1,5 @@
-using System.Collections.ObjectModel;
-using TechStockMaui.Models; // Chang� le namespace
+﻿using System.Collections.ObjectModel;
+using TechStockMaui.Models;
 using TechStockMaui.Services;
 
 namespace TechStockMaui.Views.MaterialManagements
@@ -11,15 +11,27 @@ namespace TechStockMaui.Views.MaterialManagements
 
         public AssignedProductsPage()
         {
-            InitializeComponent();
-            _materialManagementService = new MaterialManagementService();
-            _assignments = new ObservableCollection<MaterialManagement>();
-            ProductsCollectionView.ItemsSource = _assignments;
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("🔄 AssignedProductsPage constructeur - DÉBUT");
+
+                InitializeComponent();
+                _materialManagementService = new MaterialManagementService();
+                _assignments = new ObservableCollection<MaterialManagement>();
+                ProductsCollectionView.ItemsSource = _assignments;
+
+                System.Diagnostics.Debug.WriteLine("✅ AssignedProductsPage constructeur - FIN");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur constructeur AssignedProductsPage: {ex.Message}");
+            }
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            System.Diagnostics.Debug.WriteLine("🔄 AssignedProductsPage apparue - chargement automatique");
             await LoadAssignedProductsAsync();
         }
 
@@ -27,21 +39,36 @@ namespace TechStockMaui.Views.MaterialManagements
         {
             try
             {
-                // Charger les produits assign�s � l'utilisateur connect�
+                System.Diagnostics.Debug.WriteLine("🔄 Chargement des produits assignés...");
+
+                // ✅ Utiliser votre service existant
                 var assignments = await _materialManagementService.GetMyAssignmentsAsync();
 
                 _assignments.Clear();
-                foreach (var assignment in assignments)
+                if (assignments != null && assignments.Any())
                 {
-                    _assignments.Add(assignment);
+                    foreach (var assignment in assignments)
+                    {
+                        _assignments.Add(assignment);
+                        System.Diagnostics.Debug.WriteLine($"🔍 Assignment ajouté: Produit={assignment.Product?.Name}, Signé={assignment.IsSignatureValid}");
+                    }
+                    System.Diagnostics.Debug.WriteLine($"✅ {_assignments.Count} assignments chargés");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("⚠️ Aucun produit assigné trouvé");
                 }
 
-                // Commenter cette ligne si NoProductsLabel n'existe pas dans votre XAML
-                // NoProductsLabel.IsVisible = !_assignments.Any();
+                // Optionnel : Afficher un message si aucun produit
+                if (!_assignments.Any())
+                {
+                    await DisplayAlert("Information", "Aucun produit ne vous est actuellement assigné.", "OK");
+                }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erreur", $"Impossible de charger les produits assign�s: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur LoadAssignedProductsAsync: {ex.Message}");
+                await DisplayAlert("Erreur", $"Impossible de charger les produits assignés: {ex.Message}", "OK");
             }
         }
 
@@ -49,68 +76,137 @@ namespace TechStockMaui.Views.MaterialManagements
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine("🔄 OnSignClicked - DÉBUT");
+
                 if (sender is Button button && button.CommandParameter is int assignmentId)
                 {
-                    // R�cup�rer l'assignment correspondant
+                    System.Diagnostics.Debug.WriteLine($"✅ Assignment ID: {assignmentId}");
+
+                    // Récupérer l'assignment correspondant
                     var assignment = _assignments.FirstOrDefault(a => a.Id == assignmentId);
                     if (assignment == null)
                     {
+                        System.Diagnostics.Debug.WriteLine($"❌ Assignment {assignmentId} introuvable");
                         await DisplayAlert("Erreur", "Assignment introuvable", "OK");
+                        return;
+                    }
+
+                    System.Diagnostics.Debug.WriteLine($"✅ Assignment trouvé: {assignment.Product?.Name}");
+
+                    // ✅ Utiliser vos propriétés calculées existantes
+                    if (assignment.IsSignatureValid)
+                    {
+                        await DisplayAlert("Information", "Ce produit a déjà été signé.", "OK");
                         return;
                     }
 
                     // Demander confirmation
                     bool confirm = await DisplayAlert(
-                        "Signature",
-                        $"Confirmez-vous avoir re�u le produit '{assignment.Product?.Name}' ?",
-                        "Oui",
-                        "Non");
+                        "Confirmation de réception",
+                        $"Confirmez-vous avoir reçu le produit '{assignment.Product?.Name}' ?\n\nEn signant, vous attestez avoir pris possession de ce matériel.",
+                        "Oui, je confirme",
+                        "Annuler");
 
                     if (confirm)
                     {
-                        // G�n�rer une signature simple (ou ouvrir une page de signature)
+                        System.Diagnostics.Debug.WriteLine("🔄 Utilisateur a confirmé, demande de signature...");
+
+                        // Demander la signature
                         string signature = await GetUserSignature(assignment);
 
                         if (!string.IsNullOrEmpty(signature))
                         {
-                            // Envoyer la signature � l'API
+                            System.Diagnostics.Debug.WriteLine($"🔄 Signature reçue: {signature.Substring(0, Math.Min(20, signature.Length))}...");
+
+                            // ✅ Utiliser votre service existant
                             bool success = await _materialManagementService.SignProductAsync(assignmentId, signature);
 
                             if (success)
                             {
-                                await DisplayAlert("Succ�s", "Produit sign� avec succ�s!", "OK");
+                                System.Diagnostics.Debug.WriteLine("✅ Signature envoyée avec succès");
+                                await DisplayAlert("Succès", "Produit signé avec succès! Merci de confirmer la réception.", "OK");
 
-                                // Rafra�chir la liste
+                                // Rafraîchir la liste
                                 await LoadAssignedProductsAsync();
                             }
                             else
                             {
-                                await DisplayAlert("Erreur", "�chec de la signature", "OK");
+                                System.Diagnostics.Debug.WriteLine("❌ Échec envoi signature");
+                                await DisplayAlert("Erreur", "Échec de l'enregistrement de la signature. Veuillez réessayer.", "OK");
                             }
                         }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("⚠️ Signature annulée par l'utilisateur");
+                        }
                     }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("⚠️ Confirmation annulée par l'utilisateur");
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("❌ Sender ou CommandParameter invalide");
+                    await DisplayAlert("Erreur", "Erreur technique lors de la signature", "OK");
                 }
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur OnSignClicked: {ex.Message}");
                 await DisplayAlert("Erreur", $"Erreur lors de la signature: {ex.Message}", "OK");
             }
+
+            System.Diagnostics.Debug.WriteLine("🔄 OnSignClicked - FIN");
         }
 
         private async Task<string> GetUserSignature(MaterialManagement assignment)
         {
-            // Version simple : demander le nom de l'utilisateur comme signature
-            string signature = await DisplayPromptAsync(
-                "Signature",
-                $"Entrez votre nom pour confirmer la r�ception de '{assignment.Product?.Name}':",
-                "OK",
-                "Annuler",
-                "Votre nom");
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("🔄 Demande de signature utilisateur...");
 
-            // TODO: Impl�menter une vraie signature graphique avec une page d�di�e
-            // await Navigation.PushAsync(new SignaturePage(assignment));
+                // ✅ VERSION SIMPLE : Demander le nom complet comme signature
+                string signature = await DisplayPromptAsync(
+                    "Signature électronique",
+                    $"Pour confirmer la réception de '{assignment.Product?.Name}', veuillez saisir votre nom complet :\n\n(Cette signature sera horodatée et enregistrée)",
+                    "Confirmer",
+                    "Annuler",
+                    "Votre nom complet",
+                    maxLength: 100);
 
-            return signature;
+                if (!string.IsNullOrWhiteSpace(signature))
+                {
+                    // ✅ Enrichir la signature avec des infos supplémentaires
+                    var enrichedSignature = $"{signature.Trim()} - {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                    System.Diagnostics.Debug.WriteLine($"✅ Signature créée: {enrichedSignature}");
+                    return enrichedSignature;
+                }
+
+                System.Diagnostics.Debug.WriteLine("⚠️ Signature vide ou annulée");
+                return null;
+
+                // TODO FUTUR: Implémenter une vraie signature graphique
+                // await Navigation.PushAsync(new SignaturePage(assignment));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetUserSignature: {ex.Message}");
+                await DisplayAlert("Erreur", "Erreur lors de la capture de signature", "OK");
+                return null;
+            }
+        }
+
+        // ✅ MÉTHODE POUR ACTUALISER MANUELLEMENT
+        private async void OnRefreshClicked(object sender, EventArgs e)
+        {
+            await LoadAssignedProductsAsync();
+        }
+
+        // ✅ MÉTHODE POUR RETOURNER AU DASHBOARD
+        private async void OnBackClicked(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
         }
     }
 }

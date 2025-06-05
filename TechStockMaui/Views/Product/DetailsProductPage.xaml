@@ -1,34 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="TechStockMaui.Views.ProductDetailsPage" 
-             Title="Détails du produit">
+             Title="Product Details"
+             BackgroundColor="White">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
-            <Label Text="Détails du produit" FontSize="24" FontAttributes="Bold" />
 
-            <Frame>
-                <VerticalStackLayout Spacing="10">
+            <!-- Titre principal -->
+            <Label x:Name="TitleLabel" 
+                   Text="Product Details" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="Black"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,20" />
 
-                    <Label Text="Nom :" FontAttributes="Bold"/>
-                    <Label Text="{Binding Name}" />
+            <!-- Frame avec les détails -->
+            <Frame BackgroundColor="#f8f9fa" 
+                   Padding="20" 
+                   CornerRadius="12"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
 
-                    <Label Text="Numéro de série :" FontAttributes="Bold"/>
-                    <Label Text="{Binding SerialNumber}" />
+                    <!-- Nom -->
+                    <StackLayout>
+                        <Label x:Name="NameFieldLabel" 
+                               Text="Name:" 
+                               FontAttributes="Bold" 
+                               TextColor="#2c3e50"
+                               FontSize="16" />
+                        <Label Text="{Binding Name}" 
+                               TextColor="#34495e"
+                               FontSize="18"
+                               Margin="0,5,0,0" />
+                    </StackLayout>
 
-                    <Label Text="Type :" FontAttributes="Bold"/>
-                    <Label Text="{Binding TypeName}" />
+                    <!-- Numéro de série -->
+                    <StackLayout>
+                        <Label x:Name="SerialFieldLabel" 
+                               Text="Serial Number:" 
+                               FontAttributes="Bold" 
+                               TextColor="#2c3e50"
+                               FontSize="16" />
+                        <Label Text="{Binding SerialNumber}" 
+                               TextColor="#34495e"
+                               FontSize="18"
+                               Margin="0,5,0,0" />
+                    </StackLayout>
 
-                    <Label Text="Fournisseur :" FontAttributes="Bold"/>
-                    <Label Text="{Binding SupplierName}" />
+                    <!-- Type -->
+                    <StackLayout>
+                        <Label x:Name="TypeFieldLabel" 
+                               Text="Type:" 
+                               FontAttributes="Bold" 
+                               TextColor="#2c3e50"
+                               FontSize="16" />
+                        <Label Text="{Binding TypeName}" 
+                               TextColor="#34495e"
+                               FontSize="18"
+                               Margin="0,5,0,0" />
+                    </StackLayout>
+
+                    <!-- Fournisseur -->
+                    <StackLayout>
+                        <Label x:Name="SupplierFieldLabel" 
+                               Text="Supplier:" 
+                               FontAttributes="Bold" 
+                               TextColor="#2c3e50"
+                               FontSize="16" />
+                        <Label Text="{Binding SupplierName}" 
+                               TextColor="#34495e"
+                               FontSize="18"
+                               Margin="0,5,0,0" />
+                    </StackLayout>
 
                 </VerticalStackLayout>
             </Frame>
 
-            <HorizontalStackLayout Spacing="10">
-                <Button Text="Modifier" BackgroundColor="#007bff" TextColor="White" Clicked="OnEditClicked" />
-                <Button Text="Retour à la liste" BackgroundColor="#6c757d" TextColor="White" Clicked="OnBackClicked" />
+            <!-- Boutons -->
+            <HorizontalStackLayout Spacing="10" 
+                                   HorizontalOptions="Center"
+                                   Margin="0,20,0,0">
+                <Button x:Name="EditButton"
+                        Text="Edit" 
+                        BackgroundColor="#007bff" 
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="20,12"
+                        CornerRadius="8"
+                        Clicked="OnEditClicked" />
+
+                <Button x:Name="BackButton"
+                        Text="Back to List" 
+                        BackgroundColor="#6c757d" 
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="20,12"
+                        CornerRadius="8"
+                        Clicked="OnBackClicked" />
             </HorizontalStackLayout>
+
+            <!-- Sélecteur de langue -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,30,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="EN" 
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

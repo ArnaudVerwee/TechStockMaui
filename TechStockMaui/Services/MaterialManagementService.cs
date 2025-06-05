@@ -79,12 +79,60 @@ namespace TechStockMaui.Services
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine("🔄 GetMyAssignmentsAsync - DÉBUT");
+
                 await ConfigureAuthAsync();
-                var result = await _httpClient.GetFromJsonAsync<List<MaterialManagement>>($"{BaseUrl}/User");
-                return result ?? new List<MaterialManagement>();
+
+                // ✅ DEBUG: Vérifier le token
+                var token = await SecureStorage.GetAsync("auth_token");
+                if (string.IsNullOrEmpty(token))
+                {
+                    System.Diagnostics.Debug.WriteLine("❌ Pas de token d'authentification");
+                    return new List<MaterialManagement>();
+                }
+                System.Diagnostics.Debug.WriteLine($"✅ Token présent: {token.Substring(0, Math.Min(20, token.Length))}...");
+
+                // ✅ DEBUG: URL appelée
+                var url = $"{BaseUrl}/User";
+                System.Diagnostics.Debug.WriteLine($"🌐 URL appelée: {url}");
+
+                var response = await _httpClient.GetAsync(url);
+                System.Diagnostics.Debug.WriteLine($"📊 Status Code: {response.StatusCode}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"📥 Contenu brut reçu: {content}");
+
+                    var result = await response.Content.ReadFromJsonAsync<List<MaterialManagement>>();
+
+                    if (result != null && result.Any())
+                    {
+                        System.Diagnostics.Debug.WriteLine($"✅ {result.Count} assignments trouvés");
+                        foreach (var assignment in result)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"   - Assignment ID: {assignment.Id}, Product: {assignment.Product?.Name ?? "NULL"}, User: {assignment.UserId}");
+                        }
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("⚠️ Aucun assignment dans la réponse");
+                    }
+
+                    return result ?? new List<MaterialManagement>();
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"❌ Erreur API: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"📄 Erreur détail: {errorContent}");
+                    return new List<MaterialManagement>();
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Exception GetMyAssignmentsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"❌ Stack: {ex.StackTrace}");
                 return new List<MaterialManagement>();
             }
         }

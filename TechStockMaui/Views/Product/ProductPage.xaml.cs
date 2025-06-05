@@ -2,7 +2,6 @@
 using TechStockMaui.Models;
 using System.Collections.ObjectModel;
 
-
 namespace TechStockMaui.Views
 {
     public partial class ProductPage : ContentPage
@@ -10,7 +9,6 @@ namespace TechStockMaui.Views
         private readonly ProductService _productService;
         private readonly SupplierService _supplierService;
         private readonly TypeArticleService _typeArticleService;
-        // ❌ ON SUPPRIME UserService - il est cassé
 
         public ObservableCollection<Product> Products { get; set; }
 
@@ -20,20 +18,212 @@ namespace TechStockMaui.Views
             _productService = new ProductService();
             _supplierService = new SupplierService();
             _typeArticleService = new TypeArticleService();
-            // ❌ PAS de UserService
 
             Products = new ObservableCollection<Product>();
             ProductList.ItemsSource = Products;
+
+            // ✅ AJOUT: S'abonner aux changements de langue
+            TranslationService.Instance.CultureChanged += OnCultureChanged;
         }
 
-        // AUTO-CHARGEMENT comme avant
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             System.Diagnostics.Debug.WriteLine("🔄 Page apparue - chargement automatique");
+
+            // ✅ AJOUT: Charger les traductions en premier
+            await LoadTranslationsAsync();
+
+            // ✅ CONSERVÉ: Votre logique existante
             await LoadProductsAndFiltersAsync();
         }
 
+        // ✅ AJOUT: Charger les traductions
+        private async Task LoadTranslationsAsync()
+        {
+            try
+            {
+                var currentCulture = TranslationService.Instance.GetCurrentCulture();
+                await TranslationService.Instance.LoadTranslationsAsync(currentCulture);
+                await UpdateTextsAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Helper pour récupérer une traduction
+        private async Task<string> GetTextAsync(string key, string fallback = null)
+        {
+            try
+            {
+                var text = await TranslationService.Instance.GetTranslationAsync(key);
+                return !string.IsNullOrEmpty(text) && text != key ? text : (fallback ?? key);
+            }
+            catch
+            {
+                return fallback ?? key;
+            }
+        }
+
+        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
+        private async Task UpdateTextsAsync()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes Products");
+
+                // ✅ Titre de la page
+                Title = await GetTextAsync("Products", "Products");
+
+                // ✅ Titre de la page dans l'header
+                try
+                {
+                    if (PageTitleLabel != null)
+                        PageTitleLabel.Text = await GetTextAsync("ProductManagement", "Product Management");
+                }
+                catch { /* PageTitleLabel n'existe pas */ }
+
+                // ✅ Boutons
+                try
+                {
+                    if (SearchButton != null)
+                        SearchButton.Text = "🔍 " + await GetTextAsync("Search", "Search");
+                }
+                catch { /* SearchButton n'existe pas */ }
+
+                try
+                {
+                    if (ResetButton != null)
+                        ResetButton.Text = "🔄 " + await GetTextAsync("Reset", "Reset");
+                }
+                catch { /* ResetButton n'existe pas */ }
+
+                // ✅ Placeholders des Entry de recherche
+                if (NameEntry != null)
+                    NameEntry.Placeholder = await GetTextAsync("NamePlaceholder", "Name...");
+
+                if (SerialEntry != null)
+                    SerialEntry.Placeholder = await GetTextAsync("SerialPlaceholder", "Serial number...");
+
+                // ✅ Titles des Pickers
+                if (TypePicker != null)
+                    TypePicker.Title = await GetTextAsync("Type", "Type");
+
+                if (SupplierPicker != null)
+                    SupplierPicker.Title = await GetTextAsync("Supplier", "Supplier");
+
+                if (UserPicker != null)
+                    UserPicker.Title = await GetTextAsync("User", "User");
+
+                // ✅ Headers de tableau
+                try
+                {
+                    if (NameHeader != null)
+                        NameHeader.Text = await GetTextAsync("Name", "Name");
+                }
+                catch { /* NameHeader n'existe pas */ }
+
+                try
+                {
+                    if (SerialHeader != null)
+                        SerialHeader.Text = await GetTextAsync("SerialNumber", "Serial Number");
+                }
+                catch { /* SerialHeader n'existe pas */ }
+
+                try
+                {
+                    if (TypeHeader != null)
+                        TypeHeader.Text = await GetTextAsync("Type", "Type");
+                }
+                catch { /* TypeHeader n'existe pas */ }
+
+                try
+                {
+                    if (SupplierHeader != null)
+                        SupplierHeader.Text = await GetTextAsync("Supplier", "Supplier");
+                }
+                catch { /* SupplierHeader n'existe pas */ }
+
+                try
+                {
+                    if (UserHeader != null)
+                        UserHeader.Text = await GetTextAsync("User", "User");
+                }
+                catch { /* UserHeader n'existe pas */ }
+
+                try
+                {
+                    if (ActionsHeader != null)
+                        ActionsHeader.Text = await GetTextAsync("Actions", "Actions");
+                }
+                catch { /* ActionsHeader n'existe pas */ }
+
+                // ✅ Mettre à jour l'indicateur de langue
+                await UpdateLanguageFlag();
+
+                System.Diagnostics.Debug.WriteLine("✅ Textes Products mis à jour");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Callback quand la langue change
+        private async void OnCultureChanged(object sender, string newCulture)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"🌍 Products - Langue changée vers: {newCulture}");
+                await UpdateTextsAsync();
+
+                // ✅ Recharger les filtres avec les nouvelles traductions
+                await ReloadFiltersWithTranslations();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Recharger les filtres avec traductions
+        private async Task ReloadFiltersWithTranslations()
+        {
+            try
+            {
+                // Recharger seulement la partie utilisateur avec traductions
+                var users = await _productService.GetUsersAsync();
+                var userList = new List<object>();
+
+                var notAssignedText = await GetTextAsync("NotAssigned", "Not assigned");
+                var allText = await GetTextAsync("All", "All");
+
+                userList.Add(new { Id = "NotAssigned", Name = notAssignedText });
+                userList.Add(new { Id = "All", Name = allText });
+
+                if (users != null && users.Any())
+                {
+                    foreach (var user in users)
+                    {
+                        var userId = user.UserName ?? "unknown";
+                        var userName = user.UserName ?? await GetTextAsync("UnnamedUser", "Unnamed user");
+                        userList.Add(new { Id = userId, Name = userName });
+                    }
+                }
+
+                UserPicker.ItemsSource = userList;
+                UserPicker.ItemDisplayBinding = new Binding("Name");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur ReloadFiltersWithTranslations: {ex.Message}");
+            }
+        }
+
+        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async Task LoadProductsAndFiltersAsync()
         {
             try
@@ -51,10 +241,13 @@ namespace TechStockMaui.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur LoadProductsAndFiltersAsync: {ex.Message}");
-                await DisplayAlert("Erreur", "Erreur de chargement", "OK");
+                var errorTitle = await GetTextAsync("Error", "Erreur");
+                var loadingErrorMsg = await GetTextAsync("LoadingError", "Erreur de chargement");
+                await DisplayAlert(errorTitle, loadingErrorMsg, "OK");
             }
         }
 
+        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async Task LoadProductsOnlyAsync()
         {
             try
@@ -84,6 +277,7 @@ namespace TechStockMaui.Views
             }
         }
 
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async Task LoadFiltersAsync()
         {
             try
@@ -110,7 +304,7 @@ namespace TechStockMaui.Views
                     System.Diagnostics.Debug.WriteLine($"✅ {suppliers.Count()} fournisseurs chargés");
                 }
 
-                // UTILISATEURS - VERSION AVEC VRAIE API
+                // UTILISATEURS - VERSION AVEC VRAIE API ET TRADUCTIONS
                 System.Diagnostics.Debug.WriteLine("🔄 Chargement utilisateurs via ProductService...");
                 try
                 {
@@ -118,8 +312,13 @@ namespace TechStockMaui.Views
                     var users = await _productService.GetUsersAsync();
 
                     var userList = new List<object>();
-                    userList.Add(new { Id = "NotAssigned", Name = "Non assigné" });
-                    userList.Add(new { Id = "All", Name = "Tous" });
+
+                    // ✅ Options traduites
+                    var notAssignedText = await GetTextAsync("NotAssigned", "Not assigned");
+                    var allText = await GetTextAsync("All", "All");
+
+                    userList.Add(new { Id = "NotAssigned", Name = notAssignedText });
+                    userList.Add(new { Id = "All", Name = allText });
 
                     if (users != null && users.Any())
                     {
@@ -127,7 +326,7 @@ namespace TechStockMaui.Views
                         {
                             // ✅ CORRECTION: Utiliser UserName (pas Username ni Name)
                             var userId = user.UserName ?? "unknown";
-                            var userName = user.UserName ?? "Utilisateur sans nom";
+                            var userName = user.UserName ?? await GetTextAsync("UnnamedUser", "Unnamed user");
 
                             userList.Add(new { Id = userId, Name = userName });
                         }
@@ -141,10 +340,13 @@ namespace TechStockMaui.Views
                 catch (Exception userEx)
                 {
                     System.Diagnostics.Debug.WriteLine($"❌ Erreur utilisateurs: {userEx.Message}");
-                    // Fallback
+                    // Fallback avec traductions
                     var userList = new List<object>();
-                    userList.Add(new { Id = "NotAssigned", Name = "Non assigné" });
-                    userList.Add(new { Id = "All", Name = "Tous" });
+                    var notAssignedText = await GetTextAsync("NotAssigned", "Not assigned");
+                    var allText = await GetTextAsync("All", "All");
+
+                    userList.Add(new { Id = "NotAssigned", Name = notAssignedText });
+                    userList.Add(new { Id = "All", Name = allText });
                     UserPicker.ItemsSource = userList;
                     UserPicker.ItemDisplayBinding = new Binding("Name");
                 }
@@ -158,17 +360,19 @@ namespace TechStockMaui.Views
             }
         }
 
+        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async void OnCreateClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new CreateProductPage());
         }
 
+        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async void OnBackToDashboardClicked(object sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
 
-        // RECHERCHE avec filtres - COMPLÈTE
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnSearchClicked(object sender, EventArgs e)
         {
             try
@@ -207,10 +411,13 @@ namespace TechStockMaui.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur recherche: {ex.Message}");
-                await DisplayAlert("Erreur", "Erreur lors de la recherche", "OK");
+                var errorTitle = await GetTextAsync("Error", "Error");
+                var searchErrorMsg = await GetTextAsync("SearchError", "Search error");
+                await DisplayAlert(errorTitle, searchErrorMsg, "OK");
             }
         }
 
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnResetClicked(object sender, EventArgs e)
         {
             try
@@ -229,11 +436,13 @@ namespace TechStockMaui.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur reset: {ex.Message}");
-                await DisplayAlert("Erreur", "Erreur lors du reset", "OK");
+                var errorTitle = await GetTextAsync("Error", "Error");
+                var resetErrorMsg = await GetTextAsync("ResetError", "Reset error");
+                await DisplayAlert(errorTitle, resetErrorMsg, "OK");
             }
         }
 
-        // Actions
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnEditClicked(object sender, EventArgs e)
         {
             if (sender is Button button && button.CommandParameter is Product product)
@@ -246,10 +455,14 @@ namespace TechStockMaui.Views
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"❌ Erreur navigation Edit: {ex.Message}");
-                    await DisplayAlert("Erreur", "Impossible d'ouvrir la page d'édition", "OK");
+                    var errorTitle = await GetTextAsync("Error", "Error");
+                    var editErrorMsg = await GetTextAsync("CannotOpenEditPage", "Cannot open edit page");
+                    await DisplayAlert(errorTitle, editErrorMsg, "OK");
                 }
             }
         }
+
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnDetailsClicked(object sender, EventArgs e)
         {
             if (sender is Button button && button.CommandParameter is Product product)
@@ -263,21 +476,27 @@ namespace TechStockMaui.Views
                 {
                     System.Diagnostics.Debug.WriteLine($"❌ Erreur navigation Details: {ex.Message}");
 
-                    // Fallback - afficher les détails dans une alerte si la page n'existe pas encore
-                    var details = $"Nom: {product.Name}\n" +
-                                 $"Série: {product.SerialNumber}\n" +
-                                 $"Type: {product.TypeName ?? "N/A"}\n" +
-                                 $"Fournisseur: {product.SupplierName ?? "N/A"}\n" +
-                                 $"Utilisateur: {product.AssignedUserName ?? "Non assigné"}";
-                    await DisplayAlert("Détails", details, "OK");
+                    // ✅ Fallback avec traductions
+                    var nameLabel = await GetTextAsync("Name", "Name");
+                    var serialLabel = await GetTextAsync("SerialNumber", "Serial");
+                    var typeLabel = await GetTextAsync("Type", "Type");
+                    var supplierLabel = await GetTextAsync("Supplier", "Supplier");
+                    var userLabel = await GetTextAsync("User", "User");
+                    var notAssignedText = await GetTextAsync("NotAssigned", "Not assigned");
+                    var detailsTitle = await GetTextAsync("Details", "Details");
+
+                    var details = $"{nameLabel}: {product.Name}\n" +
+                                 $"{serialLabel}: {product.SerialNumber}\n" +
+                                 $"{typeLabel}: {product.TypeName ?? "N/A"}\n" +
+                                 $"{supplierLabel}: {product.SupplierName ?? "N/A"}\n" +
+                                 $"{userLabel}: {product.AssignedUserName ?? notAssignedText}";
+
+                    await DisplayAlert(detailsTitle, details, "OK");
                 }
             }
         }
 
-        // ✅ VERSION AVEC DEBUG RENFORCÉ - Remplace OnAssignClicked dans ProductPage.xaml.cs
-
-        // ✅ VERSION COMPLÈTE CORRIGÉE - Remplace OnAssignClicked dans ProductPage.xaml.cs
-
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnAssignClicked(object sender, EventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("🔄 OnAssignClicked - DÉBUT");
@@ -300,14 +519,14 @@ namespace TechStockMaui.Views
                     {
                         System.Diagnostics.Debug.WriteLine("🔄 Tentative de désassignation...");
 
-                        // ✅ DÉSASSIGNER - Demander confirmation
-                        var result = await DisplayAlert(
-                            "Confirmer",
-                            $"Désassigner {product.Name} de {product.AssignedUserName} ?",
-                            "Oui",
-                            "Non"
-                        );
+                        // ✅ DÉSASSIGNER avec traductions
+                        var confirmTitle = await GetTextAsync("Confirm", "Confirm");
+                        var unassignQuestion = await GetTextAsync("UnassignQuestion", "Unassign {0} from {1}?");
+                        var unassignMsg = string.Format(unassignQuestion, product.Name, product.AssignedUserName);
+                        var yesText = await GetTextAsync("Yes", "Yes");
+                        var noText = await GetTextAsync("No", "No");
 
+                        var result = await DisplayAlert(confirmTitle, unassignMsg, yesText, noText);
                         System.Diagnostics.Debug.WriteLine($"🔍 Résultat confirmation: {result}");
 
                         if (result)
@@ -340,7 +559,10 @@ namespace TechStockMaui.Views
                             System.Diagnostics.Debug.WriteLine($"❌ ERREUR NAVIGATION: {navEx.Message}");
                             System.Diagnostics.Debug.WriteLine($"❌ Type d'erreur: {navEx.GetType().Name}");
                             System.Diagnostics.Debug.WriteLine($"❌ Stack navigation: {navEx.StackTrace}");
-                            await DisplayAlert("Erreur Navigation", $"Type: {navEx.GetType().Name}\nMessage: {navEx.Message}", "OK");
+
+                            var errorTitle = await GetTextAsync("NavigationError", "Navigation Error");
+                            var errorMsg = $"Type: {navEx.GetType().Name}\nMessage: {navEx.Message}";
+                            await DisplayAlert(errorTitle, errorMsg, "OK");
                         }
                     }
                 }
@@ -355,13 +577,15 @@ namespace TechStockMaui.Views
             {
                 System.Diagnostics.Debug.WriteLine($"❌ EXCEPTION OnAssignClicked: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"❌ Stack trace: {ex.StackTrace}");
-                await DisplayAlert("Erreur Debug", $"Exception: {ex.Message}", "OK");
+
+                var errorTitle = await GetTextAsync("Error", "Error");
+                await DisplayAlert(errorTitle, $"Exception: {ex.Message}", "OK");
             }
 
             System.Diagnostics.Debug.WriteLine("🔄 OnAssignClicked - FIN");
         }
 
-        // ✅ Méthode pour désassigner un produit
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async Task UnassignProduct(Product product)
         {
             try
@@ -374,25 +598,41 @@ namespace TechStockMaui.Views
                     // ✅ Mettre à jour l'affichage
                     await LoadProductsOnlyAsync(); // Recharger la liste
 
-                    await DisplayAlert("Succès", $"{product.Name} a été désassigné", "OK");
+                    var successTitle = await GetTextAsync("Success", "Success");
+                    var unassignedMsg = await GetTextAsync("ProductUnassigned", "{0} has been unassigned");
+                    var message = string.Format(unassignedMsg, product.Name);
+                    await DisplayAlert(successTitle, message, "OK");
                 }
                 else
                 {
-                    await DisplayAlert("Erreur", "Échec de la désassignation", "OK");
+                    var errorTitle = await GetTextAsync("Error", "Error");
+                    var unassignFailedMsg = await GetTextAsync("UnassignFailed", "Unassign failed");
+                    await DisplayAlert(errorTitle, unassignFailedMsg, "OK");
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur UnassignProduct: {ex.Message}");
-                await DisplayAlert("Erreur", "Erreur lors de la désassignation", "OK");
+                var errorTitle = await GetTextAsync("Error", "Error");
+                var unassignErrorMsg = await GetTextAsync("UnassignError", "Error during unassign");
+                await DisplayAlert(errorTitle, unassignErrorMsg, "OK");
             }
         }
 
+        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
             if (sender is Button button && button.CommandParameter is Product product)
             {
-                var result = await DisplayAlert("Confirmer", $"Supprimer {product.Name}?", "Oui", "Non");
+                // ✅ Confirmation avec traductions
+                var confirmTitle = await GetTextAsync("Confirm", "Confirm");
+                var deleteQuestion = await GetTextAsync("DeleteQuestion", "Delete {0}?");
+                var deleteMsg = string.Format(deleteQuestion, product.Name);
+                var yesText = await GetTextAsync("Yes", "Yes");
+                var noText = await GetTextAsync("No", "No");
+
+                var result = await DisplayAlert(confirmTitle, deleteMsg, yesText, noText);
+
                 if (result)
                 {
                     try
@@ -401,20 +641,111 @@ namespace TechStockMaui.Views
                         if (success)
                         {
                             Products.Remove(product);
-                            await DisplayAlert("OK", "Produit supprimé", "OK");
+                            var successTitle = await GetTextAsync("Success", "Success");
+                            var deletedMsg = await GetTextAsync("ProductDeleted", "Product deleted");
+                            await DisplayAlert(successTitle, deletedMsg, "OK");
                         }
                         else
                         {
-                            await DisplayAlert("Erreur", "Échec suppression", "OK");
+                            var errorTitle = await GetTextAsync("Error", "Error");
+                            var deleteFailedMsg = await GetTextAsync("DeleteFailed", "Delete failed");
+                            await DisplayAlert(errorTitle, deleteFailedMsg, "OK");
                         }
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"❌ Erreur suppression: {ex.Message}");
-                        await DisplayAlert("Erreur", "Erreur suppression", "OK");
+                        var errorTitle = await GetTextAsync("Error", "Error");
+                        var deleteErrorMsg = await GetTextAsync("DeleteError", "Delete error");
+                        await DisplayAlert(errorTitle, deleteErrorMsg, "OK");
                     }
                 }
             }
+        }
+
+        // ✅ AJOUT: Gestion du changement de langue
+        private async void OnLanguageClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var translationService = TranslationService.Instance;
+                var currentCulture = translationService.GetCurrentCulture();
+
+                var options = new List<string>();
+                foreach (var culture in translationService.GetSupportedCultures())
+                {
+                    var flag = translationService.GetLanguageFlag(culture);
+                    var name = translationService.GetLanguageDisplayName(culture);
+                    var current = culture == currentCulture ? " ✓" : "";
+                    options.Add($"{flag} {name}{current}");
+                }
+
+                var cancelText = await GetTextAsync("Cancel", "Cancel");
+                var titleText = "🌍 " + await GetTextAsync("ChooseLanguage", "Choose language");
+
+                var selectedOption = await DisplayActionSheet(titleText, cancelText, null, options.ToArray());
+
+                if (!string.IsNullOrEmpty(selectedOption) && selectedOption != cancelText)
+                {
+                    string newCulture = null;
+                    if (selectedOption.Contains("EN")) newCulture = "en";
+                    else if (selectedOption.Contains("FR")) newCulture = "fr";
+                    else if (selectedOption.Contains("NL")) newCulture = "nl";
+
+                    if (newCulture != null && newCulture != currentCulture)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        await translationService.SetCurrentCultureAsync(newCulture);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Mettre à jour le drapeau de langue
+        private async Task UpdateLanguageFlag()
+        {
+            try
+            {
+                var translationService = TranslationService.Instance;
+                var currentCulture = translationService.GetCurrentCulture();
+                var flag = translationService.GetLanguageFlag(currentCulture);
+
+                // ✅ Uniquement si l'élément LanguageFlag existe
+                try
+                {
+                    if (LanguageFlag != null)
+                        LanguageFlag.Text = flag;
+                }
+                catch
+                {
+                    // LanguageFlag n'existe pas dans le XAML - pas grave
+                    System.Diagnostics.Debug.WriteLine("ℹ️ LanguageFlag non trouvé dans le XAML");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Nettoyage
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+        }
+
+        // ✅ AJOUT: Destructeur pour nettoyer l'événement
+        ~ProductPage()
+        {
+            try
+            {
+                TranslationService.Instance.CultureChanged -= OnCultureChanged;
+            }
+            catch { }
         }
     }
 }

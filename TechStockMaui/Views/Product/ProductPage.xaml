@@ -2,32 +2,72 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechStockMaui.Views.ProductPage"
-             Title="Produits">
+             Title="Products">
 
     <Grid RowDefinitions="Auto,Auto,*">
         <!-- Header -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="10" BackgroundColor="#f8f9fa">
-            <Button Grid.Column="0" Text="🏠" Clicked="OnBackToDashboardClicked" BackgroundColor="Transparent" />
-            <Label Grid.Column="1" Text="Gestion des Produits" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
-            <Button Grid.Column="2" Text="➕" Clicked="OnCreateClicked" BackgroundColor="#007bff" TextColor="White" />
+            <Button Grid.Column="0" 
+                    x:Name="BackButton"
+                    Text="🏠" 
+                    Clicked="OnBackToDashboardClicked" 
+                    BackgroundColor="Transparent" />
+            <Label Grid.Column="1" 
+                   x:Name="PageTitleLabel"
+                   Text="Product Management" 
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center" />
+            <Button Grid.Column="2" 
+                    x:Name="CreateButton"
+                    Text="➕" 
+                    Clicked="OnCreateClicked" 
+                    BackgroundColor="#007bff" 
+                    TextColor="White" />
         </Grid>
 
         <!-- Formulaire de recherche avec Pickers -->
         <Frame Grid.Row="1" BorderColor="LightGray" Padding="10" Margin="5" BackgroundColor="White">
             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" RowSpacing="8" ColumnSpacing="8">
                 <!-- Première ligne -->
-                <Entry Grid.Row="0" Grid.Column="0" x:Name="NameEntry" Placeholder="Nom..." FontSize="14" />
-                <Entry Grid.Row="0" Grid.Column="1" x:Name="SerialEntry" Placeholder="N° série..." FontSize="14" />
-                <Picker Grid.Row="0" Grid.Column="2" x:Name="TypePicker" Title="Type" FontSize="14" />
+                <Entry Grid.Row="0" Grid.Column="0" 
+                       x:Name="NameEntry" 
+                       Placeholder="Name..." 
+                       FontSize="14" />
+                <Entry Grid.Row="0" Grid.Column="1" 
+                       x:Name="SerialEntry" 
+                       Placeholder="Serial number..." 
+                       FontSize="14" />
+                <Picker Grid.Row="0" Grid.Column="2" 
+                        x:Name="TypePicker" 
+                        Title="Type" 
+                        FontSize="14" />
 
                 <!-- Deuxième ligne -->
-                <Picker Grid.Row="1" Grid.Column="0" x:Name="SupplierPicker" Title="Fournisseur" FontSize="14" />
-                <Picker Grid.Row="1" Grid.Column="1" x:Name="UserPicker" Title="Utilisateur" FontSize="14" />
+                <Picker Grid.Row="1" Grid.Column="0" 
+                        x:Name="SupplierPicker" 
+                        Title="Supplier" 
+                        FontSize="14" />
+                <Picker Grid.Row="1" Grid.Column="1" 
+                        x:Name="UserPicker" 
+                        Title="User" 
+                        FontSize="14" />
 
                 <!-- Boutons sur la troisième ligne -->
                 <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Spacing="10" HorizontalOptions="End">
-                    <Button Text="🔍 Rechercher" Clicked="OnSearchClicked" BackgroundColor="#007bff" TextColor="White" FontSize="14" />
-                    <Button Text="🔄 Reset" Clicked="OnResetClicked" BackgroundColor="#6c757d" TextColor="White" FontSize="14" />
+                    <Button x:Name="SearchButton"
+                            Text="🔍 Search" 
+                            Clicked="OnSearchClicked" 
+                            BackgroundColor="#007bff" 
+                            TextColor="White" 
+                            FontSize="14" />
+                    <Button x:Name="ResetButton"
+                            Text="🔄 Reset" 
+                            Clicked="OnResetClicked" 
+                            BackgroundColor="#6c757d" 
+                            TextColor="White" 
+                            FontSize="14" />
                 </HorizontalStackLayout>
             </Grid>
         </Frame>
@@ -37,12 +77,37 @@
             <StackLayout>
                 <!-- En-tête du tableau -->
                 <Grid BackgroundColor="#e9ecef" Padding="8,12" ColumnDefinitions="120,100,100,120,120,220">
-                    <Label Grid.Column="0" Text="Nom" FontAttributes="Bold" FontSize="14" />
-                    <Label Grid.Column="1" Text="N° Série" FontAttributes="Bold" FontSize="14" />
-                    <Label Grid.Column="2" Text="Type" FontAttributes="Bold" FontSize="14" />
-                    <Label Grid.Column="3" Text="Fournisseur" FontAttributes="Bold" FontSize="14" />
-                    <Label Grid.Column="4" Text="Utilisateur" FontAttributes="Bold" FontSize="14" />
-                    <Label Grid.Column="5" Text="Actions" FontAttributes="Bold" FontSize="14" HorizontalOptions="Center" />
+                    <Label Grid.Column="0" 
+                           x:Name="NameHeader"
+                           Text="Name" 
+                           FontAttributes="Bold" 
+                           FontSize="14" />
+                    <Label Grid.Column="1" 
+                           x:Name="SerialHeader"
+                           Text="Serial Number" 
+                           FontAttributes="Bold" 
+                           FontSize="14" />
+                    <Label Grid.Column="2" 
+                           x:Name="TypeHeader"
+                           Text="Type" 
+                           FontAttributes="Bold" 
+                           FontSize="14" />
+                    <Label Grid.Column="3" 
+                           x:Name="SupplierHeader"
+                           Text="Supplier" 
+                           FontAttributes="Bold" 
+                           FontSize="14" />
+                    <Label Grid.Column="4" 
+                           x:Name="UserHeader"
+                           Text="User" 
+                           FontAttributes="Bold" 
+                           FontSize="14" />
+                    <Label Grid.Column="5" 
+                           x:Name="ActionsHeader"
+                           Text="Actions" 
+                           FontAttributes="Bold" 
+                           FontSize="14" 
+                           HorizontalOptions="Center" />
                 </Grid>
 
                 <!-- Lignes du tableau -->
@@ -79,7 +144,7 @@
                                             WidthRequest="28" 
                                             HeightRequest="28" />
 
-                                    <!-- ✅ Bouton Assigner/Désassigner intelligent -->
+                                    <!-- Bouton Assigner/Désassigner intelligent -->
                                     <Button Clicked="OnAssignClicked" 
                                             CommandParameter="{Binding .}" 
                                             TextColor="White" 
@@ -122,5 +187,32 @@
                 </CollectionView>
             </StackLayout>
         </ScrollView>
+
+        <!-- Sélecteur de langue en bas (optionnel) -->
+        <Frame Grid.Row="2"
+               BackgroundColor="White" 
+               HasShadow="True" 
+               CornerRadius="8"
+               Padding="10"
+               Margin="20"
+               VerticalOptions="End"
+               HorizontalOptions="End"
+               WidthRequest="150">
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Label Text="🌍" FontSize="16" VerticalOptions="Center" />
+                <Label x:Name="LanguageFlag" 
+                       Text="EN" 
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="#2c3e50"
+                       BackgroundColor="#F5F5F5"
+                       Padding="6,3"
+                       VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </Frame>
     </Grid>
 </ContentPage>
