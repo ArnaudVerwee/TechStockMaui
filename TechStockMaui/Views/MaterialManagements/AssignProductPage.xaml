@@ -1,46 +1,156 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TechStockMaui.Views.MaterialManagements.AssignProductPage">
-    <VerticalStackLayout Padding="20" Spacing="15">
+             x:Class="TechStockMaui.Views.MaterialManagements.AssignProductPage"
+             Title="Assign Product">
 
-        <Label Text="Assigner un produit à un utilisateur" FontAttributes="Bold" FontSize="20" />
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
 
-        <Label>
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Produit : " />
-                    <Span Text="{Binding Product.Name}" FontAttributes="Bold" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
+            <!-- En-tête avec titre -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout>
+                    <Label x:Name="TitleLabel"
+                           Text="Assigner un produit à un utilisateur" 
+                           FontAttributes="Bold" 
+                           FontSize="20"
+                           TextColor="#2c3e50"
+                           HorizontalOptions="Center" />
+                </StackLayout>
+            </Frame>
 
+            <!-- Informations du produit -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout Spacing="10">
+                    <Label x:Name="ProductInfoHeaderLabel"
+                           Text="Informations du produit"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#2c3e50" />
 
-        <Label>
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Numéro de série : " />
-                    <Span Text="{Binding Product.SerialNumber}" FontAttributes="Bold" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
+                    <Label x:Name="ProductNameLabel">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span x:Name="ProductSpan" Text="Produit : " />
+                                <Span Text="{Binding Product.Name}" FontAttributes="Bold" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
 
+                    <Label x:Name="SerialNumberLabel">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span x:Name="SerialNumberSpan" Text="Numéro de série : " />
+                                <Span Text="{Binding Product.SerialNumber}" FontAttributes="Bold" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </StackLayout>
+            </Frame>
 
-        <Label Text="Sélectionnez un utilisateur :" />
-        <Picker Title="Sélectionner un utilisateur"
-                ItemsSource="{Binding Users}"
-                ItemDisplayBinding="{Binding UserName}"
-                SelectedItem="{Binding SelectedUser}" />
+            <!-- Sélection utilisateur -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout Spacing="10">
+                    <Label x:Name="SelectUserLabel" 
+                           Text="Sélectionnez un utilisateur :" 
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#2c3e50" />
 
-        <Label Text="Sélectionnez l'état du produit :" />
-        <Picker Title="Sélectionner un état"
-                ItemsSource="{Binding States}"
-                ItemDisplayBinding="{Binding Status}"
-                SelectedItem="{Binding SelectedState}" />
+                    <Picker x:Name="UserPicker"
+                            Title="Sélectionner un utilisateur"
+                            ItemsSource="{Binding Users}"
+                            ItemDisplayBinding="{Binding UserName}"
+                            SelectedItem="{Binding SelectedUser}"
+                            BackgroundColor="#f8f9fa"
+                            FontSize="14" />
+                </StackLayout>
+            </Frame>
 
-        <Button Text="Assigner" Command="{Binding AssignCommand}" />
+            <!-- Sélection état -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout Spacing="10">
+                    <Label x:Name="SelectStateLabel" 
+                           Text="Sélectionnez l'état du produit :" 
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#2c3e50" />
 
-        <Button Text="Retour à la liste" Clicked="OnBackClicked" />
+                    <Picker x:Name="StatePicker"
+                            Title="Sélectionner un état"
+                            ItemsSource="{Binding States}"
+                            ItemDisplayBinding="{Binding Status}"
+                            SelectedItem="{Binding SelectedState}"
+                            BackgroundColor="#f8f9fa"
+                            FontSize="14" />
+                </StackLayout>
+            </Frame>
 
-    </VerticalStackLayout>
+            <!-- Boutons d'action -->
+            <StackLayout Spacing="10" Margin="0,15,0,0">
+                <Button x:Name="AssignButton"
+                        Text="Assigner" 
+                        Command="{Binding AssignCommand}"
+                        BackgroundColor="#28a745"
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8" />
+
+                <Button x:Name="BackButton"
+                        Text="Retour à la liste" 
+                        Clicked="OnBackClicked"
+                        BackgroundColor="#6c757d"
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8" />
+            </StackLayout>
+
+            <!-- Sélecteur de langue -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,30,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="🇺🇸" 
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

@@ -5,28 +5,104 @@
              Title="Créer un Type d'Article"
              BackgroundColor="White">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
 
-        <Label Text="Créer un nouveau type d'article" 
-               FontSize="24" 
-               FontAttributes="Bold" />
+            <!-- En-tête avec titre -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout>
+                    <Label x:Name="TitleLabel"
+                           Text="Créer un nouveau type d'article" 
+                           FontSize="24" 
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           HorizontalOptions="Center" />
+                </StackLayout>
+            </Frame>
 
-        <Label Text="Nom du type :" 
-               FontAttributes="Bold" />
+            <!-- Formulaire de création -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout Spacing="15">
+                    <Label x:Name="FormHeaderLabel"
+                           Text="Informations du type d'article"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           TextColor="#2c3e50"
+                           HorizontalOptions="Center"
+                           Margin="0,0,0,10" />
 
-        <!-- IMPORTANT: Cette ligne avec x:Name="NameEntry" -->
-        <Entry x:Name="NameEntry" 
-               Placeholder="Entrez le nom du type d'article" />
+                    <Label x:Name="NameLabel"
+                           Text="Nom du type :" 
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#495057" />
 
-        <Button Text="Enregistrer" 
-                Clicked="OnSaveClicked"
-                BackgroundColor="#28a745"
-                TextColor="White" />
+                    <!-- IMPORTANT: Cette ligne avec x:Name="NameEntry" -->
+                    <Entry x:Name="NameEntry" 
+                           Placeholder="Entrez le nom du type d'article"
+                           BackgroundColor="#f8f9fa"
+                           FontSize="16"
+                           HeightRequest="50" />
+                </StackLayout>
+            </Frame>
 
-        <Button Text="Annuler" 
-                Clicked="OnCancelClicked"
-                BackgroundColor="#6c757d"
-                TextColor="White" />
+            <!-- Boutons d'action -->
+            <StackLayout Spacing="10" Margin="0,15,0,0">
+                <Button x:Name="SaveButton"
+                        Text="Enregistrer" 
+                        Clicked="OnSaveClicked"
+                        BackgroundColor="#28a745"
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8" />
 
-    </VerticalStackLayout>
+                <Button x:Name="CancelButton"
+                        Text="Annuler" 
+                        Clicked="OnCancelClicked"
+                        BackgroundColor="#6c757d"
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8" />
+            </StackLayout>
+
+            <!-- Sélecteur de langue -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,30,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="🇺🇸" 
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

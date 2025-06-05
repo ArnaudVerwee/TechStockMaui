@@ -9,6 +9,7 @@ namespace TechStockMaui.Views.MaterialManagements
         private MaterialManagementService _materialManagementService;
         private ObservableCollection<MaterialManagement> _assignments;
 
+        // ✅ CONSERVÉ: Votre constructeur original
         public AssignedProductsPage()
         {
             try
@@ -16,6 +17,10 @@ namespace TechStockMaui.Views.MaterialManagements
                 System.Diagnostics.Debug.WriteLine("🔄 AssignedProductsPage constructeur - DÉBUT");
 
                 InitializeComponent();
+
+                // ✅ AJOUT: S'abonner aux changements de langue
+                TranslationService.Instance.CultureChanged += OnCultureChanged;
+
                 _materialManagementService = new MaterialManagementService();
                 _assignments = new ObservableCollection<MaterialManagement>();
                 ProductsCollectionView.ItemsSource = _assignments;
@@ -28,13 +33,105 @@ namespace TechStockMaui.Views.MaterialManagements
             }
         }
 
+        // ✅ MODIFIÉ: Votre méthode existante avec ajout des traductions
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+
+            // ✅ AJOUT: Charger les traductions
+            await LoadTranslationsAsync();
+
+            // ✅ CONSERVÉ: Votre logique existante
             System.Diagnostics.Debug.WriteLine("🔄 AssignedProductsPage apparue - chargement automatique");
             await LoadAssignedProductsAsync();
         }
 
+        // ✅ AJOUT: Charger les traductions
+        private async Task LoadTranslationsAsync()
+        {
+            try
+            {
+                var currentCulture = TranslationService.Instance.GetCurrentCulture();
+                await TranslationService.Instance.LoadTranslationsAsync(currentCulture);
+                await UpdateTextsAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Helper pour récupérer une traduction
+        private async Task<string> GetTextAsync(string key, string fallback = null)
+        {
+            try
+            {
+                var text = await TranslationService.Instance.GetTranslationAsync(key);
+                return !string.IsNullOrEmpty(text) && text != key ? text : (fallback ?? key);
+            }
+            catch
+            {
+                return fallback ?? key;
+            }
+        }
+
+        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
+        private async Task UpdateTextsAsync()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes AssignedProductsPage");
+
+                // ✅ Titre de la page
+                Title = await GetTextAsync("My Assigned Products", "My Assigned Products");
+
+                // ✅ En-tête
+                if (HeaderTitleLabel != null)
+                    HeaderTitleLabel.Text = await GetTextAsync("Products assigned to me", "Products assigned to me");
+
+                if (HeaderDescriptionLabel != null)
+                    HeaderDescriptionLabel.Text = await GetTextAsync("Click Sign to confirm product reception", "Click 'Sign' to confirm product reception");
+
+                // ✅ Labels des détails de produit (Note: Ces labels sont dans le DataTemplate, donc difficiles à traduire directement)
+                // Vous pourriez créer des propriétés calculées dans votre modèle MaterialManagement pour les textes traduits
+
+                // ✅ Boutons d'action
+                if (RefreshButton != null)
+                    RefreshButton.Text = "🔄 " + await GetTextAsync("Refresh", "Refresh");
+
+                if (BackButton != null)
+                    BackButton.Text = "🏠 " + await GetTextAsync("Back", "Back");
+
+                // ✅ Sélecteur de langue
+                if (LanguageLabel != null)
+                    LanguageLabel.Text = await GetTextAsync("Language", "Language");
+
+                // ✅ Mettre à jour l'indicateur de langue
+                await UpdateLanguageFlag();
+
+                System.Diagnostics.Debug.WriteLine("✅ Textes AssignedProductsPage mis à jour");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Callback quand la langue change
+        private async void OnCultureChanged(object sender, string newCulture)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"🌍 AssignedProductsPage - Langue changée vers: {newCulture}");
+                await UpdateTextsAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            }
+        }
+
+        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async Task LoadAssignedProductsAsync()
         {
             try
@@ -59,19 +156,24 @@ namespace TechStockMaui.Views.MaterialManagements
                     System.Diagnostics.Debug.WriteLine("⚠️ Aucun produit assigné trouvé");
                 }
 
-                // Optionnel : Afficher un message si aucun produit
+                // ✅ MODIFIÉ: Message traduit
                 if (!_assignments.Any())
                 {
-                    await DisplayAlert("Information", "Aucun produit ne vous est actuellement assigné.", "OK");
+                    var infoTitle = await GetTextAsync("Information", "Information");
+                    var noProductsMessage = await GetTextAsync("No products currently assigned", "No products are currently assigned to you");
+                    await DisplayAlert(infoTitle, noProductsMessage, "OK");
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur LoadAssignedProductsAsync: {ex.Message}");
-                await DisplayAlert("Erreur", $"Impossible de charger les produits assignés: {ex.Message}", "OK");
+                var errorTitle = await GetTextAsync("Error", "Error");
+                var errorMessage = await GetTextAsync("Unable to load assigned products", "Unable to load assigned products");
+                await DisplayAlert(errorTitle, $"{errorMessage}: {ex.Message}", "OK");
             }
         }
 
+        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async void OnSignClicked(object sender, EventArgs e)
         {
             try
@@ -87,7 +189,9 @@ namespace TechStockMaui.Views.MaterialManagements
                     if (assignment == null)
                     {
                         System.Diagnostics.Debug.WriteLine($"❌ Assignment {assignmentId} introuvable");
-                        await DisplayAlert("Erreur", "Assignment introuvable", "OK");
+                        var errorTitle = await GetTextAsync("Error", "Error");
+                        var notFoundMessage = await GetTextAsync("Assignment not found", "Assignment not found");
+                        await DisplayAlert(errorTitle, notFoundMessage, "OK");
                         return;
                     }
 
@@ -96,16 +200,20 @@ namespace TechStockMaui.Views.MaterialManagements
                     // ✅ Utiliser vos propriétés calculées existantes
                     if (assignment.IsSignatureValid)
                     {
-                        await DisplayAlert("Information", "Ce produit a déjà été signé.", "OK");
+                        var infoTitle = await GetTextAsync("Information", "Information");
+                        var alreadySignedMessage = await GetTextAsync("Product already signed", "This product has already been signed");
+                        await DisplayAlert(infoTitle, alreadySignedMessage, "OK");
                         return;
                     }
 
-                    // Demander confirmation
-                    bool confirm = await DisplayAlert(
-                        "Confirmation de réception",
-                        $"Confirmez-vous avoir reçu le produit '{assignment.Product?.Name}' ?\n\nEn signant, vous attestez avoir pris possession de ce matériel.",
-                        "Oui, je confirme",
-                        "Annuler");
+                    // ✅ Messages traduits pour la confirmation
+                    var confirmTitle = await GetTextAsync("Reception Confirmation", "Reception Confirmation");
+                    var confirmMessage = await GetTextAsync("Confirm product reception", "Do you confirm that you have received the product") + $" '{assignment.Product?.Name}' ?\n\n" +
+                                       await GetTextAsync("By signing you attest possession", "By signing, you attest to having taken possession of this equipment.");
+                    var yesConfirm = await GetTextAsync("Yes I confirm", "Yes, I confirm");
+                    var cancel = await GetTextAsync("Cancel", "Cancel");
+
+                    bool confirm = await DisplayAlert(confirmTitle, confirmMessage, yesConfirm, cancel);
 
                     if (confirm)
                     {
@@ -124,7 +232,9 @@ namespace TechStockMaui.Views.MaterialManagements
                             if (success)
                             {
                                 System.Diagnostics.Debug.WriteLine("✅ Signature envoyée avec succès");
-                                await DisplayAlert("Succès", "Produit signé avec succès! Merci de confirmer la réception.", "OK");
+                                var successTitle = await GetTextAsync("Success", "Success");
+                                var successMessage = await GetTextAsync("Product signed successfully", "Product signed successfully! Thank you for confirming reception.");
+                                await DisplayAlert(successTitle, successMessage, "OK");
 
                                 // Rafraîchir la liste
                                 await LoadAssignedProductsAsync();
@@ -132,7 +242,9 @@ namespace TechStockMaui.Views.MaterialManagements
                             else
                             {
                                 System.Diagnostics.Debug.WriteLine("❌ Échec envoi signature");
-                                await DisplayAlert("Erreur", "Échec de l'enregistrement de la signature. Veuillez réessayer.", "OK");
+                                var errorTitle = await GetTextAsync("Error", "Error");
+                                var saveErrorMessage = await GetTextAsync("Signature save failed", "Failed to save signature. Please try again.");
+                                await DisplayAlert(errorTitle, saveErrorMessage, "OK");
                             }
                         }
                         else
@@ -148,32 +260,39 @@ namespace TechStockMaui.Views.MaterialManagements
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("❌ Sender ou CommandParameter invalide");
-                    await DisplayAlert("Erreur", "Erreur technique lors de la signature", "OK");
+                    var errorTitle = await GetTextAsync("Error", "Error");
+                    var technicalErrorMessage = await GetTextAsync("Technical error during signing", "Technical error during signing");
+                    await DisplayAlert(errorTitle, technicalErrorMessage, "OK");
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur OnSignClicked: {ex.Message}");
-                await DisplayAlert("Erreur", $"Erreur lors de la signature: {ex.Message}", "OK");
+                var errorTitle = await GetTextAsync("Error", "Error");
+                var signingErrorMessage = await GetTextAsync("Error during signing", "Error during signing");
+                await DisplayAlert(errorTitle, $"{signingErrorMessage}: {ex.Message}", "OK");
             }
 
             System.Diagnostics.Debug.WriteLine("🔄 OnSignClicked - FIN");
         }
 
+        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async Task<string> GetUserSignature(MaterialManagement assignment)
         {
             try
             {
                 System.Diagnostics.Debug.WriteLine("🔄 Demande de signature utilisateur...");
 
-                // ✅ VERSION SIMPLE : Demander le nom complet comme signature
-                string signature = await DisplayPromptAsync(
-                    "Signature électronique",
-                    $"Pour confirmer la réception de '{assignment.Product?.Name}', veuillez saisir votre nom complet :\n\n(Cette signature sera horodatée et enregistrée)",
-                    "Confirmer",
-                    "Annuler",
-                    "Votre nom complet",
-                    maxLength: 100);
+                // ✅ Messages traduits pour la signature
+                var signatureTitle = await GetTextAsync("Electronic Signature", "Electronic Signature");
+                var signaturePrompt = await GetTextAsync("Enter full name to confirm", "To confirm reception of") + $" '{assignment.Product?.Name}', " +
+                                     await GetTextAsync("please enter your full name", "please enter your full name") + " :\n\n" +
+                                     await GetTextAsync("Signature will be timestamped", "(This signature will be timestamped and recorded)");
+                var confirm = await GetTextAsync("Confirm", "Confirm");
+                var cancel = await GetTextAsync("Cancel", "Cancel");
+                var placeholder = await GetTextAsync("Your full name", "Your full name");
+
+                string signature = await DisplayPromptAsync(signatureTitle, signaturePrompt, confirm, cancel, placeholder, maxLength: 100);
 
                 if (!string.IsNullOrWhiteSpace(signature))
                 {
@@ -185,28 +304,103 @@ namespace TechStockMaui.Views.MaterialManagements
 
                 System.Diagnostics.Debug.WriteLine("⚠️ Signature vide ou annulée");
                 return null;
-
-                // TODO FUTUR: Implémenter une vraie signature graphique
-                // await Navigation.PushAsync(new SignaturePage(assignment));
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur GetUserSignature: {ex.Message}");
-                await DisplayAlert("Erreur", "Erreur lors de la capture de signature", "OK");
+                var errorTitle = await GetTextAsync("Error", "Error");
+                var captureErrorMessage = await GetTextAsync("Error during signature capture", "Error during signature capture");
+                await DisplayAlert(errorTitle, captureErrorMessage, "OK");
                 return null;
             }
         }
 
-        // ✅ MÉTHODE POUR ACTUALISER MANUELLEMENT
+        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async void OnRefreshClicked(object sender, EventArgs e)
         {
             await LoadAssignedProductsAsync();
         }
 
-        // ✅ MÉTHODE POUR RETOURNER AU DASHBOARD
+        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async void OnBackClicked(object sender, EventArgs e)
         {
             await Navigation.PopAsync();
+        }
+
+        // ✅ AJOUT: Gestion du changement de langue
+        private async void OnLanguageClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var translationService = TranslationService.Instance;
+                var currentCulture = translationService.GetCurrentCulture();
+
+                var options = new List<string>();
+                foreach (var culture in translationService.GetSupportedCultures())
+                {
+                    var flag = translationService.GetLanguageFlag(culture);
+                    var name = translationService.GetLanguageDisplayName(culture);
+                    var current = culture == currentCulture ? " ✓" : "";
+                    options.Add($"{flag} {name}{current}");
+                }
+
+                var cancelText = await GetTextAsync("Cancel", "Cancel");
+                var titleText = "🌍 " + await GetTextAsync("ChooseLanguage", "Choose language");
+
+                var selectedOption = await DisplayActionSheet(titleText, cancelText, null, options.ToArray());
+
+                if (!string.IsNullOrEmpty(selectedOption) && selectedOption != cancelText)
+                {
+                    string newCulture = null;
+                    if (selectedOption.Contains("EN")) newCulture = "en";
+                    else if (selectedOption.Contains("FR")) newCulture = "fr";
+                    else if (selectedOption.Contains("NL")) newCulture = "nl";
+
+                    if (newCulture != null && newCulture != currentCulture)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        await translationService.SetCurrentCultureAsync(newCulture);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Mettre à jour le drapeau de langue
+        private async Task UpdateLanguageFlag()
+        {
+            try
+            {
+                var translationService = TranslationService.Instance;
+                var currentCulture = translationService.GetCurrentCulture();
+                var flag = translationService.GetLanguageFlag(currentCulture);
+
+                if (LanguageFlag != null)
+                    LanguageFlag.Text = flag;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+            }
+        }
+
+        // ✅ AJOUT: Nettoyage
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+        }
+
+        // ✅ AJOUT: Destructeur
+        ~AssignedProductsPage()
+        {
+            try
+            {
+                TranslationService.Instance.CultureChanged -= OnCultureChanged;
+            }
+            catch { }
         }
     }
 }

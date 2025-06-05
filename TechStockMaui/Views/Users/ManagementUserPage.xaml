@@ -23,11 +23,13 @@
                         </Grid.ColumnDefinitions>
 
                         <StackLayout Grid.Column="0">
-                            <Label Text="Utilisateurs" 
+                            <Label x:Name="UsersHeaderLabel"
+                                   Text="Utilisateurs" 
                                    FontSize="24" 
                                    FontAttributes="Bold" 
                                    TextColor="#2c3e50"/>
-                            <Label Text="{Binding Users.Count, StringFormat='{0} utilisateur(s) trouvé(s)'}" 
+                            <Label x:Name="UsersCountLabel"
+                                   Text="{Binding Users.Count, StringFormat='{0} utilisateur(s) trouvé(s)'}" 
                                    FontSize="14" 
                                    TextColor="#7f8c8d"/>
                         </StackLayout>
@@ -56,7 +58,8 @@
                                           Color="#3498db"
                                           WidthRequest="25"
                                           HeightRequest="25" />
-                        <Label Text="Chargement..." 
+                        <Label x:Name="LoadingLabel"
+                               Text="Chargement..." 
                                FontSize="16" 
                                TextColor="#7f8c8d"
                                VerticalOptions="Center"
@@ -134,6 +137,34 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Sélecteur de langue -->
+                <Frame BackgroundColor="White" 
+                       HasShadow="True" 
+                       CornerRadius="8"
+                       Padding="15"
+                       Margin="0,15,0,0">
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                        <Label x:Name="LanguageLabel"
+                               Text="Language" 
+                               FontSize="14"
+                               TextColor="#2c3e50"
+                               VerticalOptions="Center" />
+                        <Label x:Name="LanguageFlag" 
+                               Text="🇺🇸" 
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#2c3e50"
+                               BackgroundColor="#F5F5F5"
+                               Padding="8,4"
+                               VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </Frame>
 
             </StackLayout>
         </ScrollView>

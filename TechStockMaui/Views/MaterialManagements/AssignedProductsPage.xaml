@@ -9,11 +9,13 @@
         <!-- ✅ HEADER -->
         <Frame Grid.Row="0" BackgroundColor="LightBlue" Padding="15" Margin="10,10,10,0">
             <StackLayout>
-                <Label Text="Produits qui me sont assignés" 
+                <Label x:Name="HeaderTitleLabel"
+                       Text="Produits qui me sont assignés" 
                        FontAttributes="Bold" 
                        FontSize="18" 
                        HorizontalOptions="Center"/>
-                <Label Text="Cliquez sur 'Signer' pour confirmer la réception d'un produit" 
+                <Label x:Name="HeaderDescriptionLabel"
+                       Text="Cliquez sur 'Signer' pour confirmer la réception d'un produit" 
                        FontSize="14" 
                        TextColor="Gray" 
                        HorizontalOptions="Center"/>
@@ -45,13 +47,13 @@
 
                                 <!-- État du produit -->
                                 <StackLayout Orientation="Horizontal">
-                                    <Label Text="État : " FontAttributes="Bold" FontSize="14"/>
+                                    <Label x:Name="StateLabel" Text="État : " FontAttributes="Bold" FontSize="14"/>
                                     <Label Text="{Binding State.Status}" FontSize="14" TextColor="DarkGreen"/>
                                 </StackLayout>
 
                                 <!-- Date d'assignation -->
                                 <StackLayout Orientation="Horizontal">
-                                    <Label Text="Assigné le : " FontAttributes="Bold" FontSize="14"/>
+                                    <Label x:Name="AssignedLabel" Text="Assigné le : " FontAttributes="Bold" FontSize="14"/>
                                     <Label Text="{Binding AssignmentDate, StringFormat='{0:dd/MM/yyyy à HH:mm}'}" FontSize="14"/>
                                 </StackLayout>
 
@@ -60,16 +62,18 @@
 
                                 <!-- SECTION SIGNATURE -->
                                 <StackLayout>
-                                    <Label Text="Statut de réception :" FontAttributes="Bold" FontSize="14"/>
+                                    <Label x:Name="ReceptionStatusLabel" Text="Statut de réception :" FontAttributes="Bold" FontSize="14"/>
 
                                     <!-- ✅ Signature en attente (utilise vos propriétés calculées) -->
                                     <StackLayout IsVisible="{Binding IsSignaturePending}">
-                                        <Label Text="⏳ En attente de votre signature" 
+                                        <Label x:Name="PendingSignatureLabel"
+                                               Text="⏳ En attente de votre signature" 
                                                TextColor="Orange" 
                                                FontSize="14"
                                                FontAttributes="Italic"/>
 
-                                        <Button Text="✍️ Signer la réception"
+                                        <Button x:Name="SignButton"
+                                                Text="✍️ Signer la réception"
                                                 BackgroundColor="Green"
                                                 TextColor="White"
                                                 Clicked="OnSignClicked" 
@@ -80,7 +84,8 @@
 
                                     <!-- ✅ Produit signé (utilise vos propriétés calculées) -->
                                     <StackLayout IsVisible="{Binding IsSignatureValid}">
-                                        <Label Text="✅ Réception confirmée" 
+                                        <Label x:Name="ConfirmedReceptionLabel"
+                                               Text="✅ Réception confirmée" 
                                                TextColor="Green" 
                                                FontAttributes="Bold"
                                                FontSize="14"/>
@@ -110,16 +115,53 @@
                      Spacing="15" 
                      Padding="10">
 
-            <Button Text="🔄 Actualiser" 
+            <Button x:Name="RefreshButton"
+                    Text="🔄 Actualiser" 
                     Clicked="OnRefreshClicked"
                     BackgroundColor="Blue"
-                    TextColor="White"/>
+                    TextColor="White"
+                    FontSize="14"
+                    Padding="10,8"
+                    CornerRadius="5"/>
 
-            <Button Text="🏠 Retour" 
+            <Button x:Name="BackButton"
+                    Text="🏠 Retour" 
                     Clicked="OnBackClicked"
                     BackgroundColor="Gray"
-                    TextColor="White"/>
+                    TextColor="White"
+                    FontSize="14"
+                    Padding="10,8"
+                    CornerRadius="5"/>
         </StackLayout>
+
+        <!-- Sélecteur de langue -->
+        <Frame Grid.Row="2"
+               BackgroundColor="White" 
+               HasShadow="True" 
+               CornerRadius="8"
+               Padding="10"
+               Margin="10,50,10,10">
+            <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                <Label Text="🌍" FontSize="18" VerticalOptions="Center" />
+                <Label x:Name="LanguageLabel"
+                       Text="Language" 
+                       FontSize="12"
+                       TextColor="#2c3e50"
+                       VerticalOptions="Center" />
+                <Label x:Name="LanguageFlag" 
+                       Text="🇺🇸" 
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#2c3e50"
+                       BackgroundColor="#F5F5F5"
+                       Padding="6,3"
+                       VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </Frame>
 
     </Grid>
 </ContentPage>

@@ -1,4 +1,4 @@
-using TechStockMaui.Controls;
+ï»¿using TechStockMaui.Controls;
 
 namespace TechStockMaui.Views.MaterialManagements;
 
@@ -13,7 +13,7 @@ public partial class SignProductPage : ContentPage
 
     private void OnStartDraw(object sender, TouchEventArgs e)
     {
-        // Début du dessin
+        // DÃ©but du dessin
     }
 
     private void OnDraw(object sender, TouchEventArgs e)
@@ -27,7 +27,7 @@ public partial class SignProductPage : ContentPage
     }
     private void OnClearClicked(object sender, EventArgs e)
     {
-        // Ici tu peux remettre à zéro les données de dessin sur le SignaturePad
+        // Ici tu peux remettre Ã  zÃ©ro les donnÃ©es de dessin sur le SignaturePad
         if (SignatureDrawable.Instance != null)
         {
             SignatureDrawable.Instance.Clear();
@@ -37,7 +37,7 @@ public partial class SignProductPage : ContentPage
 
     private void OnSubmitClicked(object sender, EventArgs e)
     {
-        // Ta logique pour gérer le clic sur "Soumettre"
+        // Ta logique pour gÃ©rer le clic sur "Soumettre"
     }
 
 

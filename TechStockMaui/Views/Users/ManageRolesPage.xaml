@@ -3,57 +3,114 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechStockMaui.Views.Users.ManageRolesPage"
              Title="Gestion des rôles">
-
     <ScrollView>
         <StackLayout Margin="20">
-
             <!-- En-tête utilisateur -->
-            <Label Text="{Binding UserName, StringFormat='Utilisateur: {0}'}" 
+            <Label x:Name="UserHeaderLabel"
+                   Text="{Binding UserName, StringFormat='Utilisateur: {0}'}" 
                    FontSize="20" 
                    FontAttributes="Bold" 
                    Margin="0,0,0,20"/>
 
             <!-- Message de test -->
-            <Label Text="Page de gestion des rôles" 
+            <Label x:Name="PageDescriptionLabel"
+                   Text="Page de gestion des rôles" 
                    FontSize="16" 
                    Margin="0,0,0,20"/>
 
             <!-- Indicateur de chargement -->
-            <ActivityIndicator IsVisible="{Binding IsLoading}" 
-                              IsRunning="{Binding IsLoading}"
-                              Margin="0,0,0,20"/>
+            <StackLayout IsVisible="{Binding IsLoading}" 
+                        Orientation="Horizontal"
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,20">
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                  Color="#3498db"
+                                  WidthRequest="25"
+                                  HeightRequest="25" />
+                <Label x:Name="LoadingLabel"
+                       Text="Chargement..." 
+                       FontSize="16" 
+                       TextColor="#7f8c8d"
+                       VerticalOptions="Center"
+                       Margin="10,0,0,0"/>
+            </StackLayout>
 
             <!-- Liste simple des rôles -->
-            <Label Text="Rôles disponibles:" FontSize="16" FontAttributes="Bold" Margin="0,0,0,10"/>
+            <Label x:Name="AvailableRolesLabel"
+                   Text="Rôles disponibles:" 
+                   FontSize="16" 
+                   FontAttributes="Bold" 
+                   Margin="0,0,0,10"/>
 
             <CollectionView ItemsSource="{Binding AvailableRoles}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <StackLayout Orientation="Horizontal" Padding="10">
-                            <Label Text="{Binding RoleName}" 
-                                   FontSize="16" 
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="StartAndExpand"/>
-                            <Switch IsToggled="{Binding IsSelected}" 
-                                    VerticalOptions="Center"/>
-                        </StackLayout>
+                        <Frame BackgroundColor="White" 
+                               HasShadow="True" 
+                               CornerRadius="8" 
+                               Padding="15" 
+                               Margin="0,5,0,5">
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="{Binding RoleName}" 
+                                       FontSize="16" 
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="StartAndExpand"/>
+                                <Switch IsToggled="{Binding IsSelected}" 
+                                        VerticalOptions="Center"/>
+                            </StackLayout>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
             <!-- Boutons -->
-            <Button Text="Sauvegarder" 
-                    Command="{Binding SaveCommand}"
-                    BackgroundColor="Green"
-                    TextColor="White"
-                    Margin="0,20,0,10"/>
+            <StackLayout Spacing="10" Margin="0,20,0,0">
+                <Button x:Name="SaveButton"
+                        Text="Sauvegarder" 
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="Green"
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8"/>
 
-            <Button Text="Annuler" 
-                    Command="{Binding CancelCommand}"
-                    BackgroundColor="Red"
-                    TextColor="White"/>
+                <Button x:Name="CancelButton"
+                        Text="Annuler" 
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="Red"
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8"/>
+            </StackLayout>
 
+            <!-- Sélecteur de langue -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,30,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="🇺🇸" 
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
         </StackLayout>
     </ScrollView>
-
 </ContentPage>

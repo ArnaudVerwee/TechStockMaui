@@ -1,22 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechStockMaui.Views.Supplier.DeleteSupplierPage"
-             Title="Supprimer un fournisseur"
+             Title="Delete Supplier"
              BackgroundColor="White">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <Label Text="Supprimer un fournisseur" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+            <!-- Titre principal -->
+            <Label x:Name="TitleLabel" 
+                   Text="Delete Supplier" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="Black" 
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10" />
 
-            <Label Text="Êtes-vous sûr de vouloir supprimer ce fournisseur ?" TextColor="Red" FontAttributes="Italic" />
+            <!-- Question de confirmation -->
+            <Label x:Name="ConfirmationLabel" 
+                   Text="Are you sure you want to delete this?" 
+                   TextColor="Red" 
+                   FontAttributes="Italic" 
+                   HorizontalOptions="Center"
+                   FontSize="16"
+                   Margin="0,0,0,20" />
 
-            <Frame BorderColor="Gray" Padding="10">
-                <Label x:Name="NameLabel" FontSize="18" TextColor="Black" />
+            <!-- Informations du fournisseur -->
+            <Frame BorderColor="Gray" 
+                   Padding="15" 
+                   CornerRadius="8"
+                   BackgroundColor="#f8f9fa"
+                   HasShadow="True">
+                <Label x:Name="NameLabel" 
+                       FontSize="18" 
+                       TextColor="Black" 
+                       HorizontalOptions="Center"
+                       FontAttributes="Bold" />
             </Frame>
 
-            <Button Text="Supprimer" BackgroundColor="Red" TextColor="White" Clicked="OnDeleteClicked" />
-            <Button Text="Annuler" BackgroundColor="#6c757d" TextColor="White" Clicked="OnCancelClicked" />
+            <!-- Boutons -->
+            <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
+                <Button x:Name="DeleteButton"
+                        Text="Delete" 
+                        BackgroundColor="Red" 
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8"
+                        Clicked="OnDeleteClicked" />
+
+                <Button x:Name="CancelButton"
+                        Text="Cancel" 
+                        BackgroundColor="#6c757d" 
+                        TextColor="White"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8"
+                        Clicked="OnCancelClicked" />
+            </VerticalStackLayout>
+
+            <!-- Sélecteur de langue -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,30,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="EN" 
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>

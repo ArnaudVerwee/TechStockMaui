@@ -1,28 +1,108 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TechStockMaui.Views.TypeArticle.EditTypeArticlePage">
+             x:Class="TechStockMaui.Views.TypeArticle.EditTypeArticlePage"
+             Title="Edit Type Article">
+
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
-            <Label Text="Modifier le TypeArticle"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   TextColor="Black" />
 
-            <!-- Nom -->
-            <Label Text="Nom" />
-            <Entry x:Name="NameEntry" Placeholder="Entrez le nom" />
+            <!-- En-tête avec titre -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout>
+                    <Label x:Name="TitleLabel"
+                           Text="Modifier le TypeArticle"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           HorizontalOptions="Center" />
+                </StackLayout>
+            </Frame>
 
-            <!-- Boutons -->
-            <Button Text="Enregistrer"
-                    BackgroundColor="#007bff"
-                    TextColor="White"
-                    Clicked="OnSaveClicked" />
+            <!-- Formulaire d'édition -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="12" 
+                   Padding="20"
+                   Margin="0,0,0,15">
+                <StackLayout Spacing="15">
+                    <Label x:Name="FormHeaderLabel"
+                           Text="Informations du type d'article"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           TextColor="#2c3e50"
+                           HorizontalOptions="Center"
+                           Margin="0,0,0,10" />
 
-            <Button Text="Retour à la liste"
-                    BackgroundColor="#6c757d"
-                    TextColor="White"
-                    Clicked="OnBackClicked" />
+                    <!-- Nom -->
+                    <StackLayout Spacing="8">
+                        <Label x:Name="NameLabel" 
+                               Text="Nom" 
+                               FontAttributes="Bold"
+                               FontSize="16"
+                               TextColor="#495057" />
+                        <Entry x:Name="NameEntry" 
+                               Placeholder="Entrez le nom"
+                               BackgroundColor="#f8f9fa"
+                               FontSize="16"
+                               HeightRequest="50" />
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
+
+            <!-- Boutons d'action -->
+            <StackLayout Spacing="10" Margin="0,15,0,0">
+                <Button x:Name="SaveButton"
+                        Text="Enregistrer"
+                        BackgroundColor="#007bff"
+                        TextColor="White"
+                        Clicked="OnSaveClicked"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8" />
+
+                <Button x:Name="BackButton"
+                        Text="Retour à la liste"
+                        BackgroundColor="#6c757d"
+                        TextColor="White"
+                        Clicked="OnBackClicked"
+                        FontSize="16"
+                        Padding="0,15"
+                        CornerRadius="8" />
+            </StackLayout>
+
+            <!-- Sélecteur de langue -->
+            <Frame BackgroundColor="White" 
+                   HasShadow="True" 
+                   CornerRadius="8"
+                   Padding="15"
+                   Margin="0,30,0,0">
+                <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <Label Text="🌍" FontSize="20" VerticalOptions="Center" />
+                    <Label x:Name="LanguageLabel"
+                           Text="Language" 
+                           FontSize="14"
+                           TextColor="#2c3e50"
+                           VerticalOptions="Center" />
+                    <Label x:Name="LanguageFlag" 
+                           Text="🇺🇸" 
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#2c3e50"
+                           BackgroundColor="#F5F5F5"
+                           Padding="8,4"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLanguageClicked"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+            </Frame>
+
         </VerticalStackLayout>
     </ScrollView>
-    </ContentPage>
+</ContentPage>
