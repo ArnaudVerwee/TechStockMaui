@@ -10,13 +10,36 @@ namespace TechStockMaui.Services
     public class TypeArticleService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7237/api/TypeArticles";
+
+        // ✅ Configuration adaptative pour Android/Windows
+        private static string BaseUrl
+        {
+            get
+            {
+#if ANDROID
+                return "http://10.0.2.2:7236/api/TypeArticles";  // Pour Android émulateur
+#else
+                return "https://localhost:7237/api/TypeArticles"; // Pour Windows
+#endif
+            }
+        }
 
         public TypeArticleService()
         {
-            _httpClient = new HttpClient();
-        }
+            var handler = new HttpClientHandler();
 
+#if ANDROID
+            // Ignorer les erreurs SSL pour Android en développement
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+
+            _httpClient = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            System.Diagnostics.Debug.WriteLine($"🌐 TypeArticleService utilise: {BaseUrl}");
+        }
         public async Task<List<TechStockMaui.Models.TypeArticle.TypeArticle>> GetAllAsync()
         {
             try

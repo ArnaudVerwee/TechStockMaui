@@ -8,11 +8,36 @@ namespace TechStockMaui.Services
     public class AuthService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7237/api/Auth"; // Vérifiez cette URL !
+
+        // ✅ Configuration qui différencie Windows et Android
+        private static string BaseUrl
+        {
+            get
+            {
+#if ANDROID
+                return "http://10.0.2.2:7236/api/Auth";  // ✅ Pour Android émulateur
+#else
+                return "https://localhost:7237/api/Auth"; // ✅ Pour Windows
+#endif
+            }
+        }
 
         public AuthService()
         {
-            _httpClient = new HttpClient();
+            var handler = new HttpClientHandler();
+
+#if ANDROID
+            // Ignorer les erreurs SSL pour Android en développement
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+
+            _httpClient = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            // Debug pour voir quelle URL est utilisée
+            System.Diagnostics.Debug.WriteLine($"🌐 AuthService utilise: {BaseUrl}");
         }
 
         public bool IsAuthenticated => !string.IsNullOrEmpty(GetStoredToken());

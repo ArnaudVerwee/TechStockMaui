@@ -11,11 +11,42 @@ namespace TechStockMaui.Services
     public class ProductService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7237/api/Product";
+
+        // ✅ Configuration adaptative pour Android/Windows
+        private static string BaseUrl
+        {
+            get
+            {
+#if ANDROID
+                return "http://10.0.2.2:7236/api";  // Pour Android émulateur
+#else
+                return "https://localhost:7237/api"; // Pour Windows
+#endif
+            }
+        }
+
+        // ✅ URLs spécifiques pour chaque endpoint
+        private static string ProductUrl => $"{BaseUrl}/Product";
+        private static string UserUrl => $"{BaseUrl}/User";
+        private static string TypeArticleUrl => $"{BaseUrl}/TypeArticles";
+        private static string SupplierUrl => $"{BaseUrl}/Suppliers";
+        private static string MaterialManagementUrl => $"{BaseUrl}/MaterialManagement";
 
         public ProductService()
         {
-            _httpClient = new HttpClient();
+            var handler = new HttpClientHandler();
+
+#if ANDROID
+            // Ignorer les erreurs SSL pour Android en développement
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+
+            _httpClient = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            System.Diagnostics.Debug.WriteLine($"🌐 ProductService utilise: {BaseUrl}");
         }
 
         private async Task<HttpClient> GetAuthenticatedHttpClientAsync()
@@ -45,12 +76,14 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser ProductUrl au lieu de BaseUrl
         public async Task<List<Product>> GetProductsAsync()
         {
             try
             {
                 var client = await GetAuthenticatedHttpClientAsync();
-                return await client.GetFromJsonAsync<List<Product>>(BaseUrl) ?? new List<Product>();
+                System.Diagnostics.Debug.WriteLine($"🔍 Récupération produits depuis: {ProductUrl}");
+                return await client.GetFromJsonAsync<List<Product>>(ProductUrl) ?? new List<Product>();
             }
             catch (Exception ex)
             {
@@ -59,6 +92,7 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser ProductUrl au lieu de BaseUrl
         public async Task<bool> CreateProductAsync(Product product)
         {
             try
@@ -81,10 +115,10 @@ namespace TechStockMaui.Services
                     AssignedUserName = product.AssignedUserName
                 };
 
-                System.Diagnostics.Debug.WriteLine($"🌐 URL: {BaseUrl}");
+                System.Diagnostics.Debug.WriteLine($"🌐 URL: {ProductUrl}");
                 System.Diagnostics.Debug.WriteLine($"📤 Données envoyées: Name={createRequest.Name}, TypeId={createRequest.TypeId}, SupplierId={createRequest.SupplierId}");
 
-                var response = await client.PostAsJsonAsync(BaseUrl, createRequest);
+                var response = await client.PostAsJsonAsync(ProductUrl, createRequest);
 
                 System.Diagnostics.Debug.WriteLine($"📊 Status Code: {response.StatusCode}");
 
@@ -112,15 +146,14 @@ namespace TechStockMaui.Services
         }
 
         public async Task<IEnumerable<Product>> GetProductsFilterAsync(
-    string? name = null,
-    string? serialNumber = null,
-    int? typeId = null,
-    int? supplierId = null,
-    string? userId = null)
+            string? name = null,
+            string? serialNumber = null,
+            int? typeId = null,
+            int? supplierId = null,
+            string? userId = null)
         {
             try
             {
-                // ✅ CORRECTION: Utiliser GetAuthenticatedHttpClientAsync au lieu de SetAuthorizationHeader
                 var client = await GetAuthenticatedHttpClientAsync();
 
                 var queryParams = new List<string>();
@@ -141,11 +174,11 @@ namespace TechStockMaui.Services
                     queryParams.Add($"userId={Uri.EscapeDataString(userId)}");
 
                 var queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
-                var url = $"{BaseUrl}/filter{queryString}";
+                // ✅ CORRECTION: Utiliser ProductUrl au lieu de BaseUrl
+                var url = $"{ProductUrl}/filter{queryString}";
 
                 System.Diagnostics.Debug.WriteLine($"🔍 URL filtrage: {url}");
 
-                // ✅ CORRECTION: Utiliser client au lieu de _httpClient
                 var response = await client.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
@@ -168,12 +201,13 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser ProductUrl au lieu de BaseUrl
         public async Task<Product> GetProductByIdAsync(int id)
         {
             try
             {
                 var client = await GetAuthenticatedHttpClientAsync();
-                return await client.GetFromJsonAsync<Product>($"{BaseUrl}/{id}");
+                return await client.GetFromJsonAsync<Product>($"{ProductUrl}/{id}");
             }
             catch (Exception ex)
             {
@@ -182,12 +216,13 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser ProductUrl au lieu de BaseUrl
         public async Task<bool> UpdateProductAsync(Product product)
         {
             try
             {
                 var client = await GetAuthenticatedHttpClientAsync();
-                var response = await client.PutAsJsonAsync($"{BaseUrl}/{product.Id}", product);
+                var response = await client.PutAsJsonAsync($"{ProductUrl}/{product.Id}", product);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -197,12 +232,13 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser ProductUrl au lieu de BaseUrl
         public async Task<bool> DeleteProductAsync(int id)
         {
             try
             {
                 var client = await GetAuthenticatedHttpClientAsync();
-                var response = await client.DeleteAsync($"{BaseUrl}/{id}");
+                var response = await client.DeleteAsync($"{ProductUrl}/{id}");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -212,6 +248,7 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser MaterialManagementUrl au lieu de l'URL hardcodée
         public async Task<bool> UnassignProductAsync(int productId)
         {
             try
@@ -219,7 +256,7 @@ namespace TechStockMaui.Services
                 System.Diagnostics.Debug.WriteLine($"🔄 Désassignation du produit {productId}...");
 
                 var client = await GetAuthenticatedHttpClientAsync();
-                var response = await client.DeleteAsync($"https://localhost:7237/api/MaterialManagement/product/{productId}");
+                var response = await client.DeleteAsync($"{MaterialManagementUrl}/product/{productId}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -240,13 +277,14 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser UserUrl au lieu de l'URL hardcodée
         public async Task<List<User>> GetUsersAsync()
         {
             try
             {
-                // ✅ UTILISER GetAuthenticatedHttpClientAsync comme les autres méthodes
                 var client = await GetAuthenticatedHttpClientAsync();
-                return await client.GetFromJsonAsync<List<User>>("https://localhost:7237/api/User") ?? new List<User>();
+                System.Diagnostics.Debug.WriteLine($"🔍 Récupération utilisateurs depuis: {UserUrl}");
+                return await client.GetFromJsonAsync<List<User>>(UserUrl) ?? new List<User>();
             }
             catch (Exception ex)
             {
@@ -255,12 +293,14 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser TypeArticleUrl au lieu de l'URL hardcodée
         public async Task<List<TechStockMaui.Models.TypeArticle.TypeArticle>> GetTypesAsync()
         {
             try
             {
                 var client = await GetAuthenticatedHttpClientAsync();
-                return await client.GetFromJsonAsync<List<TechStockMaui.Models.TypeArticle.TypeArticle>>("https://localhost:7237/api/TypeArticles") ?? new List<TechStockMaui.Models.TypeArticle.TypeArticle>();
+                System.Diagnostics.Debug.WriteLine($"🔍 Récupération types depuis: {TypeArticleUrl}");
+                return await client.GetFromJsonAsync<List<TechStockMaui.Models.TypeArticle.TypeArticle>>(TypeArticleUrl) ?? new List<TechStockMaui.Models.TypeArticle.TypeArticle>();
             }
             catch (Exception ex)
             {
@@ -269,17 +309,43 @@ namespace TechStockMaui.Services
             }
         }
 
+        // ✅ CORRECTION: Utiliser SupplierUrl au lieu de l'URL hardcodée
         public async Task<List<TechStockMaui.Models.Supplier.Supplier>> GetSuppliersAsync()
         {
             try
             {
                 var client = await GetAuthenticatedHttpClientAsync();
-                return await client.GetFromJsonAsync<List<TechStockMaui.Models.Supplier.Supplier>>("https://localhost:7237/api/Suppliers") ?? new List<TechStockMaui.Models.Supplier.Supplier>();
+                System.Diagnostics.Debug.WriteLine($"🔍 Récupération fournisseurs depuis: {SupplierUrl}");
+                return await client.GetFromJsonAsync<List<TechStockMaui.Models.Supplier.Supplier>>(SupplierUrl) ?? new List<TechStockMaui.Models.Supplier.Supplier>();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"❌ Erreur GetSuppliersAsync: {ex.Message}");
                 return new List<TechStockMaui.Models.Supplier.Supplier>();
+            }
+        }
+
+        // ✅ Méthode de débogage pour tester la connectivité
+        public async Task<string> TestProductEndpoint()
+        {
+            try
+            {
+                var client = await GetAuthenticatedHttpClientAsync();
+                System.Diagnostics.Debug.WriteLine($"🧪 Test de l'endpoint: {ProductUrl}");
+
+                var response = await client.GetAsync(ProductUrl);
+                var content = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"🧪 Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"🧪 Content: {content}");
+                System.Diagnostics.Debug.WriteLine($"🧪 Headers: {string.Join(", ", response.Headers.Select(h => $"{h.Key}={string.Join(",", h.Value)}"))}");
+
+                return $"Status: {response.StatusCode}, Content: {content}";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"🧪 Erreur test: {ex.Message}");
+                return $"Erreur: {ex.Message}";
             }
         }
     }

@@ -9,11 +9,35 @@ namespace TechStockMaui.Services
     public class SupplierService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7237/api/Suppliers";
+
+        // ✅ Configuration adaptative pour Android/Windows
+        private static string BaseUrl
+        {
+            get
+            {
+#if ANDROID
+                return "http://10.0.2.2:7236/api/Suppliers";  // Pour Android émulateur
+#else
+                return "https://localhost:7237/api/Suppliers"; // Pour Windows
+#endif
+            }
+        }
 
         public SupplierService()
         {
-            _httpClient = new HttpClient();
+            var handler = new HttpClientHandler();
+
+#if ANDROID
+            // Ignorer les erreurs SSL pour Android en développement
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+
+            _httpClient = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            System.Diagnostics.Debug.WriteLine($"🌐 SupplierService utilise: {BaseUrl}");
         }
 
         // Récupérer tous les fournisseurs

@@ -11,17 +11,26 @@ namespace TechStockMaui.Services
         private static readonly object _lock = new object();
 
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7237/api";
 
-        // ✅ Variables manquantes ajoutées
+        // ✅ Configuration adaptative pour Android/Windows
+        private static string BaseUrl
+        {
+            get
+            {
+#if ANDROID
+                return "http://10.0.2.2:7236/api";  // Pour Android émulateur
+#else
+                return "https://localhost:7237/api"; // Pour Windows
+#endif
+            }
+        }
+
         private readonly ConcurrentDictionary<string, Dictionary<string, string>> _translationsCache;
         private string _currentCulture;
         private readonly List<string> _supportedCultures;
 
-        // ✅ Événement pour notifier les pages du changement de langue
         public event EventHandler<string> CultureChanged;
 
-        // ✅ Singleton pattern pour partager entre toutes les pages
         public static TranslationService Instance
         {
             get
@@ -42,12 +51,24 @@ namespace TechStockMaui.Services
 
         private TranslationService()
         {
-            _httpClient = new HttpClient();
+            var handler = new HttpClientHandler();
+
+#if ANDROID
+            // Ignorer les erreurs SSL pour Android en développement
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+
+            _httpClient = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromSeconds(15)
+            };
+
             _translationsCache = new ConcurrentDictionary<string, Dictionary<string, string>>();
-            _supportedCultures = new List<string> { "en","fr" , "nl" };
+            _supportedCultures = new List<string> { "en", "fr", "nl" };
             _currentCulture = Preferences.Get("app_language", "en");
 
             System.Diagnostics.Debug.WriteLine($"🌍 TranslationService singleton initialisé - Culture: {_currentCulture}");
+            System.Diagnostics.Debug.WriteLine($"🌐 TranslationService utilise: {BaseUrl}");
         }
 
         // Configurer l'authentification

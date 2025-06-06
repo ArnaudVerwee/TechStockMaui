@@ -3,14 +3,32 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using TechStockMaui.Models;
+using Microsoft.Maui.Storage;
+using System.Text.Json;
 
 namespace TechStockMaui.Services
 {
     public class MaterialManagementService
     {
         private readonly HttpClient _httpClient;
-        private readonly AuthService _authService;
-        private const string BaseUrl = "https://localhost:7237/api/MaterialManagement";
+
+        // ✅ Configuration adaptative pour Android/Windows
+        private static string BaseUrl
+        {
+            get
+            {
+#if ANDROID
+                return "http://10.0.2.2:7236/api";  // Base pour Android émulateur
+#else
+                return "https://localhost:7237/api"; // Base pour Windows
+#endif
+            }
+        }
+
+        // ✅ URLs spécifiques
+        private static string MaterialManagementUrl => $"{BaseUrl}/MaterialManagement";
+        private static string UsersUrl => $"{BaseUrl}/User"; // ✅ Correction: /User au lieu de /Users
+        private static string StatesUrl => $"{BaseUrl}/States";
 
         public MaterialManagementService()
         {
@@ -18,16 +36,20 @@ namespace TechStockMaui.Services
             {
                 System.Diagnostics.Debug.WriteLine("🔄 MaterialManagementService constructeur - DÉBUT");
 
-                _httpClient = new HttpClient();
+                var handler = new HttpClientHandler();
+
+#if ANDROID
+                // Ignorer les erreurs SSL pour Android en développement
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+
+                _httpClient = new HttpClient(handler)
+                {
+                    Timeout = TimeSpan.FromSeconds(30)
+                };
+
+                System.Diagnostics.Debug.WriteLine($"🌐 MaterialManagementService utilise: {BaseUrl}");
                 System.Diagnostics.Debug.WriteLine("✅ HttpClient créé");
-
-                _authService = new AuthService();
-                System.Diagnostics.Debug.WriteLine("✅ AuthService créé");
-
-                // ✅ NE PAS configurer l'auth dans le constructeur
-                // On le fera de manière async dans chaque méthode
-                System.Diagnostics.Debug.WriteLine("⚠️ Configuration auth reportée (async)");
-
                 System.Diagnostics.Debug.WriteLine("✅ MaterialManagementService constructeur - FIN");
             }
             catch (Exception ex)
@@ -43,7 +65,6 @@ namespace TechStockMaui.Services
         {
             try
             {
-                // ✅ Utiliser SecureStorage directement de manière async
                 var token = await SecureStorage.GetAsync("auth_token");
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -55,31 +76,63 @@ namespace TechStockMaui.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"⚠️ Erreur configuration auth: {ex.Message}");
-                // Continue sans auth si erreur
             }
         }
 
-        // Récupérer tous les assignments
-        public async Task<List<MaterialManagement>> GetAllAsync()
+        // ✅ MÉTHODE HELPER pour extraire l'ID utilisateur du token JWT
+        private async Task<string> GetUserIdFromToken()
         {
             try
             {
-                await ConfigureAuthAsync(); // ✅ Config auth avant chaque appel
-                var result = await _httpClient.GetFromJsonAsync<List<MaterialManagement>>(BaseUrl);
-                return result ?? new List<MaterialManagement>();
+                var token = await SecureStorage.GetAsync("auth_token");
+                if (string.IsNullOrEmpty(token))
+                {
+                    System.Diagnostics.Debug.WriteLine("❌ Token vide");
+                    return "";
+                }
+
+                var parts = token.Split('.');
+                if (parts.Length != 3)
+                {
+                    System.Diagnostics.Debug.WriteLine("❌ Token JWT invalide");
+                    return "";
+                }
+
+                var payload = parts[1];
+                while (payload.Length % 4 != 0)
+                    payload += "=";
+
+                var bytes = Convert.FromBase64String(payload);
+                var json = System.Text.Encoding.UTF8.GetString(bytes);
+
+                System.Diagnostics.Debug.WriteLine($"🔍 Token payload: {json}");
+
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var element))
+                {
+                    var userId = element.GetString();
+                    System.Diagnostics.Debug.WriteLine($"✅ ID utilisateur extrait: '{userId}'");
+                    return userId ?? "";
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("❌ Propriété nameidentifier non trouvée dans le token");
+                    return "";
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return new List<MaterialManagement>();
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetUserIdFromToken: {ex.Message}");
+                return "";
             }
         }
 
-        // Récupérer les assignments de l'utilisateur connecté
+        // ✅ CORRECTION PRINCIPALE: Récupérer les assignments de l'utilisateur connecté
         public async Task<List<MaterialManagement>> GetMyAssignmentsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🔄 GetMyAssignmentsAsync - DÉBUT");
+                System.Diagnostics.Debug.WriteLine("🔄 GetMyAssignmentsAsync - DÉBUT - VERSION FILTRÉE");
 
                 await ConfigureAuthAsync();
 
@@ -92,8 +145,11 @@ namespace TechStockMaui.Services
                 }
                 System.Diagnostics.Debug.WriteLine($"✅ Token présent: {token.Substring(0, Math.Min(20, token.Length))}...");
 
-                // ✅ DEBUG: URL appelée
-                var url = $"{BaseUrl}/User";
+                // ✅ Récupérer l'ID utilisateur depuis le token
+                var currentUserId = await GetUserIdFromToken();
+                System.Diagnostics.Debug.WriteLine($"🔍 ID utilisateur connecté: '{currentUserId}'");
+
+                var url = $"{MaterialManagementUrl}";
                 System.Diagnostics.Debug.WriteLine($"🌐 URL appelée: {url}");
 
                 var response = await _httpClient.GetAsync(url);
@@ -102,24 +158,35 @@ namespace TechStockMaui.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    System.Diagnostics.Debug.WriteLine($"📥 Contenu brut reçu: {content}");
+                    System.Diagnostics.Debug.WriteLine($"📥 Contenu brut reçu: {content.Substring(0, Math.Min(200, content.Length))}...");
 
-                    var result = await response.Content.ReadFromJsonAsync<List<MaterialManagement>>();
-
-                    if (result != null && result.Any())
+                    var allAssignments = JsonSerializer.Deserialize<List<MaterialManagement>>(content, new JsonSerializerOptions
                     {
-                        System.Diagnostics.Debug.WriteLine($"✅ {result.Count} assignments trouvés");
-                        foreach (var assignment in result)
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    if (allAssignments != null && allAssignments.Any())
+                    {
+                        System.Diagnostics.Debug.WriteLine($"🔍 Total assignments reçus: {allAssignments.Count}");
+
+                        // ✅ FILTRAGE: garder seulement les assignments de l'utilisateur connecté
+                        var userAssignments = allAssignments.Where(a => a.UserId == currentUserId).ToList();
+
+                        System.Diagnostics.Debug.WriteLine($"✅ Après filtrage: {userAssignments.Count} assignments pour l'utilisateur '{currentUserId}'");
+
+                        foreach (var assignment in userAssignments)
                         {
-                            System.Diagnostics.Debug.WriteLine($"   - Assignment ID: {assignment.Id}, Product: {assignment.Product?.Name ?? "NULL"}, User: {assignment.UserId}");
+                            System.Diagnostics.Debug.WriteLine($"   ✅ Assignment ID: {assignment.Id}, Product: {assignment.Product?.Name ?? "NULL"}, UserId: {assignment.UserId}, Signature: {(string.IsNullOrEmpty(assignment.Signature) ? "Non signé" : "Signé")}");
                         }
+
+                        return userAssignments;
                     }
                     else
                     {
                         System.Diagnostics.Debug.WriteLine("⚠️ Aucun assignment dans la réponse");
                     }
 
-                    return result ?? new List<MaterialManagement>();
+                    return new List<MaterialManagement>();
                 }
                 else
                 {
@@ -137,37 +204,77 @@ namespace TechStockMaui.Services
             }
         }
 
+        // Récupérer tous les assignments (pour admin)
+        public async Task<List<MaterialManagement>> GetAllAsync()
+        {
+            try
+            {
+                await ConfigureAuthAsync();
+                var result = await _httpClient.GetFromJsonAsync<List<MaterialManagement>>(MaterialManagementUrl);
+                return result ?? new List<MaterialManagement>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetAllAsync: {ex.Message}");
+                return new List<MaterialManagement>();
+            }
+        }
+
         // Récupérer un assignment par ID
         public async Task<MaterialManagement> GetByIdAsync(int id)
         {
             try
             {
                 await ConfigureAuthAsync();
-                return await _httpClient.GetFromJsonAsync<MaterialManagement>($"{BaseUrl}/{id}");
+                return await _httpClient.GetFromJsonAsync<MaterialManagement>($"{MaterialManagementUrl}/{id}");
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetByIdAsync: {ex.Message}");
                 return null;
             }
         }
 
-        // Signer un produit
+        // ✅ CORRECTION: Signer un produit avec plus de logs
         public async Task<bool> SignProductAsync(int assignmentId, string signature)
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"🔄 SignProductAsync - DÉBUT (ID: {assignmentId})");
+
                 await ConfigureAuthAsync();
+
                 var signatureDto = new SignatureDto
                 {
                     Id = assignmentId,
                     Signature = signature
                 };
 
-                var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/Sign", signatureDto);
-                return response.IsSuccessStatusCode;
+                var url = $"{MaterialManagementUrl}/sign";
+                System.Diagnostics.Debug.WriteLine($"🌐 URL signature: {url}");
+                System.Diagnostics.Debug.WriteLine($"📤 Données signature: ID={assignmentId}, Signature={signature}");
+
+                var response = await _httpClient.PostAsJsonAsync(url, signatureDto);
+
+                System.Diagnostics.Debug.WriteLine($"📊 Status Code signature: {response.StatusCode}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine("✅ Signature envoyée avec succès");
+                    return true;
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"❌ Erreur signature: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"📄 Détail erreur: {errorContent}");
+                    return false;
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Exception SignProductAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"❌ Stack: {ex.StackTrace}");
                 return false;
             }
         }
@@ -187,7 +294,7 @@ namespace TechStockMaui.Services
                 };
 
                 System.Diagnostics.Debug.WriteLine($"🔄 Assignation API: ProductId={productId}, UserId={userId}, StateId={stateId}");
-                var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/Assign", assignmentDto);
+                var response = await _httpClient.PostAsJsonAsync($"{MaterialManagementUrl}/assign", assignmentDto);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -196,7 +303,9 @@ namespace TechStockMaui.Services
                 }
                 else
                 {
+                    var errorContent = await response.Content.ReadAsStringAsync();
                     System.Diagnostics.Debug.WriteLine($"❌ Assignation API échouée: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"📄 Détail erreur: {errorContent}");
                     return false;
                 }
             }
@@ -213,42 +322,69 @@ namespace TechStockMaui.Services
             try
             {
                 await ConfigureAuthAsync();
-                var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
+                var response = await _httpClient.DeleteAsync($"{MaterialManagementUrl}/{id}");
                 return response.IsSuccessStatusCode;
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur DeleteAssignmentAsync: {ex.Message}");
                 return false;
             }
         }
 
-        // Récupérer tous les utilisateurs (si nécessaire pour l'assignation)
+        // ✅ CORRECTION: Utiliser UsersUrl au lieu de l'URL hardcodée
         public async Task<List<User>> GetUsersAsync()
         {
             try
             {
                 await ConfigureAuthAsync();
-                var result = await _httpClient.GetFromJsonAsync<List<User>>("https://localhost:7237/api/Users");
+                var result = await _httpClient.GetFromJsonAsync<List<User>>(UsersUrl);
                 return result ?? new List<User>();
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetUsersAsync: {ex.Message}");
                 return new List<User>();
             }
         }
 
-        // Récupérer tous les états possibles
+        // ✅ CORRECTION: Utiliser StatesUrl au lieu de l'URL hardcodée
         public async Task<List<States>> GetStatesAsync()
         {
             try
             {
                 await ConfigureAuthAsync();
-                var result = await _httpClient.GetFromJsonAsync<List<States>>("https://localhost:7237/api/States");
+                var result = await _httpClient.GetFromJsonAsync<List<States>>(StatesUrl);
                 return result ?? new List<States>();
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetStatesAsync: {ex.Message}");
                 return new List<States>();
+            }
+        }
+
+        // ✅ MÉTHODE DE TEST pour vérifier les endpoints
+        public async Task<string> TestAssignmentsEndpoint()
+        {
+            try
+            {
+                await ConfigureAuthAsync();
+                var url = $"{MaterialManagementUrl}/my-assignments";
+                System.Diagnostics.Debug.WriteLine($"🧪 Test endpoint: {url}");
+
+                var response = await _httpClient.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"🧪 Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"🧪 Content: {content}");
+
+                return $"Status: {response.StatusCode}, Content: {content}";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"🧪 Erreur test: {ex.Message}");
+                return $"Erreur: {ex.Message}";
             }
         }
     }

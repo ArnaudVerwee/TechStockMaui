@@ -9,22 +9,56 @@ namespace TechStockMaui.Services
     public class UserService
     {
         private readonly HttpClient _httpClient;
-        private readonly AuthService _authService;
-        private const string BaseUrl = "https://localhost:7237/api/User";
+
+        // ✅ Configuration adaptative pour Android/Windows
+        private static string BaseUrl
+        {
+            get
+            {
+#if ANDROID
+                return "http://10.0.2.2:7236/api/User";  // Pour Android émulateur
+#else
+                return "https://localhost:7237/api/User"; // Pour Windows
+#endif
+            }
+        }
 
         public UserService()
         {
-            _httpClient = new HttpClient();
-            _authService = new AuthService();
+            var handler = new HttpClientHandler();
+
+#if ANDROID
+            // Ignorer les erreurs SSL pour Android en développement
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+
+            _httpClient = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            System.Diagnostics.Debug.WriteLine($"🌐 UserService utilise: {BaseUrl}");
         }
 
-        private void SetAuthorizationHeader()
+        private async Task ConfigureAuthAsync()
         {
-            var token = _authService.GetStoredToken();
-            if (!string.IsNullOrEmpty(token))
+            try
             {
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var token = await SecureStorage.GetAsync("auth_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    System.Diagnostics.Debug.WriteLine("🔐 Token ajouté aux headers HTTP");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("⚠️ Aucun token trouvé dans SecureStorage");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"⚠️ Erreur config auth UserService: {ex.Message}");
             }
         }
 
@@ -32,10 +66,9 @@ namespace TechStockMaui.Services
         {
             try
             {
-                SetAuthorizationHeader();
+                await ConfigureAuthAsync();
 
-                System.Diagnostics.Debug.WriteLine($"🔍 Appel API: {BaseUrl}");
-                System.Diagnostics.Debug.WriteLine($"🔑 Token: {_authService.GetStoredToken()?.Substring(0, 20)}...");
+                System.Diagnostics.Debug.WriteLine($"👥 GetAllUsers URL: {BaseUrl}");
 
                 var response = await _httpClient.GetAsync(BaseUrl);
                 var content = await response.Content.ReadAsStringAsync();
@@ -70,60 +103,69 @@ namespace TechStockMaui.Services
         {
             try
             {
-                SetAuthorizationHeader();
+                await ConfigureAuthAsync();
 
                 var fullUrl = $"{BaseUrl}/{userName}";
-                System.Diagnostics.Debug.WriteLine($"🔍 GetRolesAsync - URL complète: {fullUrl}");
-                System.Diagnostics.Debug.WriteLine($"🔑 Token présent: {!string.IsNullOrEmpty(_authService.GetStoredToken())}");
+                System.Diagnostics.Debug.WriteLine($"👥 GetRoles URL: {fullUrl}");
 
                 // Créer un HttpClient avec timeout court pour tester
-                using var httpClientWithTimeout = new HttpClient()
+                HttpClient httpClientWithTimeout;
+
+#if ANDROID
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+                httpClientWithTimeout = new HttpClient(handler);
+#else
+                httpClientWithTimeout = new HttpClient();
+#endif
+
+                using (httpClientWithTimeout)
                 {
-                    Timeout = TimeSpan.FromSeconds(10) // Timeout de 10 secondes
-                };
+                    httpClientWithTimeout.Timeout = TimeSpan.FromSeconds(10);
 
-                // Copier les headers d'autorisation
-                var token = _authService.GetStoredToken();
-                if (!string.IsNullOrEmpty(token))
-                {
-                    httpClientWithTimeout.DefaultRequestHeaders.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                }
-
-                System.Diagnostics.Debug.WriteLine("🚀 Démarrage de la requête HTTP...");
-
-                var response = await httpClientWithTimeout.GetAsync(fullUrl);
-
-                System.Diagnostics.Debug.WriteLine($"📊 Réponse reçue - Status: {response.StatusCode}");
-
-                var content = await response.Content.ReadAsStringAsync();
-                System.Diagnostics.Debug.WriteLine($"📥 Response: {content}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var userViewModel = System.Text.Json.JsonSerializer.Deserialize<UserRolesViewModel>(content, new System.Text.Json.JsonSerializerOptions
+                    // Copier les headers d'autorisation
+                    var token = await SecureStorage.GetAsync("auth_token");
+                    if (!string.IsNullOrEmpty(token))
                     {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                    if (userViewModel != null)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"📥 Utilisateur reçu: {userViewModel.UserName} - Rôles: {string.Join(", ", userViewModel.Roles)}");
-
-                        var allRoles = new List<string> { "Admin", "Support", "User" };
-                        var roleItems = allRoles.Select(role => new RoleItem
-                        {
-                            RoleName = role,
-                            IsSelected = userViewModel.Roles.Contains(role)
-                        }).ToList();
-
-                        System.Diagnostics.Debug.WriteLine($"✅ {roleItems.Count} rôles transformés");
-                        return roleItems;
+                        httpClientWithTimeout.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                     }
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"❌ Erreur HTTP: {response.StatusCode} - {content}");
+
+                    System.Diagnostics.Debug.WriteLine("🚀 Démarrage de la requête HTTP...");
+
+                    var response = await httpClientWithTimeout.GetAsync(fullUrl);
+
+                    System.Diagnostics.Debug.WriteLine($"📊 Réponse reçue - Status: {response.StatusCode}");
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"📥 Response: {content}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var userViewModel = System.Text.Json.JsonSerializer.Deserialize<UserRolesViewModel>(content, new System.Text.Json.JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                        if (userViewModel != null)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"📥 Utilisateur reçu: {userViewModel.UserName} - Rôles: {string.Join(", ", userViewModel.Roles)}");
+
+                            var allRoles = new List<string> { "Admin", "Support", "User" };
+                            var roleItems = allRoles.Select(role => new RoleItem
+                            {
+                                RoleName = role,
+                                IsSelected = userViewModel.Roles.Contains(role)
+                            }).ToList();
+
+                            System.Diagnostics.Debug.WriteLine($"✅ {roleItems.Count} rôles transformés");
+                            return roleItems;
+                        }
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"❌ Erreur HTTP: {response.StatusCode} - {content}");
+                    }
                 }
 
                 return new List<RoleItem>();
@@ -145,14 +187,27 @@ namespace TechStockMaui.Services
         {
             try
             {
-                SetAuthorizationHeader();
+                await ConfigureAuthAsync();
+                System.Diagnostics.Debug.WriteLine($"👥 UpdateUserRoles URL: {BaseUrl}/ManageRoles");
+
                 var body = new { UserName = userName, Roles = roles };
                 var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/ManageRoles", body);
-                return response.IsSuccessStatusCode;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine("✅ Rôles utilisateur mis à jour avec succès");
+                    return true;
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour rôles: {response.StatusCode} - {errorContent}");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur UpdateUserRolesAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateUserRolesAsync: {ex.Message}");
                 return false;
             }
         }
@@ -162,14 +217,15 @@ namespace TechStockMaui.Services
         {
             try
             {
-                SetAuthorizationHeader();
+                await ConfigureAuthAsync();
                 // Vous pouvez ajouter un endpoint dans votre API pour ça
                 // Pour l'instant, retourner les rôles par défaut
+                System.Diagnostics.Debug.WriteLine("👥 GetAvailableRoles - Retour des rôles par défaut");
                 return new List<string> { "Admin", "Support", "User" };
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur GetAvailableRolesAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetAvailableRolesAsync: {ex.Message}");
                 return new List<string> { "Admin", "Support", "User" };
             }
         }

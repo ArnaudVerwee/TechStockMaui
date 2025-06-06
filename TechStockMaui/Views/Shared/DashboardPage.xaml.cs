@@ -1,12 +1,10 @@
-﻿// Votre DashboardPage.xaml.cs - SANS changer ContentPage
-
-using TechStockMaui.Views.Supplier;
+﻿using TechStockMaui.Views.Supplier;
 using TechStockMaui.Services;
 using TechStockMaui.Views;
 
 namespace TechStockMaui.Views.Shared
 {
-    public partial class DashboardPage : ContentPage // ✅ On garde ContentPage
+    public partial class DashboardPage : ContentPage
     {
         private ProductService _productService;
 
@@ -23,12 +21,9 @@ namespace TechStockMaui.Views.Shared
         {
             base.OnAppearing();
             await LoadStatisticsAsync();
-
-            
             await LoadTranslationsAsync();
         }
 
-        
         private async Task LoadTranslationsAsync()
         {
             try
@@ -43,36 +38,56 @@ namespace TechStockMaui.Views.Shared
             }
         }
 
-        // ✅ Helper pour récupérer une traduction (comme dans BaseLocalizedPage)
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
             {
                 var text = await TranslationService.Instance.GetTranslationAsync(key);
+                System.Diagnostics.Debug.WriteLine($"🔑 GetTextAsync('{key}') -> '{text}' (fallback: '{fallback}')");
                 return !string.IsNullOrEmpty(text) && text != key ? text : (fallback ?? key);
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetTextAsync pour '{key}': {ex.Message}");
                 return fallback ?? key;
             }
         }
 
-        // ✅ Mettre à jour les textes traduits
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes Dashboard");
+                var currentCulture = TranslationService.Instance.GetCurrentCulture();
+                System.Diagnostics.Debug.WriteLine($"🌍 Mise à jour des textes Dashboard - Culture: {currentCulture}");
 
                 // ✅ Titre de la page
                 Title = await GetTextAsync("Dashboard", "Dashboard");
+
+                // ✅ Boutons de navigation
+                if (HomeButtonLabel != null)
+                    HomeButtonLabel.Text = await GetTextAsync("Home", "Home");
+
+                if (ProductsButtonLabel != null)
+                    ProductsButtonLabel.Text = await GetTextAsync("Products", "Products");
+
+                if (SuppliersButtonLabel != null)
+                    SuppliersButtonLabel.Text = await GetTextAsync("Suppliers", "Suppliers");
+
+                if (TypesButtonLabel != null)
+                    TypesButtonLabel.Text = await GetTextAsync("Types", "Types");
+
+                if (UsersButtonLabel != null)
+                    UsersButtonLabel.Text = await GetTextAsync("Users", "Users");
+
+                if (LogoutButtonLabel != null)
+                    LogoutButtonLabel.Text = await GetTextAsync("Exit", "Exit");
 
                 // ✅ Messages de bienvenue  
                 if (WelcomeLabel != null)
                     WelcomeLabel.Text = await GetTextAsync("Welcome", "Welcome to TechStock");
 
                 if (WelcomeSubLabel != null)
-                    WelcomeSubLabel.Text = await GetTextAsync("ManageInventory", "Manage your technology inventory easily");
+                    WelcomeSubLabel.Text = await GetTextAsync("WelcomeMessage", "Manage your technology inventory easily");
 
                 // ✅ Label "Accès rapide"
                 if (QuickAccessLabel != null)
@@ -83,7 +98,7 @@ namespace TechStockMaui.Views.Shared
                     ProductsCardLabel.Text = await GetTextAsync("Products", "Products");
 
                 if (ProductsCardSubLabel != null)
-                    ProductsCardSubLabel.Text = await GetTextAsync("ManageInventory", "Manage inventory");
+                    ProductsCardSubLabel.Text = await GetTextAsync("ManageInventoryShort", "Manage inventory");
 
                 // ✅ Card Fournisseurs
                 if (SuppliersCardLabel != null)
@@ -131,7 +146,6 @@ namespace TechStockMaui.Views.Shared
             }
         }
 
-        // ✅ Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
@@ -314,13 +328,11 @@ namespace TechStockMaui.Views.Shared
             }
         }
 
-        // ✅ Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ Nettoyage final
         ~DashboardPage()
         {
             try
