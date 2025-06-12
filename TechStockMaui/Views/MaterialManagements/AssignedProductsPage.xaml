@@ -6,101 +6,79 @@
 
     <Grid RowDefinitions="Auto,*,Auto">
 
-        <!-- ✅ HEADER -->
         <Frame Grid.Row="0" BackgroundColor="LightBlue" Padding="15" Margin="10,10,10,0">
             <StackLayout>
                 <Label x:Name="HeaderTitleLabel"
-                       Text="Produits qui me sont assignés" 
-                       FontAttributes="Bold" 
-                       FontSize="18" 
+                       Text="Produits qui me sont assignés"
+                       FontAttributes="Bold"
+                       FontSize="18"
                        HorizontalOptions="Center"/>
                 <Label x:Name="HeaderDescriptionLabel"
-                       Text="Cliquez sur 'Signer' pour confirmer la réception d'un produit" 
-                       FontSize="14" 
-                       TextColor="Gray" 
+                       Text="Cliquez sur 'Signer' pour confirmer la réception d'un produit"
+                       FontSize="14"
+                       TextColor="Gray"
                        HorizontalOptions="Center"/>
             </StackLayout>
         </Frame>
 
-        <!-- ✅ LISTE DES PRODUITS -->
-        <ScrollView Grid.Row="1">
+        <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
             <CollectionView x:Name="ProductsCollectionView">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Margin="10" 
-                               Padding="15" 
-                               BorderColor="LightGray" 
+                        <Frame Margin="10"
+                               Padding="15"
+                               BorderColor="LightGray"
                                CornerRadius="10"
                                BackgroundColor="White">
                             <StackLayout Spacing="8">
-
-                                <!-- Nom du produit -->
-                                <Label Text="{Binding Product.Name}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="18" 
+                                <Label Text="{Binding Product.Name}"
+                                       FontAttributes="Bold"
+                                       FontSize="18"
                                        TextColor="DarkBlue"/>
-
-                                <!-- Numéro de série -->
-                                <Label Text="{Binding Product.SerialNumber, StringFormat='Série: {0}'}" 
-                                       FontSize="14" 
+                                <Label Text="{Binding Product.SerialNumber, StringFormat='Série: {0}'}"
+                                       FontSize="14"
                                        TextColor="Gray"/>
-
-                                <!-- État du produit -->
                                 <StackLayout Orientation="Horizontal">
                                     <Label x:Name="StateLabel" Text="État : " FontAttributes="Bold" FontSize="14"/>
                                     <Label Text="{Binding State.Status}" FontSize="14" TextColor="DarkGreen"/>
                                 </StackLayout>
-
-                                <!-- Date d'assignation -->
                                 <StackLayout Orientation="Horizontal">
                                     <Label x:Name="AssignedLabel" Text="Assigné le : " FontAttributes="Bold" FontSize="14"/>
                                     <Label Text="{Binding AssignmentDate, StringFormat='{0:dd/MM/yyyy à HH:mm}'}" FontSize="14"/>
                                 </StackLayout>
-
-                                <!-- Séparateur -->
                                 <BoxView HeightRequest="1" BackgroundColor="LightGray" Margin="0,5"/>
-
-                                <!-- SECTION SIGNATURE -->
                                 <StackLayout>
                                     <Label x:Name="ReceptionStatusLabel" Text="Statut de réception :" FontAttributes="Bold" FontSize="14"/>
-
-                                    <!-- ✅ Signature en attente (utilise vos propriétés calculées) -->
                                     <StackLayout IsVisible="{Binding IsSignaturePending}">
                                         <Label x:Name="PendingSignatureLabel"
-                                               Text="⏳ En attente de votre signature" 
-                                               TextColor="Orange" 
+                                               Text="⏳ En attente de votre signature"
+                                               TextColor="Orange"
                                                FontSize="14"
                                                FontAttributes="Italic"/>
-
                                         <Button x:Name="SignButton"
                                                 Text="✍️ Signer la réception"
                                                 BackgroundColor="Green"
                                                 TextColor="White"
-                                                Clicked="OnSignClicked" 
+                                                Clicked="OnSignClicked"
                                                 CommandParameter="{Binding Id}"
                                                 Margin="0,5,0,0"
                                                 CornerRadius="5"/>
                                     </StackLayout>
-
-                                    <!-- ✅ Produit signé (utilise vos propriétés calculées) -->
                                     <StackLayout IsVisible="{Binding IsSignatureValid}">
                                         <Label x:Name="ConfirmedReceptionLabel"
-                                               Text="✅ Réception confirmée" 
-                                               TextColor="Green" 
+                                               Text="✅ Réception confirmée"
+                                               TextColor="Green"
                                                FontAttributes="Bold"
                                                FontSize="14"/>
-
-                                        <Label Text="{Binding Signature}" 
-                                               FontSize="12" 
+                                        <Label Text="{Binding Signature}"
+                                               FontSize="12"
                                                TextColor="Gray"
                                                FontAttributes="Italic"/>
-
-                                        <Label Text="{Binding SignatureDate, StringFormat='Signé le {0:dd/MM/yyyy à HH:mm}'}" 
-                                               FontSize="12" 
+                                        <Label Text="{Binding SignatureDate, StringFormat='Signé le {0:dd/MM/yyyy à HH:mm}'}"
+                                               FontSize="12"
                                                TextColor="Gray"/>
                                     </StackLayout>
                                 </StackLayout>
-
                             </StackLayout>
                         </Frame>
                     </DataTemplate>
@@ -108,48 +86,34 @@
             </CollectionView>
         </ScrollView>
 
-        <!-- ✅ BOUTONS D'ACTION -->
-        <StackLayout Grid.Row="2" 
-                     Orientation="Horizontal" 
-                     HorizontalOptions="Center" 
-                     Spacing="15" 
-                     Padding="10">
-
-            <Button x:Name="RefreshButton"
-                    Text="🔄 Actualiser" 
-                    Clicked="OnRefreshClicked"
-                    BackgroundColor="Blue"
-                    TextColor="White"
-                    FontSize="14"
-                    Padding="10,8"
-                    CornerRadius="5"/>
-
-            <Button x:Name="BackButton"
-                    Text="🏠 Retour" 
-                    Clicked="OnBackClicked"
-                    BackgroundColor="Gray"
-                    TextColor="White"
-                    FontSize="14"
-                    Padding="10,8"
-                    CornerRadius="5"/>
-        </StackLayout>
-
-        <!-- Sélecteur de langue -->
-        <Frame Grid.Row="2"
-               BackgroundColor="White" 
-               HasShadow="True" 
-               CornerRadius="8"
-               Padding="10"
-               Margin="10,50,10,10">
+        <StackLayout Grid.Row="2" Orientation="Vertical" Padding="10" Spacing="10" BackgroundColor="White">
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="15">
+                <Button x:Name="RefreshButton"
+                        Text="🔄 Actualiser"
+                        Clicked="OnRefreshClicked"
+                        BackgroundColor="Blue"
+                        TextColor="White"
+                        FontSize="14"
+                        Padding="10,8"
+                        CornerRadius="5"/>
+                <Button x:Name="BackButton"
+                        Text="🏠 Retour"
+                        Clicked="OnBackClicked"
+                        BackgroundColor="Gray"
+                        TextColor="White"
+                        FontSize="14"
+                        Padding="10,8"
+                        CornerRadius="5"/>
+            </HorizontalStackLayout>
             <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
-                <Label Text="🌍" FontSize="18" VerticalOptions="Center" />
+                <Label Text="🌍" FontSize="18" VerticalOptions="Center"/>
                 <Label x:Name="LanguageLabel"
-                       Text="Language" 
+                       Text="Language"
                        FontSize="12"
                        TextColor="#2c3e50"
-                       VerticalOptions="Center" />
-                <Label x:Name="LanguageFlag" 
-                       Text="🇺🇸" 
+                       VerticalOptions="Center"/>
+                <Label x:Name="LanguageFlag"
+                       Text="🇺🇸"
                        FontSize="14"
                        FontAttributes="Bold"
                        TextColor="#2c3e50"
@@ -161,7 +125,7 @@
                     </Label.GestureRecognizers>
                 </Label>
             </HorizontalStackLayout>
-        </Frame>
+        </StackLayout>
 
     </Grid>
 </ContentPage>

@@ -8,23 +8,20 @@ namespace TechStockMaui.Views.Users
         public ManagementUserPage()
         {
             InitializeComponent();
-            System.Diagnostics.Debug.WriteLine("📄 ManagementUserPage créée");
+            System.Diagnostics.Debug.WriteLine("ManagementUserPage created");
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
 
             BindingContext = new UserManagementViewModel();
-            System.Diagnostics.Debug.WriteLine("📄 BindingContext défini");
+            System.Diagnostics.Debug.WriteLine("BindingContext set");
         }
 
-        // ✅ AJOUT: Charger les traductions au démarrage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await LoadTranslationsAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -35,11 +32,10 @@ namespace TechStockMaui.Views.Users
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -53,43 +49,35 @@ namespace TechStockMaui.Views.Users
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes ManagementUserPage");
+                System.Diagnostics.Debug.WriteLine("Updating ManagementUserPage texts");
 
-                // ✅ Titre de la page
                 Title = "👥 " + await GetTextAsync("User Management", "User Management");
 
-                // ✅ En-tête
                 if (UsersHeaderLabel != null)
                     UsersHeaderLabel.Text = await GetTextAsync("Users", "Users");
 
-                // ✅ Label de chargement
                 if (LoadingLabel != null)
                     LoadingLabel.Text = await GetTextAsync("Loading", "Loading") + "...";
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                // ✅ Mettre à jour le format du compteur d'utilisateurs
                 await UpdateUsersCountFormat();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes ManagementUserPage mis à jour");
+                System.Diagnostics.Debug.WriteLine("ManagementUserPage texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le format du compteur d'utilisateurs
         private async Task UpdateUsersCountFormat()
         {
             try
@@ -98,32 +86,27 @@ namespace TechStockMaui.Views.Users
                 {
                     var usersFoundText = await GetTextAsync("users found", "users found");
                     var userFoundText = await GetTextAsync("user found", "user found");
-
-                    // Note: Vous devrez adapter cette partie selon votre ViewModel
-                    // Pour l'instant, on garde le binding existant
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateUsersCountFormat: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateUsersCountFormat error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 ManagementUserPage - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"ManagementUserPage - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -154,18 +137,17 @@ namespace TechStockMaui.Views.Users
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -179,17 +161,15 @@ namespace TechStockMaui.Views.Users
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~ManagementUserPage()
         {
             try

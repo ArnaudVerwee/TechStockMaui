@@ -1,4 +1,4 @@
-﻿// Views/BaseLocalizedPage.cs - Version corrigée
+﻿
 
 using TechStockMaui.Services;
 
@@ -8,7 +8,7 @@ namespace TechStockMaui.Views
     {
         public BaseLocalizedPage()
         {
-            // ✅ S'abonner aux changements de langue directement
+            
             TranslationService.Instance.CultureChanged += OnCultureChanged;
         }
 
@@ -28,7 +28,7 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" Error update translations: {ex.Message}");
             }
         }
 
@@ -38,12 +38,12 @@ namespace TechStockMaui.Views
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 Page {GetType().Name} - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"🌍 Page {GetType().Name} - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" Error change language: {ex.Message}");
             }
         }
 

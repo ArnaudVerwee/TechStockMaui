@@ -13,7 +13,6 @@ namespace TechStockMaui.Views.Shared
             InitializeComponent();
             _productService = new ProductService();
 
-            // ✅ S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
         }
 
@@ -22,6 +21,8 @@ namespace TechStockMaui.Views.Shared
             base.OnAppearing();
             await LoadStatisticsAsync();
             await LoadTranslationsAsync();
+            await Task.Delay(100);
+            await ConfigureUserInterfaceBasedOnRoleAsync();
         }
 
         private async Task LoadTranslationsAsync()
@@ -34,8 +35,287 @@ namespace TechStockMaui.Views.Shared
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
+        }
+
+        private async Task ConfigureUserInterfaceBasedOnRoleAsync()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Configuring interface based on role...");
+
+                var authService = new AuthService();
+                var currentUser = await authService.GetCurrentUserAsync();
+
+                if (currentUser != null && currentUser.Roles.Any())
+                {
+                    System.Diagnostics.Debug.WriteLine($"Connected user: {currentUser.UserName}, Roles: {string.Join(", ", currentUser.Roles)}");
+
+                    var isUser = currentUser.Roles.Contains("User");
+                    var isSupport = currentUser.Roles.Contains("Support");
+                    var isAdmin = currentUser.Roles.Contains("Admin");
+
+                    System.Diagnostics.Debug.WriteLine($"Is User: {isUser}, Is Support: {isSupport}, Is Admin: {isAdmin}");
+
+                    if (isUser && !isSupport && !isAdmin)
+                    {
+                        System.Diagnostics.Debug.WriteLine("User role only detected - hiding all admin/support features");
+
+                        await Application.Current.Dispatcher.DispatchAsync(() =>
+                        {
+                            try
+                            {
+                                if (ProductsButtonFrame != null)
+                                {
+                                    ProductsButtonFrame.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("ProductsButtonFrame hidden");
+                                }
+                                if (ProductsCard != null)
+                                {
+                                    ProductsCard.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("ProductsCard hidden");
+                                }
+
+                                if (SuppliersButtonFrame != null)
+                                {
+                                    SuppliersButtonFrame.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("SuppliersButtonFrame hidden");
+                                }
+                                if (SuppliersCard != null)
+                                {
+                                    SuppliersCard.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("SuppliersCard hidden");
+                                }
+
+                                if (TypesButtonFrame != null)
+                                {
+                                    TypesButtonFrame.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("TypesButtonFrame hidden");
+                                }
+
+                                if (UsersButtonFrame != null)
+                                {
+                                    UsersButtonFrame.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("UsersButtonFrame hidden");
+                                }
+                                if (UsersCard != null)
+                                {
+                                    UsersCard.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("UsersCard hidden");
+                                }
+
+                                if (OverviewLabel != null)
+                                {
+                                    OverviewLabel.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("OverviewLabel hidden");
+                                }
+                                if (OverviewFrame != null)
+                                {
+                                    OverviewFrame.IsVisible = false;
+                                    System.Diagnostics.Debug.WriteLine("OverviewFrame hidden");
+                                }
+
+                                if (MyProductsCard != null)
+                                {
+                                    MyProductsCard.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("MyProductsCard kept visible");
+                                }
+
+                                System.Diagnostics.Debug.WriteLine("Only AssignedProducts accessible for User role");
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Error configuring UI for User: {ex.Message}");
+                            }
+                        });
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Admin or Support role detected - showing appropriate features");
+
+                        await Application.Current.Dispatcher.DispatchAsync(() =>
+                        {
+                            try
+                            {
+                                if (ProductsButtonFrame != null)
+                                {
+                                    ProductsButtonFrame.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("ProductsButtonFrame visible for Support/Admin");
+                                }
+                                if (ProductsCard != null)
+                                {
+                                    ProductsCard.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("ProductsCard visible for Support/Admin");
+                                }
+
+                                if (SuppliersButtonFrame != null)
+                                {
+                                    SuppliersButtonFrame.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("SuppliersButtonFrame visible for Support/Admin");
+                                }
+                                if (SuppliersCard != null)
+                                {
+                                    SuppliersCard.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("SuppliersCard visible for Support/Admin");
+                                }
+
+                                if (TypesButtonFrame != null)
+                                {
+                                    TypesButtonFrame.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("TypesButtonFrame visible for Support/Admin");
+                                }
+
+                                if (UsersButtonFrame != null)
+                                {
+                                    UsersButtonFrame.IsVisible = isAdmin;
+                                    System.Diagnostics.Debug.WriteLine($"UsersButtonFrame visible: {isAdmin}");
+                                }
+                                if (UsersCard != null)
+                                {
+                                    UsersCard.IsVisible = isAdmin;
+                                    System.Diagnostics.Debug.WriteLine($"UsersCard visible: {isAdmin}");
+                                }
+
+                                if (MyProductsCard != null)
+                                {
+                                    MyProductsCard.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("MyProductsCard visible for Support/Admin");
+                                }
+
+                                if (OverviewLabel != null)
+                                {
+                                    OverviewLabel.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("OverviewLabel visible for Support/Admin");
+                                }
+                                if (OverviewFrame != null)
+                                {
+                                    OverviewFrame.IsVisible = true;
+                                    System.Diagnostics.Debug.WriteLine("OverviewFrame visible for Support/Admin");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Error configuring UI for Support/Admin: {ex.Message}");
+                            }
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ConfigureUserInterfaceBasedOnRoleAsync error: {ex.Message}");
+            }
+        }
+
+        private void HideFramesByGestureHandler(string[] handlerNames)
+        {
+            try
+            {
+                var frames = GetAllFramesInPage();
+                foreach (var frame in frames)
+                {
+                    if (frame.GestureRecognizers?.Any() == true)
+                    {
+                        foreach (var gesture in frame.GestureRecognizers.OfType<TapGestureRecognizer>())
+                        {
+                            var methodName = GetTapGestureMethodName(gesture);
+                            if (handlerNames.Contains(methodName))
+                            {
+                                frame.IsVisible = false;
+                                System.Diagnostics.Debug.WriteLine($"Hidden frame with gesture: {methodName}");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error hiding frames: {ex.Message}");
+            }
+        }
+
+        private void ShowFramesByGestureHandler(string[] handlerNames)
+        {
+            try
+            {
+                var frames = GetAllFramesInPage();
+                foreach (var frame in frames)
+                {
+                    if (frame.GestureRecognizers?.Any() == true)
+                    {
+                        foreach (var gesture in frame.GestureRecognizers.OfType<TapGestureRecognizer>())
+                        {
+                            var methodName = GetTapGestureMethodName(gesture);
+                            if (handlerNames.Contains(methodName))
+                            {
+                                frame.IsVisible = true;
+                                System.Diagnostics.Debug.WriteLine($"Shown frame with gesture: {methodName}");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error showing frames: {ex.Message}");
+            }
+        }
+
+        private List<Frame> GetAllFramesInPage()
+        {
+            var frames = new List<Frame>();
+            try
+            {
+                TraverseVisualTree(this.Content, frames);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting frames: {ex.Message}");
+            }
+            return frames;
+        }
+
+        private void TraverseVisualTree(IView view, List<Frame> frames)
+        {
+            if (view is Frame frame)
+            {
+                frames.Add(frame);
+            }
+
+            if (view is Layout layout)
+            {
+                foreach (var child in layout.Children)
+                {
+                    TraverseVisualTree(child, frames);
+                }
+            }
+            else if (view is ContentView contentView && contentView.Content != null)
+            {
+                TraverseVisualTree(contentView.Content, frames);
+            }
+            else if (view is ScrollView scrollView && scrollView.Content != null)
+            {
+                TraverseVisualTree(scrollView.Content, frames);
+            }
+        }
+
+        private string GetTapGestureMethodName(TapGestureRecognizer gesture)
+        {
+            try
+            {
+                var field = gesture.GetType().GetField("_tapped", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field?.GetValue(gesture) is EventHandler handler)
+                {
+                    return handler.Method.Name;
+                }
+            }
+            catch
+            {
+            }
+            return "";
         }
 
         private async Task<string> GetTextAsync(string key, string fallback = null)
@@ -43,12 +323,12 @@ namespace TechStockMaui.Views.Shared
             try
             {
                 var text = await TranslationService.Instance.GetTranslationAsync(key);
-                System.Diagnostics.Debug.WriteLine($"🔑 GetTextAsync('{key}') -> '{text}' (fallback: '{fallback}')");
+                System.Diagnostics.Debug.WriteLine($"GetTextAsync('{key}') -> '{text}' (fallback: '{fallback}')");
                 return !string.IsNullOrEmpty(text) && text != key ? text : (fallback ?? key);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetTextAsync pour '{key}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"GetTextAsync error for '{key}': {ex.Message}");
                 return fallback ?? key;
             }
         }
@@ -58,12 +338,10 @@ namespace TechStockMaui.Views.Shared
             try
             {
                 var currentCulture = TranslationService.Instance.GetCurrentCulture();
-                System.Diagnostics.Debug.WriteLine($"🌍 Mise à jour des textes Dashboard - Culture: {currentCulture}");
+                System.Diagnostics.Debug.WriteLine($"Updating Dashboard texts - Culture: {currentCulture}");
 
-                // ✅ Titre de la page
                 Title = await GetTextAsync("Dashboard", "Dashboard");
 
-                // ✅ Boutons de navigation
                 if (HomeButtonLabel != null)
                     HomeButtonLabel.Text = await GetTextAsync("Home", "Home");
 
@@ -82,50 +360,42 @@ namespace TechStockMaui.Views.Shared
                 if (LogoutButtonLabel != null)
                     LogoutButtonLabel.Text = await GetTextAsync("Exit", "Exit");
 
-                // ✅ Messages de bienvenue  
                 if (WelcomeLabel != null)
                     WelcomeLabel.Text = await GetTextAsync("Welcome", "Welcome to TechStock");
 
                 if (WelcomeSubLabel != null)
                     WelcomeSubLabel.Text = await GetTextAsync("WelcomeMessage", "Manage your technology inventory easily");
 
-                // ✅ Label "Accès rapide"
                 if (QuickAccessLabel != null)
                     QuickAccessLabel.Text = await GetTextAsync("QuickAccess", "Quick Access");
 
-                // ✅ Card Produits
                 if (ProductsCardLabel != null)
                     ProductsCardLabel.Text = await GetTextAsync("Products", "Products");
 
                 if (ProductsCardSubLabel != null)
                     ProductsCardSubLabel.Text = await GetTextAsync("ManageInventoryShort", "Manage inventory");
 
-                // ✅ Card Fournisseurs
                 if (SuppliersCardLabel != null)
                     SuppliersCardLabel.Text = await GetTextAsync("Suppliers", "Suppliers");
 
                 if (SuppliersCardSubLabel != null)
                     SuppliersCardSubLabel.Text = await GetTextAsync("ManageContacts", "Manage contacts");
 
-                // ✅ Card Utilisateurs
                 if (UsersCardLabel != null)
                     UsersCardLabel.Text = await GetTextAsync("Users", "Users");
 
                 if (UsersCardSubLabel != null)
                     UsersCardSubLabel.Text = await GetTextAsync("ManageAccess", "Manage access");
 
-                // ✅ Card Mes Produits
                 if (MyProductsCardLabel != null)
                     MyProductsCardLabel.Text = await GetTextAsync("MyProducts", "My Products");
 
                 if (MyProductsCardSubLabel != null)
                     MyProductsCardSubLabel.Text = await GetTextAsync("AssignedProducts", "Assigned products");
 
-                // ✅ Label "Aperçu"
                 if (OverviewLabel != null)
                     OverviewLabel.Text = await GetTextAsync("Overview", "Overview");
 
-                // ✅ Statistiques - Labels
                 if (TotalLabel != null)
                     TotalLabel.Text = await GetTextAsync("Total", "Total");
 
@@ -135,14 +405,13 @@ namespace TechStockMaui.Views.Shared
                 if (AvailableLabel != null)
                     AvailableLabel.Text = await GetTextAsync("Available", "Available");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes Dashboard mis à jour");
+                System.Diagnostics.Debug.WriteLine("Dashboard texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
@@ -150,12 +419,12 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 Dashboard - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"Dashboard - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
@@ -163,18 +432,42 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
-                var products = await _productService.GetProductsAsync();
-                var totalProducts = products?.Count ?? 0;
-                var assignedProducts = products?.Count(p =>
-                    !string.IsNullOrEmpty(p.AssignedUserName)) ?? 0;
-                var freeProducts = totalProducts - assignedProducts;
+                System.Diagnostics.Debug.WriteLine("Starting Dashboard statistics loading...");
 
-                TotalProductsLabel.Text = totalProducts.ToString();
-                AssignedProductsLabel.Text = assignedProducts.ToString();
-                FreeProductsLabel.Text = freeProducts.ToString();
+                var products = await _productService.GetProductsFilterAsync();
+
+                if (products != null)
+                {
+                    var productsList = products.ToList();
+                    System.Diagnostics.Debug.WriteLine($"{productsList.Count} products retrieved via filter");
+
+                    foreach (var product in productsList)
+                    {
+                        var assigned = string.IsNullOrEmpty(product.AssignedUserName) ? "NOT ASSIGNED" : product.AssignedUserName;
+                        System.Diagnostics.Debug.WriteLine($"Product: {product.Name}, AssignedUserName: '{product.AssignedUserName}' -> {assigned}");
+                    }
+
+                    var totalProducts = productsList.Count;
+                    var assignedProducts = productsList.Count(p => !string.IsNullOrEmpty(p.AssignedUserName));
+                    var freeProducts = totalProducts - assignedProducts;
+
+                    System.Diagnostics.Debug.WriteLine($"DASHBOARD STATS -> Total: {totalProducts}, Assigned: {assignedProducts}, Free: {freeProducts}");
+
+                    TotalProductsLabel.Text = totalProducts.ToString();
+                    AssignedProductsLabel.Text = assignedProducts.ToString();
+                    FreeProductsLabel.Text = freeProducts.ToString();
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("products filter is null");
+                    TotalProductsLabel.Text = "N/A";
+                    AssignedProductsLabel.Text = "N/A";
+                    FreeProductsLabel.Text = "N/A";
+                }
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"LoadStatisticsAsync error: {ex.Message}");
                 TotalProductsLabel.Text = "N/A";
                 AssignedProductsLabel.Text = "N/A";
                 FreeProductsLabel.Text = "N/A";
@@ -185,12 +478,28 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
+                var authService = new AuthService();
+                var currentUser = await authService.GetCurrentUserAsync();
+
+                if (currentUser != null)
+                {
+                    var isUser = currentUser.Roles.Contains("User");
+                    var isSupport = currentUser.Roles.Contains("Support");
+                    var isAdmin = currentUser.Roles.Contains("Admin");
+
+                    if (isUser && !isSupport && !isAdmin)
+                    {
+                        await DisplayAlert("Access Denied", "You don't have permission to access this page", "OK");
+                        return;
+                    }
+                }
+
                 await Navigation.PushAsync(new ProductPage());
             }
             catch (Exception ex)
             {
-                var errorText = await GetTextAsync("Error", "Erreur");
-                await DisplayAlert(errorText, $"Impossible d'ouvrir la page des produits: {ex.Message}", "OK");
+                var errorText = await GetTextAsync("Error", "Error");
+                await DisplayAlert(errorText, $"Unable to open products page: {ex.Message}", "OK");
             }
         }
 
@@ -198,12 +507,28 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
+                var authService = new AuthService();
+                var currentUser = await authService.GetCurrentUserAsync();
+
+                if (currentUser != null)
+                {
+                    var isUser = currentUser.Roles.Contains("User");
+                    var isSupport = currentUser.Roles.Contains("Support");
+                    var isAdmin = currentUser.Roles.Contains("Admin");
+
+                    if (isUser && !isSupport && !isAdmin)
+                    {
+                        await DisplayAlert("Access Denied", "You don't have permission to access this page", "OK");
+                        return;
+                    }
+                }
+
                 await Navigation.PushAsync(new SupplierPage());
             }
             catch (Exception ex)
             {
-                var errorText = await GetTextAsync("Error", "Erreur");
-                await DisplayAlert(errorText, $"Impossible d'ouvrir la page des fournisseurs: {ex.Message}", "OK");
+                var errorText = await GetTextAsync("Error", "Error");
+                await DisplayAlert(errorText, $"Unable to open suppliers page: {ex.Message}", "OK");
             }
         }
 
@@ -211,12 +536,28 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
+                var authService = new AuthService();
+                var currentUser = await authService.GetCurrentUserAsync();
+
+                if (currentUser != null)
+                {
+                    var isUser = currentUser.Roles.Contains("User");
+                    var isSupport = currentUser.Roles.Contains("Support");
+                    var isAdmin = currentUser.Roles.Contains("Admin");
+
+                    if (isUser && !isSupport && !isAdmin)
+                    {
+                        await DisplayAlert("Access Denied", "You don't have permission to access this page", "OK");
+                        return;
+                    }
+                }
+
                 await Navigation.PushAsync(new TypeArticlePage());
             }
             catch (Exception ex)
             {
-                var errorText = await GetTextAsync("Error", "Erreur");
-                await DisplayAlert(errorText, $"Impossible d'ouvrir la page des types d'articles: {ex.Message}", "OK");
+                var errorText = await GetTextAsync("Error", "Error");
+                await DisplayAlert(errorText, $"Unable to open article types page: {ex.Message}", "OK");
             }
         }
 
@@ -228,8 +569,8 @@ namespace TechStockMaui.Views.Shared
             }
             catch (Exception ex)
             {
-                var errorText = await GetTextAsync("Error", "Erreur");
-                await DisplayAlert(errorText, $"Impossible d'ouvrir la page des produits assignés: {ex.Message}", "OK");
+                var errorText = await GetTextAsync("Error", "Error");
+                await DisplayAlert(errorText, $"Unable to open assigned products page: {ex.Message}", "OK");
             }
         }
 
@@ -237,12 +578,26 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
+                var authService = new AuthService();
+                var currentUser = await authService.GetCurrentUserAsync();
+
+                if (currentUser != null)
+                {
+                    var isAdmin = currentUser.Roles.Contains("Admin");
+
+                    if (!isAdmin)
+                    {
+                        await DisplayAlert("Access Denied", "Only administrators can access this page", "OK");
+                        return;
+                    }
+                }
+
                 await Navigation.PushAsync(new Views.Users.ManagementUserPage());
             }
             catch (Exception ex)
             {
-                var errorText = await GetTextAsync("Error", "Erreur");
-                await DisplayAlert(errorText, $"Erreur: {ex.Message}", "OK");
+                var errorText = await GetTextAsync("Error", "Error");
+                await DisplayAlert(errorText, $"Error: {ex.Message}", "OK");
             }
         }
 
@@ -250,10 +605,10 @@ namespace TechStockMaui.Views.Shared
         {
             try
             {
-                var confirmTitle = await GetTextAsync("Logout", "Déconnexion");
-                var confirmMessage = await GetTextAsync("ConfirmLogout", "Êtes-vous sûr de vouloir vous déconnecter ?");
-                var yesText = await GetTextAsync("Yes", "Oui");
-                var noText = await GetTextAsync("No", "Non");
+                var confirmTitle = await GetTextAsync("Logout", "Logout");
+                var confirmMessage = await GetTextAsync("ConfirmLogout", "Are you sure you want to logout?");
+                var yesText = await GetTextAsync("Yes", "Yes");
+                var noText = await GetTextAsync("No", "No");
 
                 bool confirm = await DisplayAlert(confirmTitle, confirmMessage, yesText, noText);
                 if (confirm)
@@ -265,8 +620,8 @@ namespace TechStockMaui.Views.Shared
             }
             catch (Exception ex)
             {
-                var errorText = await GetTextAsync("Error", "Erreur");
-                await DisplayAlert(errorText, $"Erreur lors de la déconnexion: {ex.Message}", "OK");
+                var errorText = await GetTextAsync("Error", "Error");
+                await DisplayAlert(errorText, $"Error during logout: {ex.Message}", "OK");
             }
         }
 
@@ -286,8 +641,8 @@ namespace TechStockMaui.Views.Shared
                     options.Add($"{flag} {name}{current}");
                 }
 
-                var cancelText = await GetTextAsync("Cancel", "Annuler");
-                var titleText = "🌍 " + await GetTextAsync("ChooseLanguage", "Choisir la langue");
+                var cancelText = await GetTextAsync("Cancel", "Cancel");
+                var titleText = "🌍 " + await GetTextAsync("ChooseLanguage", "Choose Language");
 
                 var selectedOption = await DisplayActionSheet(titleText, cancelText, null, options.ToArray());
 
@@ -300,14 +655,14 @@ namespace TechStockMaui.Views.Shared
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
@@ -324,7 +679,7 @@ namespace TechStockMaui.Views.Shared
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 

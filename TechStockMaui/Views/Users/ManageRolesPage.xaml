@@ -5,20 +5,20 @@
              Title="Gestion des rôles">
     <ScrollView>
         <StackLayout Margin="20">
-            <!-- En-tête utilisateur -->
+          
             <Label x:Name="UserHeaderLabel"
                    Text="{Binding UserName, StringFormat='Utilisateur: {0}'}" 
                    FontSize="20" 
                    FontAttributes="Bold" 
                    Margin="0,0,0,20"/>
 
-            <!-- Message de test -->
+           
             <Label x:Name="PageDescriptionLabel"
                    Text="Page de gestion des rôles" 
                    FontSize="16" 
                    Margin="0,0,0,20"/>
 
-            <!-- Indicateur de chargement -->
+            
             <StackLayout IsVisible="{Binding IsLoading}" 
                         Orientation="Horizontal"
                         HorizontalOptions="Center"
@@ -35,7 +35,7 @@
                        Margin="10,0,0,0"/>
             </StackLayout>
 
-            <!-- Liste simple des rôles -->
+            
             <Label x:Name="AvailableRolesLabel"
                    Text="Rôles disponibles:" 
                    FontSize="16" 
@@ -63,7 +63,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Boutons -->
+            
             <StackLayout Spacing="10" Margin="0,20,0,0">
                 <Button x:Name="SaveButton"
                         Text="Sauvegarder" 
@@ -84,7 +84,7 @@
                         CornerRadius="8"/>
             </StackLayout>
 
-            <!-- Sélecteur de langue -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

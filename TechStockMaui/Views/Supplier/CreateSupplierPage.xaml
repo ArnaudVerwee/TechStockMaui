@@ -8,7 +8,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- Titre principal -->
+            
             <Label x:Name="TitleLabel" 
                    Text="Create Supplier" 
                    FontSize="24" 
@@ -17,7 +17,7 @@
                    HorizontalOptions="Center"
                    Margin="0,0,0,20" />
 
-            <!-- Nom -->
+           
             <VerticalStackLayout Spacing="5">
                 <Label x:Name="NameLabel" 
                        Text="Name" 
@@ -29,7 +29,7 @@
                        TextColor="#2c3e50" />
             </VerticalStackLayout>
 
-            <!-- Boutons -->
+            
             <VerticalStackLayout Spacing="10" Margin="0,30,0,0">
                 <Button x:Name="CreateButton"
                         Text="Create" 
@@ -50,7 +50,7 @@
                         Clicked="OnBackToListClicked" />
             </VerticalStackLayout>
 
-            <!-- Sélecteur de langue -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

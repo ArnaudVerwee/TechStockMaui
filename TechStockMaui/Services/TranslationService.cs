@@ -1,6 +1,4 @@
-﻿// Services/TranslationService.cs - Version globale singleton
-
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Collections.Concurrent;
 
 namespace TechStockMaui.Services
@@ -12,15 +10,14 @@ namespace TechStockMaui.Services
 
         private readonly HttpClient _httpClient;
 
-        // ✅ Configuration adaptative pour Android/Windows
         private static string BaseUrl
         {
             get
             {
 #if ANDROID
-                return "http://10.0.2.2:7236/api";  // Pour Android émulateur
+                return "http://10.0.2.2:7236/api";
 #else
-                return "https://localhost:7237/api"; // Pour Windows
+                return "https://localhost:7237/api";
 #endif
             }
         }
@@ -54,7 +51,6 @@ namespace TechStockMaui.Services
             var handler = new HttpClientHandler();
 
 #if ANDROID
-            // Ignorer les erreurs SSL pour Android en développement
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 #endif
 
@@ -67,11 +63,10 @@ namespace TechStockMaui.Services
             _supportedCultures = new List<string> { "en", "fr", "nl" };
             _currentCulture = Preferences.Get("app_language", "en");
 
-            System.Diagnostics.Debug.WriteLine($"🌍 TranslationService singleton initialisé - Culture: {_currentCulture}");
-            System.Diagnostics.Debug.WriteLine($"🌐 TranslationService utilise: {BaseUrl}");
+            System.Diagnostics.Debug.WriteLine($"TranslationService singleton initialized - Culture: {_currentCulture}");
+            System.Diagnostics.Debug.WriteLine($"TranslationService using: {BaseUrl}");
         }
 
-        // Configurer l'authentification
         private async Task ConfigureAuthAsync()
         {
             try
@@ -85,27 +80,24 @@ namespace TechStockMaui.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"⚠️ Erreur config auth: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Auth configuration error: {ex.Message}");
             }
         }
 
-        // Charger toutes les traductions pour une culture
         public async Task LoadTranslationsAsync(string culture)
         {
             try
             {
-                // Vérifier le cache d'abord
                 if (_translationsCache.ContainsKey(culture))
                 {
-                    System.Diagnostics.Debug.WriteLine($"✅ Traductions {culture} en cache");
+                    System.Diagnostics.Debug.WriteLine($"Translations for {culture} found in cache");
                     return;
                 }
 
                 await ConfigureAuthAsync();
 
-                // TODO: Adapter cette URL selon votre API existante
                 var url = $"{BaseUrl}/Translations?culture={culture}";
-                System.Diagnostics.Debug.WriteLine($"🌐 Chargement traductions: {url}");
+                System.Diagnostics.Debug.WriteLine($"Loading translations from: {url}");
 
                 var response = await _httpClient.GetAsync(url);
 
@@ -116,75 +108,75 @@ namespace TechStockMaui.Services
                     if (translations != null && translations.Any())
                     {
                         _translationsCache[culture] = translations;
-                        System.Diagnostics.Debug.WriteLine($"✅ {translations.Count} traductions chargées pour {culture}");
+                        System.Diagnostics.Debug.WriteLine($"{translations.Count} translations loaded for {culture}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"No translations received for {culture}");
                     }
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ Erreur API: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"API error: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur LoadTranslationsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error LoadTranslationsAsync: {ex.Message}");
             }
         }
 
-        // Récupérer une traduction
         public async Task<string> GetTranslationAsync(string key, string culture = null)
         {
             try
             {
                 culture ??= _currentCulture;
 
-                // Charger si pas en cache
                 if (!_translationsCache.ContainsKey(culture))
                 {
                     await LoadTranslationsAsync(culture);
                 }
 
-                // Récupérer la traduction
                 if (_translationsCache.TryGetValue(culture, out var translations) &&
                     translations.TryGetValue(key, out var translation))
                 {
+                    System.Diagnostics.Debug.WriteLine($"Translation found for key '{key}' in culture '{culture}': {translation}");
                     return translation;
                 }
 
-                // Fallback vers français
-                if (culture != "en" && _translationsCache.TryGetValue("en", out var frTranslations) &&
-                    frTranslations.TryGetValue(key, out var enTranslation))
+                if (culture != "en" && _translationsCache.TryGetValue("en", out var enTranslations) &&
+                    enTranslations.TryGetValue(key, out var enTranslation))
                 {
+                    System.Diagnostics.Debug.WriteLine($"Fallback to English for key '{key}': {enTranslation}");
                     return enTranslation;
                 }
 
-                // Retourner la clé si pas trouvé
+                System.Diagnostics.Debug.WriteLine($"No translation found for key '{key}', returning key as fallback");
                 return key;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetTranslationAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error GetTranslationAsync: {ex.Message}");
                 return key;
             }
         }
 
-        // Changer la culture
         public async Task SetCurrentCultureAsync(string culture)
         {
             if (_supportedCultures.Contains(culture))
             {
                 _currentCulture = culture;
                 Preferences.Set("app_language", culture);
-                System.Diagnostics.Debug.WriteLine($"🌍 Culture changée vers: {culture}");
+                System.Diagnostics.Debug.WriteLine($"Culture changed to: {culture}");
 
-                // ✅ Précharger les traductions
                 await LoadTranslationsAsync(culture);
 
-                // ✅ Notifier toutes les pages du changement
                 CultureChanged?.Invoke(this, culture);
+                System.Diagnostics.Debug.WriteLine($"Culture change event fired for: {culture}");
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"⚠️ Culture non supportée: {culture}");
+                System.Diagnostics.Debug.WriteLine($"Unsupported culture: {culture}");
             }
         }
 
@@ -192,7 +184,6 @@ namespace TechStockMaui.Services
 
         public List<string> GetSupportedCultures() => _supportedCultures;
 
-        // ✅ Méthodes helper pour l'UI
         public string GetLanguageDisplayName(string culture)
         {
             return culture switch
@@ -215,11 +206,10 @@ namespace TechStockMaui.Services
             };
         }
 
-        // ✅ Vider le cache si nécessaire
         public void ClearCache()
         {
             _translationsCache.Clear();
-            System.Diagnostics.Debug.WriteLine("🗑️ Cache traductions vidé");
+            System.Diagnostics.Debug.WriteLine("Translation cache cleared");
         }
     }
 }

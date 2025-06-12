@@ -19,24 +19,19 @@ namespace TechStockMaui.Views
             _product = product;
             _productService = new ProductService();
 
-            // Bind le produit pour les champs Name et SerialNumber
             BindingContext = _product;
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
 
-            // ✅ CONSERVÉ: Votre logique existante
             LoadData();
         }
 
-        // ✅ AJOUT: Charger les traductions au démarrage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await LoadTranslationsAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -47,11 +42,10 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -65,21 +59,17 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes EditProduct");
+                System.Diagnostics.Debug.WriteLine("Updating EditProduct texts");
 
-                // ✅ Titre de la page
                 Title = await GetTextAsync("Edit", "Edit");
 
-                // ✅ Titre principal
                 if (TitleLabel != null)
                     TitleLabel.Text = await GetTextAsync("Edit", "Edit Product");
 
-                // ✅ Labels des champs
                 if (NameLabel != null)
                     NameLabel.Text = await GetTextAsync("Name", "Name") + ":";
 
@@ -92,70 +82,60 @@ namespace TechStockMaui.Views
                 if (SupplierLabel != null)
                     SupplierLabel.Text = await GetTextAsync("Supplier", "Supplier") + ":";
 
-                // ✅ Placeholders
                 if (NameEntry != null)
                     NameEntry.Placeholder = await GetTextAsync("ProductNamePlaceholder", "Product name");
 
                 if (SerialNumberEntry != null)
                     SerialNumberEntry.Placeholder = await GetTextAsync("SerialNumberPlaceholder", "Serial number");
 
-                // ✅ Titles des Pickers
                 if (TypePicker != null)
                     TypePicker.Title = await GetTextAsync("Select a type", "Select a type");
 
                 if (SupplierPicker != null)
                     SupplierPicker.Title = await GetTextAsync("Select a supplier", "Select a supplier");
 
-                // ✅ Boutons
                 if (SaveButton != null)
                     SaveButton.Text = await GetTextAsync("Save", "Save");
 
                 if (BackButton != null)
                     BackButton.Text = await GetTextAsync("Back to List", "Back to List");
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes EditProduct mis à jour");
+                System.Diagnostics.Debug.WriteLine("EditProduct texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 EditProduct - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"EditProduct - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async void LoadData()
         {
             try
             {
-                // Charger les types et fournisseurs
                 _types = await _productService.GetTypesAsync();
                 _suppliers = await _productService.GetSuppliersAsync();
 
-                // Assigner aux pickers
                 TypePicker.ItemsSource = _types;
                 SupplierPicker.ItemsSource = _suppliers;
 
-                // Sélectionner les items actuels si ils existent
                 if (_product.TypeId > 0)
                 {
                     var selectedType = _types.Find(t => t.Id == _product.TypeId);
@@ -176,29 +156,23 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             try
             {
-                // ✅ CONSERVÉ: Votre logique existante
                 _product.Name = NameEntry.Text;
                 _product.SerialNumber = SerialNumberEntry.Text;
 
-                // Récupérer les sélections des pickers
                 if (TypePicker.SelectedItem is TechStockMaui.Models.TypeArticle.TypeArticle selectedType)
                 {
                     _product.TypeId = selectedType.Id;
-                    // Ne pas assigner TypeName car c'est readonly
                 }
 
                 if (SupplierPicker.SelectedItem is TechStockMaui.Models.Supplier.Supplier selectedSupplier)
                 {
                     _product.SupplierId = selectedSupplier.Id;
-                    // Ne pas assigner SupplierName car c'est readonly
                 }
 
-                // Sauvegarder via l'API
                 bool success = await _productService.UpdateProductAsync(_product);
 
                 if (success)
@@ -207,11 +181,9 @@ namespace TechStockMaui.Views
                     var productModifiedMsg = await GetTextAsync("ProductModifiedSuccessfully", "Produit modifié avec succès!");
                     await DisplayAlert(successTitle, productModifiedMsg, "OK");
 
-                    // ✅ CONSERVÉ: Votre logique de rechargement
                     var updatedProduct = await _productService.GetProductByIdAsync(_product.Id);
                     if (updatedProduct != null)
                     {
-                        // Remplacer complètement l'objet _product
                         _product = updatedProduct;
                     }
 
@@ -232,13 +204,11 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async void OnBackClicked(object sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -269,18 +239,17 @@ namespace TechStockMaui.Views
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -294,17 +263,15 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~EditProductPage()
         {
             try

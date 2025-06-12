@@ -9,12 +9,10 @@ namespace TechStockMaui.Views
         private TypeArticleService _typeArticleService;
         private ObservableCollection<TechStockMaui.Models.TypeArticle.TypeArticle> _typeArticles;
 
-        // ✅ CONSERVÉ: Votre constructeur original
         public TypeArticlePage()
         {
             InitializeComponent();
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
 
             _typeArticleService = new TypeArticleService();
@@ -22,19 +20,15 @@ namespace TechStockMaui.Views
             TypeArticleList.ItemsSource = _typeArticles;
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec ajout des traductions
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            // ✅ AJOUT: Charger les traductions
             await LoadTranslationsAsync();
 
-            // ✅ CONSERVÉ: Votre logique existante
             await LoadTypeArticlesAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -45,11 +39,10 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -63,64 +56,56 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes TypeArticlePage");
+                System.Diagnostics.Debug.WriteLine("Updating TypeArticlePage texts");
 
-                // ✅ Titre de la page et titre principal (utilise vos fichiers .resx existants)
                 var productTypesText = await GetTextAsync("Products Types", "Product Types");
                 Title = productTypesText;
 
                 if (TitleLabel != null)
                     TitleLabel.Text = productTypesText;
 
-                // ✅ Bouton créer (utilise vos fichiers .resx existants)
                 if (CreateButton != null)
                 {
                     var createNewText = await GetTextAsync("Create New", "Create New");
                     CreateButton.Text = createNewText;
                 }
 
-                // ✅ En-tête de liste
                 if (ListHeaderLabel != null)
                 {
                     var listText = await GetTextAsync("Type List", "Type List");
                     ListHeaderLabel.Text = listText;
                 }
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes TypeArticlePage mis à jour");
+                System.Diagnostics.Debug.WriteLine("TypeArticlePage texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 TypeArticlePage - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"TypeArticlePage - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async Task LoadTypeArticlesAsync()
         {
             try
@@ -144,7 +129,6 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async void OnCreateClicked(object sender, EventArgs e)
         {
             try
@@ -159,7 +143,6 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async void OnEditClicked(object sender, EventArgs e)
         {
             try
@@ -177,7 +160,6 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async void OnDetailsClicked(object sender, EventArgs e)
         {
             try
@@ -195,7 +177,6 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
             try
@@ -237,7 +218,6 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -268,18 +248,17 @@ namespace TechStockMaui.Views
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -293,17 +272,15 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~TypeArticlePage()
         {
             try

@@ -2,22 +2,23 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using TechStockMaui.Models.Auth;
+using System.IdentityModel.Tokens.Jwt;
+using TechStockMaui.Models;
 
 namespace TechStockMaui.Services
 {
-    public class AuthService
+    public class AuthService : IDisposable
     {
         private readonly HttpClient _httpClient;
 
-        // ✅ Configuration qui différencie Windows et Android
         private static string BaseUrl
         {
             get
             {
 #if ANDROID
-                return "http://10.0.2.2:7236/api/Auth";  // ✅ Pour Android émulateur
+                return "http://10.0.2.2:7236/api/Auth";
 #else
-                return "https://localhost:7237/api/Auth"; // ✅ Pour Windows
+                return "https://localhost:7237/api/Auth"; 
 #endif
             }
         }
@@ -27,7 +28,6 @@ namespace TechStockMaui.Services
             var handler = new HttpClientHandler();
 
 #if ANDROID
-            // Ignorer les erreurs SSL pour Android en développement
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 #endif
 
@@ -36,18 +36,17 @@ namespace TechStockMaui.Services
                 Timeout = TimeSpan.FromSeconds(30)
             };
 
-            // Debug pour voir quelle URL est utilisée
-            System.Diagnostics.Debug.WriteLine($"🌐 AuthService utilise: {BaseUrl}");
+            System.Diagnostics.Debug.WriteLine($"AuthService use: {BaseUrl}");
         }
 
         public bool IsAuthenticated => !string.IsNullOrEmpty(GetStoredToken());
 
-        public async Task<AuthResult> LoginAsync(string email, string password)
+        public async Task<AuthResult> LoginAsync(string email, string password, bool rememberMe = false)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🔐 Tentative de connexion: {email}");
-                System.Diagnostics.Debug.WriteLine($"🌐 URL utilisée: {BaseUrl}/Login");
+                System.Diagnostics.Debug.WriteLine($"Try connection {email}");
+                System.Diagnostics.Debug.WriteLine($"Used URL : {BaseUrl}/Login");
 
                 var loginRequest = new LoginRequest
                 {
@@ -55,15 +54,14 @@ namespace TechStockMaui.Services
                     Password = password
                 };
 
-                // Debug: Voir les données envoyées
                 var jsonData = JsonSerializer.Serialize(loginRequest);
-                System.Diagnostics.Debug.WriteLine($"📤 Données envoyées: {jsonData}");
+                System.Diagnostics.Debug.WriteLine($"Send data {jsonData}");
 
                 var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/Login", loginRequest);
                 var content = await response.Content.ReadAsStringAsync();
 
-                System.Diagnostics.Debug.WriteLine($"📊 Status: {response.StatusCode}");
-                System.Diagnostics.Debug.WriteLine($"📥 Response: {content}");
+                System.Diagnostics.Debug.WriteLine($"Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"Response: {content}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -74,7 +72,7 @@ namespace TechStockMaui.Services
 
                     if (result != null && !string.IsNullOrEmpty(result.Token))
                     {
-                        System.Diagnostics.Debug.WriteLine("✅ Token reçu, sauvegarde...");
+                        System.Diagnostics.Debug.WriteLine("Token received, save...");
 
                         await SecureStorage.SetAsync("auth_token", result.Token);
                         await SecureStorage.SetAsync("user_email", email);
@@ -82,50 +80,57 @@ namespace TechStockMaui.Services
 
                         SetAuthorizationHeader(result.Token);
 
-                        return new AuthResult { Success = true, Message = "Connexion réussie" };
+                        
+                        if (rememberMe)
+                        {
+                            await SecureStorage.SetAsync("saved_email", email);
+                            await SecureStorage.SetAsync("saved_password", password);
+                            await SecureStorage.SetAsync("remember_me", "true");
+                            System.Diagnostics.Debug.WriteLine("Credentials saved for auto-reconnection");
+                        }
+
+                        return new AuthResult { Success = true, Message = "Connection ok" };
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("❌ Token manquant dans la réponse");
-                        return new AuthResult { Success = false, Message = "Réponse invalide du serveur" };
+                        System.Diagnostics.Debug.WriteLine("No token");
+                        return new AuthResult { Success = false, Message = "Response not ok from server" };
                     }
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ Erreur HTTP: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"HTTP error: {response.StatusCode}");
 
-                    // Essayer de parser l'erreur
                     try
                     {
                         var errorResponse = JsonSerializer.Deserialize<JsonElement>(content);
                         var errorMessage = errorResponse.TryGetProperty("message", out var msg) ?
-                            msg.GetString() : "Erreur de connexion";
+                            msg.GetString() : "Connection error";
                         return new AuthResult { Success = false, Message = errorMessage };
                     }
                     catch
                     {
-                        return new AuthResult { Success = false, Message = $"Erreur {response.StatusCode}: {content}" };
+                        return new AuthResult { Success = false, Message = $"Error {response.StatusCode}: {content}" };
                     }
                 }
             }
             catch (HttpRequestException ex)
             {
-                System.Diagnostics.Debug.WriteLine($"🌐 Erreur de connexion: {ex.Message}");
-                return new AuthResult { Success = false, Message = $"Impossible de contacter le serveur: {ex.Message}" };
+                System.Diagnostics.Debug.WriteLine($"Connection error: {ex.Message}");
+                return new AuthResult { Success = false, Message = $"Can't contact server: {ex.Message}" };
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"💥 Erreur inattendue: {ex.Message}");
-                return new AuthResult { Success = false, Message = $"Erreur inattendue: {ex.Message}" };
+                System.Diagnostics.Debug.WriteLine($"Unexpected error {ex.Message}");
+                return new AuthResult { Success = false, Message = $"Unexpected error: {ex.Message}" };
             }
         }
 
-        // Test direct de l'API
         public async Task<string> TestApiConnectionAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🧪 Test de connexion vers: {BaseUrl}");
+                System.Diagnostics.Debug.WriteLine($"Connection test : {BaseUrl}");
 
                 var response = await _httpClient.GetAsync(BaseUrl);
                 var content = await response.Content.ReadAsStringAsync();
@@ -134,7 +139,7 @@ namespace TechStockMaui.Services
             }
             catch (Exception ex)
             {
-                return $"Erreur: {ex.Message}";
+                return $"Error: {ex.Message}";
             }
         }
 
@@ -142,31 +147,36 @@ namespace TechStockMaui.Services
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🔓 Début déconnexion...");
+                System.Diagnostics.Debug.WriteLine("Start disconnecting...");
 
-                // Supprimer l'en-tête d'autorisation d'abord
                 _httpClient.DefaultRequestHeaders.Authorization = null;
-                System.Diagnostics.Debug.WriteLine("✅ Headers nettoyés");
+                System.Diagnostics.Debug.WriteLine("Headers clean");
 
-                // Vider le SecureStorage (version simple)
-                await Task.Run(() =>
+               
+                var rememberMeEnabled = await IsRememberMeEnabledAsync();
+
+               
+                SecureStorage.Remove("auth_token");
+                SecureStorage.Remove("user_id");
+                SecureStorage.Remove("user_email");
+                SecureStorage.Remove("user_name");
+
+             
+                if (!rememberMeEnabled)
                 {
-                    try
-                    {
-                        SecureStorage.RemoveAll();
-                        System.Diagnostics.Debug.WriteLine("✅ SecureStorage vidé");
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"⚠️ Erreur SecureStorage: {ex.Message}");
-                    }
-                });
+                    System.Diagnostics.Debug.WriteLine("Remember me disabled, clearing saved credentials");
+                    await ClearSavedCredentialsAsync();
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Remember me enabled, keeping saved credentials");
+                }
 
-                System.Diagnostics.Debug.WriteLine("✅ Déconnexion terminée");
+                System.Diagnostics.Debug.WriteLine("Disconnection done");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur logout: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error logout: {ex.Message}");
             }
         }
 
@@ -207,32 +217,155 @@ namespace TechStockMaui.Services
             {
                 SetAuthorizationHeader(token);
 
-                // Vérifier si le token est encore valide en appelant l'API
                 try
                 {
                     var response = await _httpClient.GetAsync($"{BaseUrl}/ValidateToken");
                     if (response.IsSuccessStatusCode)
                     {
-                        System.Diagnostics.Debug.WriteLine("✅ Token valide - connexion automatique");
+                        System.Diagnostics.Debug.WriteLine("Valid token - automatic connection");
                         return true;
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("❌ Token expiré - suppression");
-                        // Token expiré, on le supprime
+                        System.Diagnostics.Debug.WriteLine("Expired token - removal");
                         await LogoutAsync();
                         return false;
                     }
                 }
                 catch
                 {
-                    System.Diagnostics.Debug.WriteLine("❌ Erreur validation token - suppression");
-                    // Erreur de réseau ou token invalide
+                    System.Diagnostics.Debug.WriteLine("Token validation error - removal");
                     await LogoutAsync();
                     return false;
                 }
             }
             return false;
+        }
+
+        public async Task<User> GetCurrentUserAsync()
+        {
+            try
+            {
+                var token = await SecureStorage.GetAsync("auth_token");
+                if (string.IsNullOrEmpty(token))
+                {
+                    System.Diagnostics.Debug.WriteLine("No token found");
+                    return null;
+                }
+
+                System.Diagnostics.Debug.WriteLine("Analyzing JWT token...");
+
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadJwtToken(token);
+
+                var emailClaim = jsonToken.Claims.FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+                var roleClaim = jsonToken.Claims.FirstOrDefault(x => x.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
+                var userIdClaim = jsonToken.Claims.FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+                var user = new User
+                {
+                    UserName = emailClaim?.Value ?? string.Empty,
+                    Roles = roleClaim?.Value != null ? new List<string> { roleClaim.Value } : new List<string>()
+                };
+
+                System.Diagnostics.Debug.WriteLine($"User: {user.Email}, Roles: {string.Join(", ", user.Roles)}");
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"GetCurrentUserAsync error: {ex.Message}");
+                return null;
+            }
+        }
+      
+
+        public async Task<bool> IsRememberMeEnabledAsync()
+        {
+            var rememberMe = await SecureStorage.GetAsync("remember_me");
+            return rememberMe == "true";
+        }
+
+        public async Task<bool> TryAutoLoginAsync()
+        {
+            try
+            {
+                if (!await IsRememberMeEnabledAsync())
+                {
+                    System.Diagnostics.Debug.WriteLine("Remember me not enabled");
+                    return false;
+                }
+
+                var savedEmail = await SecureStorage.GetAsync("saved_email");
+                var savedPassword = await SecureStorage.GetAsync("saved_password");
+
+                if (string.IsNullOrEmpty(savedEmail) || string.IsNullOrEmpty(savedPassword))
+                {
+                    System.Diagnostics.Debug.WriteLine("No saved credentials found");
+                    return false;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Attempting auto-login for: {savedEmail}");
+                var result = await LoginAsync(savedEmail, savedPassword, true);
+
+                if (result.Success)
+                {
+                    System.Diagnostics.Debug.WriteLine("Auto-login successful");
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Auto-login failed, clearing saved credentials");
+                    await ClearSavedCredentialsAsync();
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Auto-login error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task ClearSavedCredentialsAsync()
+        {
+            try
+            {
+                SecureStorage.Remove("saved_email");
+                SecureStorage.Remove("saved_password");
+                SecureStorage.Remove("remember_me");
+                System.Diagnostics.Debug.WriteLine("Saved credentials cleared");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing credentials: {ex.Message}");
+            }
+        }
+
+      
+        private bool _disposed = false;
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _httpClient?.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        ~AuthService()
+        {
+            Dispose(false);
         }
     }
 }

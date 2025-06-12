@@ -7,7 +7,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- En-tête avec titre -->
+           
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -23,7 +23,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Formulaire d'édition -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -38,7 +38,7 @@
                            HorizontalOptions="Center"
                            Margin="0,0,0,10" />
 
-                    <!-- Nom -->
+                    
                     <StackLayout Spacing="8">
                         <Label x:Name="NameLabel" 
                                Text="Nom" 
@@ -54,7 +54,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Boutons d'action -->
+            
             <StackLayout Spacing="10" Margin="0,15,0,0">
                 <Button x:Name="SaveButton"
                         Text="Enregistrer"
@@ -75,7 +75,7 @@
                         CornerRadius="8" />
             </StackLayout>
 
-            <!-- Sélecteur de langue -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

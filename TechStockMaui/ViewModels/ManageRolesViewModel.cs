@@ -46,7 +46,7 @@ namespace TechStockMaui.ViewModels
             SaveCommand = new Command(async () => await SaveRolesAsync());
             CancelCommand = new Command(async () => await CancelAsync());
 
-            System.Diagnostics.Debug.WriteLine($"🏗️ ManageRolesViewModel créé pour: {userName}");
+            System.Diagnostics.Debug.WriteLine($"ManageRolesViewModel created for: {userName}");
         }
 
         public async Task LoadRolesAsync()
@@ -54,40 +54,28 @@ namespace TechStockMaui.ViewModels
             try
             {
                 IsLoading = true;
-                System.Diagnostics.Debug.WriteLine($"🔍 Chargement des rôles pour: {UserName}");
+                System.Diagnostics.Debug.WriteLine($"Loading roles for: {UserName}");
 
-                // SOLUTION ALTERNATIVE - Récupérer les rôles depuis UserManagementViewModel
-                System.Diagnostics.Debug.WriteLine("🔄 Récupération des rôles depuis les données existantes");
+                var roleItems = await _userService.GetRolesAsync(UserName);
 
-                // Simuler l'appel API avec les données qu'on a déjà
-                var allRoles = new List<string> { "Admin", "Support", "User" };
-                var userCurrentRoles = GetUserCurrentRoles(UserName); // Méthode à créer
-
-                var roles = allRoles.Select(role => new RoleItem
-                {
-                    RoleName = role,
-                    IsSelected = userCurrentRoles.Contains(role)
-                }).ToList();
-
-                System.Diagnostics.Debug.WriteLine($"📊 Traitement de {roles.Count} rôles");
+                System.Diagnostics.Debug.WriteLine($"Processing {roleItems.Count} roles from API");
 
                 await Application.Current.Dispatcher.DispatchAsync(() =>
                 {
                     AvailableRoles.Clear();
-                    foreach (var role in roles)
+                    foreach (var role in roleItems)
                     {
                         AvailableRoles.Add(role);
-                        System.Diagnostics.Debug.WriteLine($"🏷️ Rôle ajouté: {role.RoleName} - Sélectionné: {role.IsSelected}");
+                        System.Diagnostics.Debug.WriteLine($"Role added: {role.RoleName} - Selected: {role.IsSelected}");
                     }
                 });
 
-                System.Diagnostics.Debug.WriteLine($"✅ {roles.Count} rôles chargés avec succès");
+                System.Diagnostics.Debug.WriteLine($"{roleItems.Count} roles loaded successfully");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur LoadRolesAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error LoadRolesAsync: {ex.Message}");
 
-                // En cas d'erreur, charger des rôles par défaut
                 await Application.Current.Dispatcher.DispatchAsync(() =>
                 {
                     AvailableRoles.Clear();
@@ -99,14 +87,12 @@ namespace TechStockMaui.ViewModels
             finally
             {
                 IsLoading = false;
-                System.Diagnostics.Debug.WriteLine("🏁 Fin de LoadRolesAsync");
+                System.Diagnostics.Debug.WriteLine("End of LoadRolesAsync");
             }
         }
 
         private List<string> GetUserCurrentRoles(string userName)
         {
-            // Pour l'instant, retourner des rôles basés sur le pattern de nom
-            // Plus tard, on pourra passer ces données depuis UserManagementViewModel
             if (userName.Contains("admin"))
                 return new List<string> { "Admin" };
             else if (userName.Contains("support"))
@@ -120,33 +106,32 @@ namespace TechStockMaui.ViewModels
             try
             {
                 IsLoading = true;
-                System.Diagnostics.Debug.WriteLine($"💾 Sauvegarde des rôles pour: {UserName}");
+                System.Diagnostics.Debug.WriteLine($"Saving roles for: {UserName}");
 
                 var selectedRoles = AvailableRoles
                     .Where(r => r.IsSelected)
                     .Select(r => r.RoleName)
                     .ToList();
 
-                System.Diagnostics.Debug.WriteLine($"📝 Rôles sélectionnés: {string.Join(", ", selectedRoles)}");
+                System.Diagnostics.Debug.WriteLine($"Selected roles: {string.Join(", ", selectedRoles)}");
 
-                // VRAIE SAUVEGARDE
                 var success = await _userService.UpdateUserRolesAsync(UserName, selectedRoles);
 
                 if (success)
                 {
-                    System.Diagnostics.Debug.WriteLine("✅ Rôles sauvegardés avec succès");
-                    await Application.Current.MainPage.DisplayAlert("Succès", "Les rôles ont été mis à jour avec succès", "OK");
+                    System.Diagnostics.Debug.WriteLine("Roles saved successfully");
+                    await Application.Current.MainPage.DisplayAlert("Success", "Roles have been updated successfully", "OK");
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Erreur", "Impossible de sauvegarder les rôles", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Error", "Unable to save roles", "OK");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur SaveRolesAsync: {ex.Message}");
-                await Application.Current.MainPage.DisplayAlert("Erreur", $"Erreur lors de la sauvegarde: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"Error SaveRolesAsync: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error during save: {ex.Message}", "OK");
             }
             finally
             {
@@ -156,7 +141,7 @@ namespace TechStockMaui.ViewModels
 
         private async Task CancelAsync()
         {
-            System.Diagnostics.Debug.WriteLine("❌ Annulation des modifications");
+            System.Diagnostics.Debug.WriteLine("Cancelling modifications");
             await Application.Current.MainPage.Navigation.PopAsync();
         }
 

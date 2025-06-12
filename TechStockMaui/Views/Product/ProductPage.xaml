@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:system="clr-namespace:System;assembly=netstandard"
+             xmlns:converters="clr-namespace:TechStockMaui.Converters"
              x:Class="TechStockMaui.Views.ProductPage"
              Title="Products">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:AssignmentTextConverter x:Key="AssignmentTextConverter" />
+            <converters:AssignmentColorConverter x:Key="AssignmentColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <Grid RowDefinitions="Auto,Auto,*">
-        <!-- Header -->
+
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="10" BackgroundColor="#f8f9fa">
             <Button Grid.Column="0" 
                     x:Name="BackButton"
@@ -27,10 +36,9 @@
                     TextColor="White" />
         </Grid>
 
-        <!-- Formulaire de recherche avec Pickers -->
         <Frame Grid.Row="1" BorderColor="LightGray" Padding="10" Margin="5" BackgroundColor="White">
             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" RowSpacing="8" ColumnSpacing="8">
-                <!-- Première ligne -->
+
                 <Entry Grid.Row="0" Grid.Column="0" 
                        x:Name="NameEntry" 
                        Placeholder="Name..." 
@@ -44,7 +52,6 @@
                         Title="Type" 
                         FontSize="14" />
 
-                <!-- Deuxième ligne -->
                 <Picker Grid.Row="1" Grid.Column="0" 
                         x:Name="SupplierPicker" 
                         Title="Supplier" 
@@ -54,7 +61,6 @@
                         Title="User" 
                         FontSize="14" />
 
-                <!-- Boutons sur la troisième ligne -->
                 <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Spacing="10" HorizontalOptions="End">
                     <Button x:Name="SearchButton"
                             Text="🔍 Search" 
@@ -72,10 +78,9 @@
             </Grid>
         </Frame>
 
-        <!-- Tableau des produits -->
         <ScrollView Grid.Row="2" Orientation="Both" Margin="5">
             <StackLayout>
-                <!-- En-tête du tableau -->
+
                 <Grid BackgroundColor="#e9ecef" Padding="8,12" ColumnDefinitions="120,100,100,120,120,220">
                     <Label Grid.Column="0" 
                            x:Name="NameHeader"
@@ -110,7 +115,6 @@
                            HorizontalOptions="Center" />
                 </Grid>
 
-                <!-- Lignes du tableau -->
                 <CollectionView x:Name="ProductList" BackgroundColor="White">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
@@ -124,62 +128,47 @@
                                 <Label Grid.Column="4" Text="{Binding AssignedUserName}" FontSize="14" VerticalOptions="Center" />
 
                                 <StackLayout Grid.Column="5" Orientation="Horizontal" Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <!-- Bouton Edit -->
-                                    <Button Text="✏️" 
+
+                                    <Button Text="✎" 
                                             Clicked="OnEditClicked" 
                                             CommandParameter="{Binding .}" 
                                             BackgroundColor="#ffc107" 
                                             TextColor="Black" 
-                                            FontSize="10" 
+                                            FontSize="{OnPlatform Android=14, Default=10}" 
                                             WidthRequest="28" 
-                                            HeightRequest="28" />
+                                            HeightRequest="28" 
+                                            CornerRadius="4" />
 
-                                    <!-- Bouton Details -->
-                                    <Button Text="👁️" 
+                                    <Button Text="👁" 
                                             Clicked="OnDetailsClicked" 
                                             CommandParameter="{Binding .}" 
                                             BackgroundColor="#17a2b8" 
                                             TextColor="White" 
-                                            FontSize="10" 
+                                            FontSize="{OnPlatform Android=14, Default=10}" 
                                             WidthRequest="28" 
-                                            HeightRequest="28" />
+                                            HeightRequest="28" 
+                                            CornerRadius="4" />
 
-                                    <!-- Bouton Assigner/Désassigner intelligent -->
                                     <Button Clicked="OnAssignClicked" 
                                             CommandParameter="{Binding .}" 
                                             TextColor="White" 
-                                            FontSize="8" 
+                                            FontSize="{OnPlatform Android=10, Default=8}" 
                                             WidthRequest="55" 
-                                            HeightRequest="28">
-                                        <Button.Triggers>
-                                            <!-- Si AssignedUserName est vide ou null = Bouton ASSIGNER -->
-                                            <DataTrigger TargetType="Button" Binding="{Binding AssignedUserName}" Value="">
-                                                <Setter Property="Text" Value="👤 Assign" />
-                                                <Setter Property="BackgroundColor" Value="#007bff" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Button" Binding="{Binding AssignedUserName}" Value="{x:Null}">
-                                                <Setter Property="Text" Value="👤 Assign" />
-                                                <Setter Property="BackgroundColor" Value="#007bff" />
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                        <!-- Style par défaut = Si AssignedUserName a une valeur = Bouton DÉSASSIGNER -->
-                                        <Button.Style>
-                                            <Style TargetType="Button">
-                                                <Setter Property="Text" Value="🗑️ " />
-                                                <Setter Property="BackgroundColor" Value="Gray" />
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
+                                            HeightRequest="28"
+                                            CornerRadius="4"
+                                            Text="{Binding AssignedUserName, Converter={StaticResource AssignmentTextConverter}}"
+                                            BackgroundColor="{Binding AssignedUserName, Converter={StaticResource AssignmentColorConverter}}" />
 
-                                    <!-- Bouton Delete -->
-                                    <Button Text="🗑️" 
-                                            Clicked="OnDeleteClicked" 
-                                            CommandParameter="{Binding .}" 
-                                            BackgroundColor="#dc3545" 
-                                            TextColor="White" 
-                                            FontSize="10" 
-                                            WidthRequest="28" 
-                                            HeightRequest="28" />
+
+                                    <Button Text="✕" 
+                                        Clicked="OnDeleteClicked" 
+                                        CommandParameter="{Binding .}" 
+                                        BackgroundColor="#dc3545" 
+                                        TextColor="White" 
+                                        FontSize="{OnPlatform Android=14, Default=10}" 
+                                        WidthRequest="28" 
+                                        HeightRequest="28" 
+                                        CornerRadius="4" />
                                 </StackLayout>
                             </Grid>
                         </DataTemplate>
@@ -188,7 +177,6 @@
             </StackLayout>
         </ScrollView>
 
-        <!-- Sélecteur de langue en bas (optionnel) -->
         <Frame Grid.Row="2"
                BackgroundColor="White" 
                HasShadow="True" 

@@ -14,21 +14,17 @@ namespace TechStockMaui.Views.Supplier
             _supplierService = new SupplierService();
             _supplier = supplier;
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
 
-            // ✅ CONSERVÉ: Votre logique existante
             LoadSupplierData();
         }
 
-        // ✅ AJOUT: Charger les traductions au démarrage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await LoadTranslationsAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -39,11 +35,10 @@ namespace TechStockMaui.Views.Supplier
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -57,65 +52,55 @@ namespace TechStockMaui.Views.Supplier
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes EditSupplier");
+                System.Diagnostics.Debug.WriteLine("Updating EditSupplier texts");
 
-                // ✅ Titre de la page
                 Title = await GetTextAsync("Edit", "Edit");
 
-                // ✅ Titre principal
                 if (TitleLabel != null)
                     TitleLabel.Text = await GetTextAsync("Edit", "Edit Supplier");
 
-                // ✅ Label du champ
                 if (NameLabel != null)
                     NameLabel.Text = await GetTextAsync("Name", "Name");
 
-                // ✅ Placeholder
                 if (NameEntry != null)
                     NameEntry.Placeholder = await GetTextAsync("SupplierNamePlaceholder", "Supplier name");
 
-                // ✅ Boutons
                 if (SaveButton != null)
                     SaveButton.Text = await GetTextAsync("Save", "Save");
 
                 if (BackButton != null)
                     BackButton.Text = await GetTextAsync("Back to List", "Back to List");
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes EditSupplier mis à jour");
+                System.Diagnostics.Debug.WriteLine("EditSupplier texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 EditSupplier - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"EditSupplier - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private void LoadSupplierData()
         {
             if (_supplier != null)
@@ -124,12 +109,10 @@ namespace TechStockMaui.Views.Supplier
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             try
             {
-                // ✅ CONSERVÉ: Votre validation existante
                 string supplierName = NameEntry.Text?.Trim();
                 if (string.IsNullOrWhiteSpace(supplierName))
                 {
@@ -139,10 +122,8 @@ namespace TechStockMaui.Views.Supplier
                     return;
                 }
 
-                // ✅ CONSERVÉ: Votre logique de mise à jour existante
                 _supplier.Name = supplierName;
 
-                // Appeler l'API pour sauvegarder les modifications
                 bool success = await _supplierService.UpdateSupplierAsync(_supplier);
 
                 if (success)
@@ -152,7 +133,6 @@ namespace TechStockMaui.Views.Supplier
                     var message = string.Format(supplierModifiedMsg, supplierName);
                     await DisplayAlert(successTitle, message, "OK");
 
-                    // Retourner à la page précédente
                     await Navigation.PopAsync();
                 }
                 else
@@ -170,10 +150,8 @@ namespace TechStockMaui.Views.Supplier
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnBackToListClicked(object sender, EventArgs e)
         {
-            // ✅ CONSERVÉ: Votre logique de vérification des modifications
             if (HasChanges())
             {
                 var unsavedChangesTitle = await GetTextAsync("UnsavedChanges", "Modifications non sauvegardées");
@@ -189,13 +167,11 @@ namespace TechStockMaui.Views.Supplier
             await Navigation.PopAsync();
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private bool HasChanges()
         {
             return _supplier.Name != NameEntry.Text?.Trim();
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -226,18 +202,17 @@ namespace TechStockMaui.Views.Supplier
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -251,17 +226,15 @@ namespace TechStockMaui.Views.Supplier
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~EditSupplierPage()
         {
             try

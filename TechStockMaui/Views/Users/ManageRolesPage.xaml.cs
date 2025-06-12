@@ -7,41 +7,33 @@ namespace TechStockMaui.Views.Users
     {
         public string UserName { get; private set; }
 
-        // ✅ CONSERVÉ: Constructeur par défaut (gardez-le pour le XAML)
         public ManageRolesPage()
         {
             InitializeComponent();
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
         }
 
-        // ✅ CONSERVÉ: Constructeur avec paramètre userName
         public ManageRolesPage(string userName) : this()
         {
             UserName = userName;
             Title = $"🔐 Rôles - {userName}";
-            System.Diagnostics.Debug.WriteLine($"📄 ManageRolesPage créée pour: {userName}");
-            // Initialiser le ViewModel avec le userName
+            System.Diagnostics.Debug.WriteLine($"ManageRolesPage created for: {userName}");
             BindingContext = new ManageRolesViewModel(userName);
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec ajout des traductions
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            // ✅ AJOUT: Charger les traductions
             await LoadTranslationsAsync();
 
-            // ✅ CONSERVÉ: Charger les rôles quand la page apparaît
             if (BindingContext is ManageRolesViewModel viewModel)
             {
                 await viewModel.LoadRolesAsync();
             }
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -52,11 +44,10 @@ namespace TechStockMaui.Views.Users
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -70,19 +61,16 @@ namespace TechStockMaui.Views.Users
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes ManageRolesPage");
+                System.Diagnostics.Debug.WriteLine("Updating ManageRolesPage texts");
 
-                // ✅ Titre de la page
                 var rolesText = await GetTextAsync("Roles", "Roles");
                 if (!string.IsNullOrEmpty(UserName))
                     Title = $"🔐 {rolesText} - {UserName}";
 
-                // ✅ En-tête utilisateur
                 if (UserHeaderLabel != null)
                 {
                     var userText = await GetTextAsync("User", "User");
@@ -90,55 +78,47 @@ namespace TechStockMaui.Views.Users
                         UserHeaderLabel.Text = $"{userText}: {UserName}";
                 }
 
-                // ✅ Description de la page
                 if (PageDescriptionLabel != null)
                     PageDescriptionLabel.Text = await GetTextAsync("Role management page", "Role management page");
 
-                // ✅ Label de chargement
                 if (LoadingLabel != null)
                     LoadingLabel.Text = await GetTextAsync("Loading", "Loading") + "...";
 
-                // ✅ Label rôles disponibles
                 if (AvailableRolesLabel != null)
                     AvailableRolesLabel.Text = await GetTextAsync("Available roles", "Available roles") + ":";
 
-                // ✅ Boutons
                 if (SaveButton != null)
                     SaveButton.Text = await GetTextAsync("Save", "Save");
 
                 if (CancelButton != null)
                     CancelButton.Text = await GetTextAsync("Cancel", "Cancel");
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes ManageRolesPage mis à jour");
+                System.Diagnostics.Debug.WriteLine("ManageRolesPage texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 ManageRolesPage - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"ManageRolesPage - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -169,18 +149,17 @@ namespace TechStockMaui.Views.Users
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -194,17 +173,15 @@ namespace TechStockMaui.Views.Users
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~ManageRolesPage()
         {
             try

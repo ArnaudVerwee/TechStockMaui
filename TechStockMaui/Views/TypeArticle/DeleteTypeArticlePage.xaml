@@ -7,7 +7,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- En-tête avec titre -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -23,7 +23,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Question de confirmation -->
+            
             <Frame BackgroundColor="#fff3cd" 
                    BorderColor="#ffeaa7" 
                    CornerRadius="8" 
@@ -37,7 +37,7 @@
                        FontAttributes="Bold" />
             </Frame>
 
-            <!-- Informations du type d'article à supprimer -->
+           
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -70,7 +70,7 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Boutons d'action -->
+           
             <StackLayout Spacing="10" Margin="0,15,0,0">
                 <Button x:Name="DeleteButton"
                         Text="Supprimer"
@@ -91,7 +91,7 @@
                         CornerRadius="8" />
             </StackLayout>
 
-            <!-- Sélecteur de langue -->
+         
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

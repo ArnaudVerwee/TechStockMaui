@@ -10,15 +10,14 @@ namespace TechStockMaui.Services
     {
         private readonly HttpClient _httpClient;
 
-        // ✅ Configuration adaptative pour Android/Windows
         private static string BaseUrl
         {
             get
             {
 #if ANDROID
-                return "http://10.0.2.2:7236/api/User";  // Pour Android émulateur
+                return "http://10.0.2.2:7236/api/User";
 #else
-                return "https://localhost:7237/api/User"; // Pour Windows
+                return "https://localhost:7237/api/User";
 #endif
             }
         }
@@ -28,7 +27,6 @@ namespace TechStockMaui.Services
             var handler = new HttpClientHandler();
 
 #if ANDROID
-            // Ignorer les erreurs SSL pour Android en développement
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 #endif
 
@@ -37,7 +35,7 @@ namespace TechStockMaui.Services
                 Timeout = TimeSpan.FromSeconds(30)
             };
 
-            System.Diagnostics.Debug.WriteLine($"🌐 UserService utilise: {BaseUrl}");
+            System.Diagnostics.Debug.WriteLine($"UserService using: {BaseUrl}");
         }
 
         private async Task ConfigureAuthAsync()
@@ -49,16 +47,16 @@ namespace TechStockMaui.Services
                 {
                     _httpClient.DefaultRequestHeaders.Authorization =
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                    System.Diagnostics.Debug.WriteLine("🔐 Token ajouté aux headers HTTP");
+                    System.Diagnostics.Debug.WriteLine("Token added to HTTP headers");
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("⚠️ Aucun token trouvé dans SecureStorage");
+                    System.Diagnostics.Debug.WriteLine("No token found in SecureStorage");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"⚠️ Erreur config auth UserService: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Auth configuration error UserService: {ex.Message}");
             }
         }
 
@@ -68,13 +66,13 @@ namespace TechStockMaui.Services
             {
                 await ConfigureAuthAsync();
 
-                System.Diagnostics.Debug.WriteLine($"👥 GetAllUsers URL: {BaseUrl}");
+                System.Diagnostics.Debug.WriteLine($"GetAllUsers URL: {BaseUrl}");
 
                 var response = await _httpClient.GetAsync(BaseUrl);
                 var content = await response.Content.ReadAsStringAsync();
 
-                System.Diagnostics.Debug.WriteLine($"📊 Status: {response.StatusCode}");
-                System.Diagnostics.Debug.WriteLine($"📥 Response: {content}");
+                System.Diagnostics.Debug.WriteLine($"Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"Response: {content}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -83,18 +81,18 @@ namespace TechStockMaui.Services
                         PropertyNameCaseInsensitive = true
                     });
 
-                    System.Diagnostics.Debug.WriteLine($"✅ {users?.Count ?? 0} utilisateurs récupérés");
+                    System.Diagnostics.Debug.WriteLine($"{users?.Count ?? 0} users retrieved");
                     return users ?? new List<UserRolesViewModel>();
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ Erreur API: {response.StatusCode} - {content}");
+                    System.Diagnostics.Debug.WriteLine($"API error: {response.StatusCode} - {content}");
                     return new List<UserRolesViewModel>();
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"💥 Exception GetAllUsersAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Exception GetAllUsersAsync: {ex.Message}");
                 return new List<UserRolesViewModel>();
             }
         }
@@ -106,9 +104,8 @@ namespace TechStockMaui.Services
                 await ConfigureAuthAsync();
 
                 var fullUrl = $"{BaseUrl}/{userName}";
-                System.Diagnostics.Debug.WriteLine($"👥 GetRoles URL: {fullUrl}");
+                System.Diagnostics.Debug.WriteLine($"GetRoles URL: {fullUrl}");
 
-                // Créer un HttpClient avec timeout court pour tester
                 HttpClient httpClientWithTimeout;
 
 #if ANDROID
@@ -123,7 +120,6 @@ namespace TechStockMaui.Services
                 {
                     httpClientWithTimeout.Timeout = TimeSpan.FromSeconds(10);
 
-                    // Copier les headers d'autorisation
                     var token = await SecureStorage.GetAsync("auth_token");
                     if (!string.IsNullOrEmpty(token))
                     {
@@ -131,14 +127,14 @@ namespace TechStockMaui.Services
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                     }
 
-                    System.Diagnostics.Debug.WriteLine("🚀 Démarrage de la requête HTTP...");
+                    System.Diagnostics.Debug.WriteLine("Starting HTTP request...");
 
                     var response = await httpClientWithTimeout.GetAsync(fullUrl);
 
-                    System.Diagnostics.Debug.WriteLine($"📊 Réponse reçue - Status: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"Response received - Status: {response.StatusCode}");
 
                     var content = await response.Content.ReadAsStringAsync();
-                    System.Diagnostics.Debug.WriteLine($"📥 Response: {content}");
+                    System.Diagnostics.Debug.WriteLine($"Response: {content}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -149,7 +145,7 @@ namespace TechStockMaui.Services
 
                         if (userViewModel != null)
                         {
-                            System.Diagnostics.Debug.WriteLine($"📥 Utilisateur reçu: {userViewModel.UserName} - Rôles: {string.Join(", ", userViewModel.Roles)}");
+                            System.Diagnostics.Debug.WriteLine($"User received: {userViewModel.UserName} - Roles: {string.Join(", ", userViewModel.Roles)}");
 
                             var allRoles = new List<string> { "Admin", "Support", "User" };
                             var roleItems = allRoles.Select(role => new RoleItem
@@ -158,13 +154,13 @@ namespace TechStockMaui.Services
                                 IsSelected = userViewModel.Roles.Contains(role)
                             }).ToList();
 
-                            System.Diagnostics.Debug.WriteLine($"✅ {roleItems.Count} rôles transformés");
+                            System.Diagnostics.Debug.WriteLine($"{roleItems.Count} roles transformed");
                             return roleItems;
                         }
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine($"❌ Erreur HTTP: {response.StatusCode} - {content}");
+                        System.Diagnostics.Debug.WriteLine($"HTTP error: {response.StatusCode} - {content}");
                     }
                 }
 
@@ -172,13 +168,13 @@ namespace TechStockMaui.Services
             }
             catch (TaskCanceledException ex)
             {
-                System.Diagnostics.Debug.WriteLine($"⏰ Timeout de la requête: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Request timeout: {ex.Message}");
                 return new List<RoleItem>();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Exception GetRolesAsync: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"❌ Type: {ex.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"Exception GetRolesAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Type: {ex.GetType().Name}");
                 return new List<RoleItem>();
             }
         }
@@ -188,44 +184,41 @@ namespace TechStockMaui.Services
             try
             {
                 await ConfigureAuthAsync();
-                System.Diagnostics.Debug.WriteLine($"👥 UpdateUserRoles URL: {BaseUrl}/ManageRoles");
+                System.Diagnostics.Debug.WriteLine($"UpdateUserRoles URL: {BaseUrl}/ManageRoles");
 
                 var body = new { UserName = userName, Roles = roles };
                 var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/ManageRoles", body);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    System.Diagnostics.Debug.WriteLine("✅ Rôles utilisateur mis à jour avec succès");
+                    System.Diagnostics.Debug.WriteLine("User roles updated successfully");
                     return true;
                 }
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour rôles: {response.StatusCode} - {errorContent}");
+                    System.Diagnostics.Debug.WriteLine($"Role update error: {response.StatusCode} - {errorContent}");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateUserRolesAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error UpdateUserRolesAsync: {ex.Message}");
                 return false;
             }
         }
 
-        // Méthode pour obtenir tous les rôles disponibles
         public async Task<List<string>> GetAvailableRolesAsync()
         {
             try
             {
                 await ConfigureAuthAsync();
-                // Vous pouvez ajouter un endpoint dans votre API pour ça
-                // Pour l'instant, retourner les rôles par défaut
-                System.Diagnostics.Debug.WriteLine("👥 GetAvailableRoles - Retour des rôles par défaut");
+                System.Diagnostics.Debug.WriteLine("GetAvailableRoles - Returning default roles");
                 return new List<string> { "Admin", "Support", "User" };
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetAvailableRolesAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error GetAvailableRolesAsync: {ex.Message}");
                 return new List<string> { "Admin", "Support", "User" };
             }
         }

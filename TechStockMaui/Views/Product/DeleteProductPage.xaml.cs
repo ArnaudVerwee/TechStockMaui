@@ -9,18 +9,15 @@ namespace TechStockMaui.Views
         {
             InitializeComponent();
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
         }
 
-        // ✅ AJOUT: Charger les traductions au démarrage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await LoadTranslationsAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -31,11 +28,10 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -49,24 +45,20 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes DeleteProduct");
+                System.Diagnostics.Debug.WriteLine("Updating DeleteProduct texts");
 
-                // ✅ Titre de la page
                 Title = await GetTextAsync("Delete", "Delete");
 
-                // ✅ Labels principaux
                 if (TitleLabel != null)
                     TitleLabel.Text = await GetTextAsync("Delete", "Delete product");
 
                 if (ConfirmationLabel != null)
                     ConfirmationLabel.Text = await GetTextAsync("Are you sure you want to delete this?", "Are you sure you want to delete this?");
 
-                // ✅ Labels des champs
                 if (NameFieldLabel != null)
                     NameFieldLabel.Text = await GetTextAsync("Name", "Name") + ":";
 
@@ -79,60 +71,51 @@ namespace TechStockMaui.Views
                 if (SupplierFieldLabel != null)
                     SupplierFieldLabel.Text = await GetTextAsync("Supplier", "Supplier") + ":";
 
-                // ✅ Boutons
                 if (DeleteButton != null)
                     DeleteButton.Text = await GetTextAsync("Delete", "Delete");
 
                 if (BackButton != null)
                     BackButton.Text = await GetTextAsync("Back to List", "Back to List");
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes DeleteProduct mis à jour");
+                System.Diagnostics.Debug.WriteLine("DeleteProduct texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 DeleteProduct - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"DeleteProduct - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
-            // ✅ Messages traduits
             var deletedTitle = await GetTextAsync("Deleted", "Deleted");
             var productDeletedMsg = await GetTextAsync("ProductDeleted", "Product has been deleted");
 
-            // Ici, tu peux ajouter la logique pour supprimer le produit
             await DisplayAlert(deletedTitle, productDeletedMsg, "OK");
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private void OnBackToListClicked(object sender, EventArgs e)
         {
             Navigation.PopAsync();
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -163,18 +146,17 @@ namespace TechStockMaui.Views
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -188,17 +170,15 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~DeleteProductPage()
         {
             try

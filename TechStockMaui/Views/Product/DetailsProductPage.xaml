@@ -8,7 +8,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- Titre principal -->
+            
             <Label x:Name="TitleLabel" 
                    Text="Product Details" 
                    FontSize="24" 
@@ -17,14 +17,14 @@
                    HorizontalOptions="Center"
                    Margin="0,0,0,20" />
 
-            <!-- Frame avec les détails -->
+            
             <Frame BackgroundColor="#f8f9fa" 
                    Padding="20" 
                    CornerRadius="12"
                    HasShadow="True">
                 <VerticalStackLayout Spacing="15">
 
-                    <!-- Nom -->
+                    
                     <StackLayout>
                         <Label x:Name="NameFieldLabel" 
                                Text="Name:" 
@@ -37,7 +37,7 @@
                                Margin="0,5,0,0" />
                     </StackLayout>
 
-                    <!-- Numéro de série -->
+                   
                     <StackLayout>
                         <Label x:Name="SerialFieldLabel" 
                                Text="Serial Number:" 
@@ -50,7 +50,7 @@
                                Margin="0,5,0,0" />
                     </StackLayout>
 
-                    <!-- Type -->
+                   
                     <StackLayout>
                         <Label x:Name="TypeFieldLabel" 
                                Text="Type:" 
@@ -63,7 +63,7 @@
                                Margin="0,5,0,0" />
                     </StackLayout>
 
-                    <!-- Fournisseur -->
+                    
                     <StackLayout>
                         <Label x:Name="SupplierFieldLabel" 
                                Text="Supplier:" 
@@ -79,7 +79,7 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Boutons -->
+            
             <HorizontalStackLayout Spacing="10" 
                                    HorizontalOptions="Center"
                                    Margin="0,20,0,0">
@@ -102,7 +102,7 @@
                         Clicked="OnBackClicked" />
             </HorizontalStackLayout>
 
-            <!-- Sélecteur de langue -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

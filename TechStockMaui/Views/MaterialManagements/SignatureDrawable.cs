@@ -27,7 +27,7 @@ namespace TechStockMaui.Controls
 
         public void End()
         {
-            // Optionnel : logique à la fin du dessin
+           
         }
 
         public void Clear()

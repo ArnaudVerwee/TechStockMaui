@@ -6,25 +6,21 @@ namespace TechStockMaui.Views
     {
         private TypeArticleService _typeArticleService;
 
-        // ✅ CONSERVÉ: Votre constructeur original
         public CreateTypeArticlePage()
         {
             InitializeComponent();
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
 
             _typeArticleService = new TypeArticleService();
         }
 
-        // ✅ AJOUT: Charger les traductions au démarrage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await LoadTranslationsAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -35,11 +31,10 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -53,79 +48,67 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes CreateTypeArticlePage");
+                System.Diagnostics.Debug.WriteLine("Updating CreateTypeArticlePage texts");
 
-                // ✅ Titre de la page (utilise vos fichiers .resx existants)
                 var createText = await GetTextAsync("Create", "Create");
                 var typeArticleText = await GetTextAsync("TypeArticle", "Type Article");
                 Title = $"{createText} {typeArticleText}";
 
-                // ✅ Titre principal
                 if (TitleLabel != null)
                     TitleLabel.Text = $"{createText} " + await GetTextAsync("New Type Article", "nouveau type d'article");
 
-                // ✅ En-tête du formulaire
                 if (FormHeaderLabel != null)
                     FormHeaderLabel.Text = await GetTextAsync("Type Article Information", "Informations du type d'article");
 
-                // ✅ Label nom (utilise vos fichiers .resx existants)
                 if (NameLabel != null)
                 {
                     var nameText = await GetTextAsync("Name", "Name");
                     NameLabel.Text = nameText + " :";
                 }
 
-                // ✅ Placeholder de l'Entry
                 if (NameEntry != null)
                     NameEntry.Placeholder = await GetTextAsync("Enter type name", "Entrez le nom du type d'article");
 
-                // ✅ Boutons
                 if (SaveButton != null)
                     SaveButton.Text = await GetTextAsync("Save", "Save");
 
                 if (CancelButton != null)
                     CancelButton.Text = await GetTextAsync("Cancel", "Cancel");
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes CreateTypeArticlePage mis à jour");
+                System.Diagnostics.Debug.WriteLine("CreateTypeArticlePage texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 CreateTypeArticlePage - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"CreateTypeArticlePage - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             try
             {
-                // ✅ CONSERVÉ: Votre validation existante avec messages traduits
                 string name = NameEntry.Text?.Trim();
                 if (string.IsNullOrWhiteSpace(name))
                 {
@@ -135,13 +118,11 @@ namespace TechStockMaui.Views
                     return;
                 }
 
-                // ✅ CONSERVÉ: Votre logique de création existante
                 var newTypeArticle = new TechStockMaui.Models.TypeArticle.TypeArticle
                 {
                     Name = name
                 };
 
-                // Appeler l'API pour créer le type d'article
                 bool success = await _typeArticleService.CreateAsync(newTypeArticle);
 
                 if (success)
@@ -150,7 +131,6 @@ namespace TechStockMaui.Views
                     var createdSuccessMessage = await GetTextAsync("Type created successfully", "Type d'article '{0}' créé avec succès!");
                     await DisplayAlert(successTitle, string.Format(createdSuccessMessage, name), "OK");
 
-                    // Retourner à la page précédente (TypeArticlePage)
                     await Navigation.PopAsync();
                 }
                 else
@@ -168,10 +148,8 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
         private async void OnCancelClicked(object sender, EventArgs e)
         {
-            // ✅ CONSERVÉ: Votre logique de confirmation existante avec messages traduits
             if (!string.IsNullOrWhiteSpace(NameEntry.Text))
             {
                 var confirmTitle = await GetTextAsync("Confirmation", "Confirmation");
@@ -188,7 +166,6 @@ namespace TechStockMaui.Views
             await Navigation.PopAsync();
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -219,18 +196,17 @@ namespace TechStockMaui.Views
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -244,17 +220,15 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~CreateTypeArticlePage()
         {
             try

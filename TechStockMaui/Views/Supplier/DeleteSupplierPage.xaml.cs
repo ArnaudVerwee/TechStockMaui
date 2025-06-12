@@ -8,18 +8,15 @@ namespace TechStockMaui.Views.Supplier
         {
             InitializeComponent();
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
         }
 
-        // ✅ AJOUT: Charger les traductions au démarrage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await LoadTranslationsAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
         private async Task LoadTranslationsAsync()
         {
             try
@@ -30,11 +27,10 @@ namespace TechStockMaui.Views.Supplier
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -48,68 +44,57 @@ namespace TechStockMaui.Views.Supplier
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes DeleteSupplier");
+                System.Diagnostics.Debug.WriteLine("Updating DeleteSupplier texts");
 
-                // ✅ Titre de la page
                 Title = await GetTextAsync("Delete", "Delete");
 
-                // ✅ Titre principal
                 if (TitleLabel != null)
                     TitleLabel.Text = await GetTextAsync("Delete", "Delete Supplier");
 
-                // ✅ Question de confirmation
                 if (ConfirmationLabel != null)
                     ConfirmationLabel.Text = await GetTextAsync("Are you sure you want to delete this?", "Are you sure you want to delete this?");
 
-                // ✅ Boutons
                 if (DeleteButton != null)
                     DeleteButton.Text = await GetTextAsync("Delete", "Delete");
 
                 if (CancelButton != null)
                     CancelButton.Text = await GetTextAsync("Cancel", "Cancel");
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes DeleteSupplier mis à jour");
+                System.Diagnostics.Debug.WriteLine("DeleteSupplier texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 DeleteSupplier - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"DeleteSupplier - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
-            // ✅ Messages traduits
             var confirmationTitle = await GetTextAsync("Confirmation", "Confirmation");
             var supplierDeletedMsg = await GetTextAsync("SupplierDeleted", "Le fournisseur a été supprimé.");
 
-            // TODO: appeler ton API pour supprimer le fournisseur ici
             bool confirmed = await DisplayAlert(confirmationTitle, supplierDeletedMsg, "OK", null);
             if (confirmed)
             {
@@ -117,13 +102,11 @@ namespace TechStockMaui.Views.Supplier
             }
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async void OnCancelClicked(object sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -154,18 +137,17 @@ namespace TechStockMaui.Views.Supplier
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -179,17 +161,15 @@ namespace TechStockMaui.Views.Supplier
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
         ~DeleteSupplierPage()
         {
             try

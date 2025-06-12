@@ -16,61 +16,55 @@ public partial class AssignProductPage : ContentPage
     private readonly MaterialManagementService _service;
     private readonly ProductService _productService;
 
-    // ✅ CONSERVÉ: Votre constructeur original
     public AssignProductPage(Product product)
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("🔄 AssignProductPage constructeur - DÉBUT");
+            System.Diagnostics.Debug.WriteLine("AssignProductPage constructor - START");
 
             InitializeComponent();
-            System.Diagnostics.Debug.WriteLine("✅ InitializeComponent OK");
+            System.Diagnostics.Debug.WriteLine("InitializeComponent OK");
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
 
             Product = product;
-            System.Diagnostics.Debug.WriteLine($"✅ Produit assigné: {product.Name}");
+            System.Diagnostics.Debug.WriteLine($"Product assigned: {product.Name}");
 
-            System.Diagnostics.Debug.WriteLine("🔄 Création MaterialManagementService...");
+            System.Diagnostics.Debug.WriteLine("Creating MaterialManagementService...");
             _service = new MaterialManagementService();
-            System.Diagnostics.Debug.WriteLine("✅ MaterialManagementService créé");
+            System.Diagnostics.Debug.WriteLine("MaterialManagementService created");
 
-            System.Diagnostics.Debug.WriteLine("🔄 Création ProductService...");
+            System.Diagnostics.Debug.WriteLine("Creating ProductService...");
             _productService = new ProductService();
-            System.Diagnostics.Debug.WriteLine("✅ ProductService créé");
+            System.Diagnostics.Debug.WriteLine("ProductService created");
 
-            System.Diagnostics.Debug.WriteLine("🔄 Création Command...");
+            System.Diagnostics.Debug.WriteLine("Creating Command...");
             AssignCommand = new Command(async () => await AssignProductToUser());
-            System.Diagnostics.Debug.WriteLine("✅ Command créé");
+            System.Diagnostics.Debug.WriteLine("Command created");
 
-            System.Diagnostics.Debug.WriteLine("🔄 BindingContext...");
+            System.Diagnostics.Debug.WriteLine("Setting BindingContext...");
             BindingContext = this;
-            System.Diagnostics.Debug.WriteLine("✅ BindingContext assigné");
+            System.Diagnostics.Debug.WriteLine("BindingContext assigned");
 
-            System.Diagnostics.Debug.WriteLine("✅ AssignProductPage constructeur - FIN");
+            System.Diagnostics.Debug.WriteLine("AssignProductPage constructor - END");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ ERREUR constructeur AssignProductPage: {ex.Message}");
-            System.Diagnostics.Debug.WriteLine($"❌ Stack constructeur: {ex.StackTrace}");
+            System.Diagnostics.Debug.WriteLine($"AssignProductPage constructor error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Constructor stack: {ex.StackTrace}");
         }
     }
 
-    // ✅ MODIFIÉ: Votre méthode existante avec ajout des traductions
     protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-        // ✅ AJOUT: Charger les traductions
         await LoadTranslationsAsync();
 
-        // ✅ CONSERVÉ: Votre logique existante
-        System.Diagnostics.Debug.WriteLine("🔄 AssignProductPage apparue - chargement automatique");
+        System.Diagnostics.Debug.WriteLine("AssignProductPage appeared - automatic loading");
         await LoadDataAsync();
     }
 
-    // ✅ AJOUT: Charger les traductions
     private async Task LoadTranslationsAsync()
     {
         try
@@ -81,11 +75,10 @@ public partial class AssignProductPage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Helper pour récupérer une traduction
     private async Task<string> GetTextAsync(string key, string fallback = null)
     {
         try
@@ -99,78 +92,65 @@ public partial class AssignProductPage : ContentPage
         }
     }
 
-    // ✅ AJOUT: Mettre à jour tous les textes de l'interface
     private async Task UpdateTextsAsync()
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes AssignProductPage");
+            System.Diagnostics.Debug.WriteLine("Updating AssignProductPage texts");
 
-            // ✅ Titre de la page
-            Title = await GetTextAsync("Assign Product", "Assign Product");
+            Title = await GetTextAsync("Assign Product to User", "Assign Product");
 
-            // ✅ Titre principal
             if (TitleLabel != null)
-                TitleLabel.Text = await GetTextAsync("Assign product to user", "Assign a product to a user");
+                TitleLabel.Text = await GetTextAsync("Assign product to user", "Assign Product");
 
-            // ✅ En-tête informations produit
             if (ProductInfoHeaderLabel != null)
                 ProductInfoHeaderLabel.Text = await GetTextAsync("Product Information", "Product Information");
 
-            // ✅ Labels des informations produit
             if (ProductSpan != null)
                 ProductSpan.Text = await GetTextAsync("Product", "Product") + " : ";
 
             if (SerialNumberSpan != null)
                 SerialNumberSpan.Text = await GetTextAsync("Serial Number", "Serial Number") + " : ";
 
-            // ✅ Labels de sélection
             if (SelectUserLabel != null)
                 SelectUserLabel.Text = await GetTextAsync("Select a user", "Select a user") + " :";
 
             if (SelectStateLabel != null)
                 SelectStateLabel.Text = await GetTextAsync("Select product state", "Select the product state") + " :";
 
-            // ✅ Placeholders des Pickers
             if (UserPicker != null)
                 UserPicker.Title = await GetTextAsync("Select a user", "Select a user");
 
             if (StatePicker != null)
                 StatePicker.Title = await GetTextAsync("Select a state", "Select a state");
 
-            // ✅ Boutons
             if (AssignButton != null)
                 AssignButton.Text = await GetTextAsync("Assign", "Assign");
 
             if (BackButton != null)
                 BackButton.Text = await GetTextAsync("Back to list", "Back to list");
 
-            // ✅ Sélecteur de langue
             if (LanguageLabel != null)
                 LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-            // ✅ Mettre à jour l'indicateur de langue
             await UpdateLanguageFlag();
 
-            // ✅ Mettre à jour les états traduits
             await UpdateStatesWithTranslations();
 
-            System.Diagnostics.Debug.WriteLine("✅ Textes AssignProductPage mis à jour");
+            System.Diagnostics.Debug.WriteLine("AssignProductPage texts updated");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Mettre à jour les états avec traductions
     private async Task UpdateStatesWithTranslations()
     {
         try
         {
             if (States.Any())
             {
-                // Créer une nouvelle liste avec les traductions
                 var translatedStates = new List<States>();
 
                 foreach (var state in States.ToList())
@@ -187,7 +167,6 @@ public partial class AssignProductPage : ContentPage
                     translatedStates.Add(new States { Id = state.Id, Status = translatedStatus });
                 }
 
-                // Mettre à jour la collection sur le thread principal
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     var selectedStateId = SelectedState?.Id;
@@ -197,7 +176,6 @@ public partial class AssignProductPage : ContentPage
                         States.Add(state);
                     }
 
-                    // Restaurer la sélection si elle existait
                     if (selectedStateId.HasValue)
                     {
                         SelectedState = States.FirstOrDefault(s => s.Id == selectedStateId.Value);
@@ -207,33 +185,30 @@ public partial class AssignProductPage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateStatesWithTranslations: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"UpdateStatesWithTranslations error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Callback quand la langue change
     private async void OnCultureChanged(object sender, string newCulture)
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine($"🌍 AssignProductPage - Langue changée vers: {newCulture}");
+            System.Diagnostics.Debug.WriteLine($"AssignProductPage - Language changed to: {newCulture}");
             await UpdateTextsAsync();
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
         }
     }
 
-    // ✅ CONSERVÉ: Votre méthode existante inchangée
     private async Task LoadDataAsync()
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("🔄 LoadDataAsync - DÉBUT");
+            System.Diagnostics.Debug.WriteLine("LoadDataAsync - START");
 
-            // CHARGER UTILISATEURS
-            System.Diagnostics.Debug.WriteLine("🔄 Chargement utilisateurs...");
+            System.Diagnostics.Debug.WriteLine("Loading users...");
             try
             {
                 var users = await _productService.GetUsersAsync();
@@ -246,23 +221,22 @@ public partial class AssignProductPage : ContentPage
                         foreach (var user in users)
                         {
                             Users.Add(user);
-                            System.Diagnostics.Debug.WriteLine($"🔍 Utilisateur ajouté: {user}");
+                            System.Diagnostics.Debug.WriteLine($"User added: {user}");
                         }
-                        System.Diagnostics.Debug.WriteLine($"✅ {Users.Count} utilisateurs ajoutés");
+                        System.Diagnostics.Debug.WriteLine($"{Users.Count} users added");
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("⚠️ Aucun utilisateur reçu");
+                        System.Diagnostics.Debug.WriteLine("No users received");
                     }
                 });
             }
             catch (Exception userEx)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement utilisateurs: {userEx.Message}");
+                System.Diagnostics.Debug.WriteLine($"Users loading error: {userEx.Message}");
             }
 
-            // CHARGER ÉTATS
-            System.Diagnostics.Debug.WriteLine("🔄 Chargement états...");
+            System.Diagnostics.Debug.WriteLine("Loading states...");
             var defaultStates = new List<States>
             {
                 new States { Id = 1, Status = "New Product" },
@@ -277,19 +251,18 @@ public partial class AssignProductPage : ContentPage
                 foreach (var state in defaultStates)
                 {
                     States.Add(state);
-                    System.Diagnostics.Debug.WriteLine($"🔍 État ajouté: {state.Status}");
+                    System.Diagnostics.Debug.WriteLine($"State added: {state.Status}");
                 }
-                System.Diagnostics.Debug.WriteLine($"✅ {States.Count} états ajoutés");
+                System.Diagnostics.Debug.WriteLine($"{States.Count} states added");
             });
 
-            // ✅ AJOUT: Appliquer les traductions après le chargement
             await UpdateStatesWithTranslations();
 
-            System.Diagnostics.Debug.WriteLine("✅ LoadDataAsync - FIN");
+            System.Diagnostics.Debug.WriteLine("LoadDataAsync - END");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur LoadDataAsync: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"LoadDataAsync error: {ex.Message}");
             var errorTitle = await GetTextAsync("Error", "Error");
             var loadErrorMessage = await GetTextAsync("Data loading error", "Data loading error");
             await MainThread.InvokeOnMainThreadAsync(async () =>
@@ -299,48 +272,41 @@ public partial class AssignProductPage : ContentPage
         }
     }
 
-    // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
     private async Task AssignProductToUser()
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("🔄 AssignProductToUser - DÉBUT");
+            System.Diagnostics.Debug.WriteLine("AssignProductToUser - START");
 
             if (SelectedUser == null || SelectedState == null)
             {
-                System.Diagnostics.Debug.WriteLine("❌ Utilisateur ou état non sélectionné");
+                System.Diagnostics.Debug.WriteLine("User or state not selected");
                 var errorTitle = await GetTextAsync("Error", "Error");
                 var selectionErrorMessage = await GetTextAsync("Please select user and state", "Please select a user and a state.");
                 await DisplayAlert(errorTitle, selectionErrorMessage, "OK");
                 return;
             }
 
-            // TROUVER LA BONNE PROPRIÉTÉ DE L'UTILISATEUR
             string userIdentifier = "";
             var userType = SelectedUser.GetType();
 
-            // Essayer Email en premier
             var emailProp = userType.GetProperty("Email");
             if (emailProp != null)
             {
                 userIdentifier = emailProp.GetValue(SelectedUser)?.ToString();
             }
-            // Sinon essayer UserName
             else if (userType.GetProperty("UserName") != null)
             {
                 userIdentifier = userType.GetProperty("UserName").GetValue(SelectedUser)?.ToString();
             }
-            // Sinon essayer Username
             else if (userType.GetProperty("Username") != null)
             {
                 userIdentifier = userType.GetProperty("Username").GetValue(SelectedUser)?.ToString();
             }
-            // Sinon essayer Name
             else if (userType.GetProperty("Name") != null)
             {
                 userIdentifier = userType.GetProperty("Name").GetValue(SelectedUser)?.ToString();
             }
-            // Sinon essayer Id
             else if (userType.GetProperty("Id") != null)
             {
                 userIdentifier = userType.GetProperty("Id").GetValue(SelectedUser)?.ToString();
@@ -354,13 +320,13 @@ public partial class AssignProductPage : ContentPage
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine($"🔄 Assignation: Produit={Product.Id}, Utilisateur={userIdentifier}, État={SelectedState.Id}");
+            System.Diagnostics.Debug.WriteLine($"Assignment: Product={Product.Id}, User={userIdentifier}, State={SelectedState.Id}");
 
             bool success = await _service.AssignProductAsync(Product.Id, userIdentifier, SelectedState.Id);
 
             if (success)
             {
-                System.Diagnostics.Debug.WriteLine("✅ Assignation réussie");
+                System.Diagnostics.Debug.WriteLine("Assignment successful");
                 var successTitle = await GetTextAsync("Success", "Success");
                 var successMessage = await GetTextAsync("Product assigned successfully", "Product assigned successfully.");
                 await DisplayAlert(successTitle, successMessage, "OK");
@@ -368,7 +334,7 @@ public partial class AssignProductPage : ContentPage
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("❌ Assignation échouée");
+                System.Diagnostics.Debug.WriteLine("Assignment failed");
                 var errorTitle = await GetTextAsync("Error", "Error");
                 var assignErrorMessage = await GetTextAsync("Assignment error", "Error during assignment.");
                 await DisplayAlert(errorTitle, assignErrorMessage, "OK");
@@ -376,20 +342,18 @@ public partial class AssignProductPage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur AssignProductToUser: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"AssignProductToUser error: {ex.Message}");
             var errorTitle = await GetTextAsync("Error", "Error");
             var assignErrorMessage = await GetTextAsync("Assignment error", "Error during assignment");
             await DisplayAlert(errorTitle, $"{assignErrorMessage}: {ex.Message}", "OK");
         }
     }
 
-    // ✅ CONSERVÉ: Votre méthode existante inchangée
     private async void OnBackClicked(object sender, EventArgs e)
     {
         await Navigation.PopAsync();
     }
 
-    // ✅ AJOUT: Gestion du changement de langue
     private async void OnLanguageClicked(object sender, EventArgs e)
     {
         try
@@ -420,18 +384,17 @@ public partial class AssignProductPage : ContentPage
 
                 if (newCulture != null && newCulture != currentCulture)
                 {
-                    System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                    System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                     await translationService.SetCurrentCultureAsync(newCulture);
                 }
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Mettre à jour le drapeau de langue
     private async Task UpdateLanguageFlag()
     {
         try
@@ -445,17 +408,15 @@ public partial class AssignProductPage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Nettoyage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
     }
 
-    // ✅ AJOUT: Destructeur
     ~AssignProductPage()
     {
         try

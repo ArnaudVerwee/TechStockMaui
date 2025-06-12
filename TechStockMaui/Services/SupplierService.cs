@@ -10,15 +10,14 @@ namespace TechStockMaui.Services
     {
         private readonly HttpClient _httpClient;
 
-        // ✅ Configuration adaptative pour Android/Windows
         private static string BaseUrl
         {
             get
             {
 #if ANDROID
-                return "http://10.0.2.2:7236/api/Suppliers";  // Pour Android émulateur
+                return "http://10.0.2.2:7236/api/Suppliers";
 #else
-                return "https://localhost:7237/api/Suppliers"; // Pour Windows
+                return "https://localhost:7237/api/Suppliers";
 #endif
             }
         }
@@ -28,7 +27,6 @@ namespace TechStockMaui.Services
             var handler = new HttpClientHandler();
 
 #if ANDROID
-            // Ignorer les erreurs SSL pour Android en développement
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 #endif
 
@@ -37,93 +35,196 @@ namespace TechStockMaui.Services
                 Timeout = TimeSpan.FromSeconds(30)
             };
 
-            System.Diagnostics.Debug.WriteLine($"🌐 SupplierService utilise: {BaseUrl}");
+            System.Diagnostics.Debug.WriteLine($"SupplierService using: {BaseUrl}");
         }
 
-        // Récupérer tous les fournisseurs
         public async Task<List<Supplier>> GetSuppliersAsync()
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Supplier>>(BaseUrl) ?? new List<Supplier>();
+                System.Diagnostics.Debug.WriteLine($"GET Request to: {BaseUrl}");
+
+                var result = await _httpClient.GetFromJsonAsync<List<Supplier>>(BaseUrl);
+
+                System.Diagnostics.Debug.WriteLine($"Number of suppliers retrieved: {result?.Count ?? 0}");
+
+                return result ?? new List<Supplier>();
             }
-            catch
+            catch (HttpRequestException ex)
             {
+                System.Diagnostics.Debug.WriteLine($"HTTP error GetSuppliersAsync: {ex.Message}");
+                return new List<Supplier>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error GetSuppliersAsync: {ex.Message}");
                 return new List<Supplier>();
             }
         }
 
-        // Récupérer un fournisseur par ID
         public async Task<Supplier> GetSupplierByIdAsync(int id)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<Supplier>($"{BaseUrl}/{id}");
+                System.Diagnostics.Debug.WriteLine($"GET Request to: {BaseUrl}/{id}");
+
+                var result = await _httpClient.GetFromJsonAsync<Supplier>($"{BaseUrl}/{id}");
+
+                if (result != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Supplier retrieved: {result.Name}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("No supplier found with this ID");
+                }
+
+                return result;
             }
-            catch
+            catch (HttpRequestException ex)
             {
+                System.Diagnostics.Debug.WriteLine($"HTTP error GetSupplierByIdAsync: {ex.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error GetSupplierByIdAsync: {ex.Message}");
                 return null;
             }
         }
 
-        // Créer un nouveau fournisseur
         public async Task<bool> CreateSupplierAsync(Supplier supplier)
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"POST Request to: {BaseUrl}");
+                System.Diagnostics.Debug.WriteLine($"Supplier to create: {supplier.Name}");
+
                 var response = await _httpClient.PostAsJsonAsync(BaseUrl, supplier);
-                return response.IsSuccessStatusCode;
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"Response: {responseContent}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine("Supplier creation successful");
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Supplier creation failed: {response.StatusCode}");
+                    return false;
+                }
             }
-            catch
+            catch (HttpRequestException ex)
             {
+                System.Diagnostics.Debug.WriteLine($"HTTP error CreateSupplierAsync: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error CreateSupplierAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
                 return false;
             }
         }
 
-        // Mettre à jour un fournisseur
         public async Task<bool> UpdateSupplierAsync(Supplier supplier)
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"PUT Request to: {BaseUrl}/{supplier.Id}");
+                System.Diagnostics.Debug.WriteLine($"Supplier to update: {supplier.Name}");
+
                 var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{supplier.Id}", supplier);
-                return response.IsSuccessStatusCode;
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"Response: {responseContent}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine("Supplier update successful");
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Supplier update failed: {response.StatusCode}");
+                    return false;
+                }
             }
-            catch
+            catch (HttpRequestException ex)
             {
+                System.Diagnostics.Debug.WriteLine($"HTTP error UpdateSupplierAsync: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error UpdateSupplierAsync: {ex.Message}");
                 return false;
             }
         }
 
-        // Supprimer un fournisseur
         public async Task<bool> DeleteSupplierAsync(int id)
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"DELETE Request to: {BaseUrl}/{id}");
+
                 var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
-                return response.IsSuccessStatusCode;
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"Response: {responseContent}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine("Supplier deletion successful");
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Supplier deletion failed: {response.StatusCode}");
+                    return false;
+                }
             }
-            catch
+            catch (HttpRequestException ex)
             {
+                System.Diagnostics.Debug.WriteLine($"HTTP error DeleteSupplierAsync: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error DeleteSupplierAsync: {ex.Message}");
                 return false;
             }
         }
 
-        // Filtrer les fournisseurs par nom
         public async Task<List<Supplier>> GetSuppliersFilterAsync(string name = null)
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"Filtering suppliers by name: {name ?? "no filter"}");
+
                 var allSuppliers = await GetSuppliersAsync();
 
                 if (string.IsNullOrWhiteSpace(name))
+                {
+                    System.Diagnostics.Debug.WriteLine($"No filter applied, returning all {allSuppliers.Count} suppliers");
                     return allSuppliers;
+                }
 
-                return allSuppliers
+                var filteredSuppliers = allSuppliers
                     .Where(s => s.Name != null && s.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
                     .ToList();
+
+                System.Diagnostics.Debug.WriteLine($"Filter applied, returning {filteredSuppliers.Count} suppliers");
+                return filteredSuppliers;
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Error GetSuppliersFilterAsync: {ex.Message}");
                 return new List<Supplier>();
             }
         }

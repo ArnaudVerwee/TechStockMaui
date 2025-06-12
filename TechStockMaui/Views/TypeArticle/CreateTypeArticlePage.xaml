@@ -8,7 +8,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- En-tête avec titre -->
+           
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -24,7 +24,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Formulaire de création -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -45,7 +45,7 @@
                            FontSize="16"
                            TextColor="#495057" />
 
-                    <!-- IMPORTANT: Cette ligne avec x:Name="NameEntry" -->
+                   
                     <Entry x:Name="NameEntry" 
                            Placeholder="Entrez le nom du type d'article"
                            BackgroundColor="#f8f9fa"
@@ -54,7 +54,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Boutons d'action -->
+          
             <StackLayout Spacing="10" Margin="0,15,0,0">
                 <Button x:Name="SaveButton"
                         Text="Enregistrer" 
@@ -75,7 +75,7 @@
                         CornerRadius="8" />
             </StackLayout>
 
-            <!-- Sélecteur de langue -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

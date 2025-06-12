@@ -8,7 +8,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- Titre principal -->
+            
             <Label x:Name="TitleLabel" 
                    Text="Delete product" 
                    FontSize="24" 
@@ -17,7 +17,7 @@
                    HorizontalOptions="Center"
                    Margin="0,0,0,10" />
 
-            <!-- Question de confirmation -->
+            
             <Label x:Name="ConfirmationLabel" 
                    Text="Are you sure you want to delete this?" 
                    FontAttributes="Italic" 
@@ -26,14 +26,14 @@
                    FontSize="16"
                    Margin="0,0,0,20" />
 
-            <!-- Affichage des données -->
+            
             <Frame BackgroundColor="#f8f9fa" 
                    Padding="15" 
                    CornerRadius="10"
                    HasShadow="True">
                 <VerticalStackLayout Spacing="12">
 
-                    <!-- Nom -->
+                   
                     <StackLayout>
                         <Label x:Name="NameFieldLabel" 
                                Text="Name:" 
@@ -44,7 +44,7 @@
                                FontSize="16" />
                     </StackLayout>
 
-                    <!-- Numéro de série -->
+                   
                     <StackLayout>
                         <Label x:Name="SerialFieldLabel" 
                                Text="Serial Number:" 
@@ -55,7 +55,7 @@
                                FontSize="16" />
                     </StackLayout>
 
-                    <!-- Type -->
+                    
                     <StackLayout>
                         <Label x:Name="TypeFieldLabel" 
                                Text="Type:" 
@@ -66,7 +66,7 @@
                                FontSize="16" />
                     </StackLayout>
 
-                    <!-- Fournisseur -->
+                    
                     <StackLayout>
                         <Label x:Name="SupplierFieldLabel" 
                                Text="Supplier:" 
@@ -80,7 +80,7 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Boutons -->
+           
             <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
                 <Button x:Name="DeleteButton"
                         Text="Delete" 
@@ -101,7 +101,7 @@
                         Clicked="OnBackToListClicked" />
             </VerticalStackLayout>
 
-            <!-- Sélecteur de langue -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

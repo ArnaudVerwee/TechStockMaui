@@ -11,15 +11,14 @@ namespace TechStockMaui.Services
     {
         private readonly HttpClient _httpClient;
 
-        // ✅ Configuration adaptative pour Android/Windows
         private static string BaseUrl
         {
             get
             {
 #if ANDROID
-                return "http://10.0.2.2:7236/api/TypeArticles";  // Pour Android émulateur
+                return "http://10.0.2.2:7236/api/TypeArticles";
 #else
-                return "https://localhost:7237/api/TypeArticles"; // Pour Windows
+                return "https://localhost:7237/api/TypeArticles";
 #endif
             }
         }
@@ -29,7 +28,6 @@ namespace TechStockMaui.Services
             var handler = new HttpClientHandler();
 
 #if ANDROID
-            // Ignorer les erreurs SSL pour Android en développement
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 #endif
 
@@ -38,28 +36,29 @@ namespace TechStockMaui.Services
                 Timeout = TimeSpan.FromSeconds(30)
             };
 
-            System.Diagnostics.Debug.WriteLine($"🌐 TypeArticleService utilise: {BaseUrl}");
+            System.Diagnostics.Debug.WriteLine($"TypeArticleService using: {BaseUrl}");
         }
+
         public async Task<List<TechStockMaui.Models.TypeArticle.TypeArticle>> GetAllAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"GET Request vers: {BaseUrl}");
+                System.Diagnostics.Debug.WriteLine($"GET Request to: {BaseUrl}");
 
                 var result = await _httpClient.GetFromJsonAsync<List<TechStockMaui.Models.TypeArticle.TypeArticle>>(BaseUrl);
 
-                System.Diagnostics.Debug.WriteLine($"Nombre d'éléments récupérés: {result?.Count ?? 0}");
+                System.Diagnostics.Debug.WriteLine($"Number of items retrieved: {result?.Count ?? 0}");
 
                 return result ?? new List<TechStockMaui.Models.TypeArticle.TypeArticle>();
             }
             catch (HttpRequestException ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur HTTP GetAll: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"HTTP error GetAll: {ex.Message}");
                 return new List<TechStockMaui.Models.TypeArticle.TypeArticle>();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur GetAll: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error GetAll: {ex.Message}");
                 return new List<TechStockMaui.Models.TypeArticle.TypeArticle>();
             }
         }
@@ -68,11 +67,29 @@ namespace TechStockMaui.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<TechStockMaui.Models.TypeArticle.TypeArticle>($"{BaseUrl}/{id}");
+                System.Diagnostics.Debug.WriteLine($"GET Request to: {BaseUrl}/{id}");
+
+                var result = await _httpClient.GetFromJsonAsync<TechStockMaui.Models.TypeArticle.TypeArticle>($"{BaseUrl}/{id}");
+
+                if (result != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"TypeArticle retrieved: {result.Name}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("No TypeArticle found with this ID");
+                }
+
+                return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"HTTP error GetById: {ex.Message}");
+                return null;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur GetById: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error GetById: {ex.Message}");
                 return null;
             }
         }
@@ -81,8 +98,8 @@ namespace TechStockMaui.Services
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"POST Request vers: {BaseUrl}");
-                System.Diagnostics.Debug.WriteLine($"Nom à créer: {item.Name}");
+                System.Diagnostics.Debug.WriteLine($"POST Request to: {BaseUrl}");
+                System.Diagnostics.Debug.WriteLine($"Name to create: {item.Name}");
 
                 var response = await _httpClient.PostAsJsonAsync(BaseUrl, item);
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -92,23 +109,23 @@ namespace TechStockMaui.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    System.Diagnostics.Debug.WriteLine("✅ Création réussie");
+                    System.Diagnostics.Debug.WriteLine("Creation successful");
                     return true;
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ Création échouée: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"Creation failed: {response.StatusCode}");
                     return false;
                 }
             }
             catch (HttpRequestException ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur HTTP Create: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"HTTP error Create: {ex.Message}");
                 return false;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur Create: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error Create: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
                 return false;
             }
@@ -118,12 +135,34 @@ namespace TechStockMaui.Services
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"PUT Request to: {BaseUrl}/{item.Id}");
+                System.Diagnostics.Debug.WriteLine($"Name to update: {item.Name}");
+
                 var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{item.Id}", item);
-                return response.IsSuccessStatusCode;
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"Response: {responseContent}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine("Update successful");
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Update failed: {response.StatusCode}");
+                    return false;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"HTTP error Update: {ex.Message}");
+                return false;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur Update: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error Update: {ex.Message}");
                 return false;
             }
         }
@@ -132,12 +171,33 @@ namespace TechStockMaui.Services
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"DELETE Request to: {BaseUrl}/{id}");
+
                 var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
-                return response.IsSuccessStatusCode;
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                System.Diagnostics.Debug.WriteLine($"Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"Response: {responseContent}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    System.Diagnostics.Debug.WriteLine("Deletion successful");
+                    return true;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Deletion failed: {response.StatusCode}");
+                    return false;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"HTTP error Delete: {ex.Message}");
+                return false;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erreur Delete: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error Delete: {ex.Message}");
                 return false;
             }
         }

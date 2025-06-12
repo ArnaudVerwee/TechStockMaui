@@ -11,7 +11,6 @@ namespace TechStockMaui.Views
             InitializeComponent();
             _authService = new AuthService();
 
-            // ✅ AJOUT: S'abonner aux changements de langue
             TranslationService.Instance.CultureChanged += OnCultureChanged;
         }
 
@@ -19,19 +18,74 @@ namespace TechStockMaui.Views
         {
             base.OnAppearing();
 
-            // ✅ AJOUT: Charger les traductions
             await LoadTranslationsAsync();
 
-            /*
-            // Vérifier si l'utilisateur est déjà connecté
-            if (await _authService.TryRestoreAuthenticationAsync())
-            {
-                await NavigateToDashboard();
-            }
-            */
+            await LoadSavedCredentialsAsync();
+
         }
 
-        // ✅ AJOUT: Charger les traductions
+        private async Task LoadSavedCredentialsAsync()
+        {
+            try
+            {
+                var rememberMeEnabled = await _authService.IsRememberMeEnabledAsync();
+
+                if (rememberMeEnabled)
+                {
+                    var savedEmail = await SecureStorage.GetAsync("saved_email");
+                    var savedPassword = await SecureStorage.GetAsync("saved_password");
+
+                    if (!string.IsNullOrEmpty(savedEmail) && !string.IsNullOrEmpty(savedPassword))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Loading saved credentials for: {savedEmail}");
+
+                        
+                        if (EmailEntry != null)
+                            EmailEntry.Text = savedEmail;
+
+                        if (PasswordEntry != null)
+                            PasswordEntry.Text = savedPassword;
+
+                        if (RememberMeSwitch != null)
+                            RememberMeSwitch.IsToggled = true;
+
+                        System.Diagnostics.Debug.WriteLine("Credentials loaded and fields pre-filled");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Remember me enabled but no credentials found");
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Remember me not enabled");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading saved credentials: {ex.Message}");
+            }
+        }
+        private async Task TryAutoLoginAsync()
+        {
+            try
+            {
+                if (await _authService.TryAutoLoginAsync())
+                {
+                    System.Diagnostics.Debug.WriteLine("Auto-login successful, navigating to dashboard");
+                    await NavigateToDashboard();
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Auto-login failed or disabled");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Auto-login error: {ex.Message}");
+            }
+        }
+
         private async Task LoadTranslationsAsync()
         {
             try
@@ -42,11 +96,10 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -60,43 +113,35 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes Login");
+                System.Diagnostics.Debug.WriteLine("Updating Login texts");
 
-                // ✅ Titre de la page
                 Title = await GetTextAsync("Login", "Login");
 
-                // ✅ Sous-titre
                 if (SubtitleLabel != null)
                     SubtitleLabel.Text = await GetTextAsync("ConnectToAccount", "Connect to your account");
 
-                // ✅ Labels des champs
                 if (EmailLabel != null)
                     EmailLabel.Text = await GetTextAsync("Email", "Email");
 
                 if (PasswordLabel != null)
                     PasswordLabel.Text = await GetTextAsync("Password", "Password");
 
-                // ✅ Placeholders des Entry
                 if (EmailEntry != null)
                     EmailEntry.Placeholder = await GetTextAsync("EmailPlaceholder", "your.email@example.com");
 
                 if (PasswordEntry != null)
                     PasswordEntry.Placeholder = await GetTextAsync("PasswordPlaceholder", "Your password");
 
-                // ✅ Bouton de connexion
                 if (LoginButton != null)
                     LoginButton.Text = await GetTextAsync("Login", "Login");
 
-                // ✅ Checkbox "Se souvenir de moi"
                 if (RememberMeLabel != null)
                     RememberMeLabel.Text = await GetTextAsync("RememberMe", "Remember me");
 
-                // ✅ Liens
                 if (ForgotPasswordLabel != null)
                     ForgotPasswordLabel.Text = await GetTextAsync("ForgotPassword", "Forgot password?");
 
@@ -106,36 +151,32 @@ namespace TechStockMaui.Views
                 if (RegisterLabel != null)
                     RegisterLabel.Text = await GetTextAsync("SignUp", "Sign up");
 
-                // ✅ Sélecteur de langue
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes Login mis à jour");
+                System.Diagnostics.Debug.WriteLine("Login texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 Login - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"Login - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnLoginClicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(EmailEntry.Text))
@@ -158,14 +199,16 @@ namespace TechStockMaui.Views
 
             try
             {
-                var result = await _authService.LoginAsync(EmailEntry.Text.Trim(), PasswordEntry.Text);
+                
+                var rememberMe = RememberMeSwitch?.IsToggled ?? false;
+
+                var result = await _authService.LoginAsync(EmailEntry.Text.Trim(), PasswordEntry.Text, rememberMe);
                 if (result.Success)
                 {
                     await NavigateToDashboard();
                 }
                 else
                 {
-                    // Afficher seulement les erreurs réelles de connexion
                     var connectionErrorTitle = await GetTextAsync("ConnectionError", "Erreur de connexion");
                     var invalidCredentialsMsg = await GetTextAsync("InvalidCredentials", "Email ou mot de passe incorrect");
                     await DisplayAlert(connectionErrorTitle,
@@ -178,7 +221,6 @@ namespace TechStockMaui.Views
                 var errorTitle = await GetTextAsync("Error", "Erreur");
                 var serverConnectionMsg = await GetTextAsync("ServerConnectionError", "Impossible de se connecter au serveur");
                 await DisplayAlert(errorTitle, serverConnectionMsg, "OK");
-                // Log l'erreur pour debug sans afficher à l'utilisateur
                 System.Diagnostics.Debug.WriteLine($"Login error: {ex.Message}");
             }
             finally
@@ -187,13 +229,11 @@ namespace TechStockMaui.Views
             }
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private async Task NavigateToDashboard()
         {
             Application.Current.MainPage = new AppShell();
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
         private void SetLoadingState(bool isLoading)
         {
             LoadingIndicator.IsVisible = isLoading;
@@ -203,7 +243,6 @@ namespace TechStockMaui.Views
             PasswordEntry.IsEnabled = !isLoading;
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnForgotPasswordTapped(object sender, TappedEventArgs e)
         {
             var forgotPasswordTitle = await GetTextAsync("ForgotPassword", "Mot de passe oublié");
@@ -211,7 +250,6 @@ namespace TechStockMaui.Views
             await DisplayAlert(forgotPasswordTitle, featureToImplementMsg, "OK");
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec traductions ajoutées
         private async void OnRegisterTapped(object sender, TappedEventArgs e)
         {
             var registerTitle = await GetTextAsync("Register", "Inscription");
@@ -219,7 +257,6 @@ namespace TechStockMaui.Views
             await DisplayAlert(registerTitle, featureToImplementMsg, "OK");
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -250,18 +287,17 @@ namespace TechStockMaui.Views
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
         private async Task UpdateLanguageFlag()
         {
             try
@@ -275,17 +311,15 @@ namespace TechStockMaui.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur pour nettoyer l'événement
         ~LoginPage()
         {
             try

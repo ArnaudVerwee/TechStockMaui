@@ -7,7 +7,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- En-tête avec titre -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -23,7 +23,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Bouton créer -->
+            
             <Button x:Name="CreateButton"
                     Text="Créer un nouveau type" 
                     BackgroundColor="#28a745" 
@@ -33,7 +33,7 @@
                     Padding="0,15"
                     CornerRadius="8" />
 
-            <!-- Liste des types d'articles -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -56,7 +56,7 @@
                                        CornerRadius="10"
                                        BackgroundColor="#f8f9fa">
                                     <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                                        <!-- Nom du type -->
+                                        
                                         <Label Text="{Binding Name}" 
                                                FontSize="18" 
                                                Grid.Column="0" 
@@ -64,7 +64,7 @@
                                                TextColor="#2c3e50"
                                                FontAttributes="Bold" />
 
-                                        <!-- Boutons d'actions -->
+                                        
                                         <HorizontalStackLayout Grid.Column="1" Spacing="5">
                                             <Button Text="✏️" 
                                                     BackgroundColor="#ffc107" 
@@ -107,7 +107,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Sélecteur de langue -->
+           
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

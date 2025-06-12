@@ -7,7 +7,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <!-- En-tête avec titre -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -23,7 +23,7 @@
                 </StackLayout>
             </Frame>
 
-            <!-- Informations du type d'article -->
+           
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="12" 
@@ -61,7 +61,7 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Boutons d'action -->
+            
             <StackLayout Spacing="10" Margin="0,15,0,0">
                 <Button x:Name="EditButton"
                         Text="Modifier"
@@ -82,7 +82,7 @@
                         CornerRadius="8" />
             </StackLayout>
 
-            <!-- Sélecteur de langue -->
+            
             <Frame BackgroundColor="White" 
                    HasShadow="True" 
                    CornerRadius="8"

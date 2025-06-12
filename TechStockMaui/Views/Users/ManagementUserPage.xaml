@@ -10,7 +10,7 @@
         <ScrollView>
             <StackLayout Margin="15">
 
-                <!-- En-tête avec bouton actualiser -->
+                
                 <Frame BackgroundColor="White" 
                        HasShadow="True" 
                        CornerRadius="12" 
@@ -46,7 +46,7 @@
                     </Grid>
                 </Frame>
 
-                <!-- Indicateur de chargement stylé -->
+               
                 <Frame IsVisible="{Binding IsLoading}"
                        BackgroundColor="White" 
                        HasShadow="True" 
@@ -67,7 +67,7 @@
                     </StackLayout>
                 </Frame>
 
-                <!-- Liste des utilisateurs avec style moderne -->
+                
                 <CollectionView ItemsSource="{Binding Users}" BackgroundColor="Transparent">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
@@ -87,7 +87,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Avatar circulaire -->
+                                   
                                     <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                                            BackgroundColor="#3498db"
                                            WidthRequest="45"
@@ -103,7 +103,7 @@
                                                VerticalOptions="Center"/>
                                     </Frame>
 
-                                    <!-- Nom d'utilisateur -->
+                                    
                                     <Label Grid.Row="0" Grid.Column="1"
                                            Text="{Binding UserName}" 
                                            FontSize="18" 
@@ -111,14 +111,14 @@
                                            TextColor="#2c3e50"
                                            VerticalOptions="Center"/>
 
-                                    <!-- Rôles avec texte simple -->
+                                    
                                     <Label Grid.Row="1" Grid.Column="1"
                                            Text="{Binding RolesAsString}" 
                                            FontSize="14" 
                                            TextColor="#7f8c8d"
                                            Margin="0,5,0,0"/>
 
-                                    <!-- Bouton gérer avec style moderne -->
+                                    
                                     <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
                                             Text="⚙"
                                             Command="{Binding BindingContext.ManageRolesCommand, Source={x:Reference UserManagementPage}}"
@@ -138,7 +138,7 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Sélecteur de langue -->
+                
                 <Frame BackgroundColor="White" 
                        HasShadow="True" 
                        CornerRadius="8"

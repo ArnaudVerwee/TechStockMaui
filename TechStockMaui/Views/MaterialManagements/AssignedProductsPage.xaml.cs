@@ -9,44 +9,45 @@ namespace TechStockMaui.Views.MaterialManagements
         private MaterialManagementService _materialManagementService;
         private ObservableCollection<MaterialManagement> _assignments;
 
-        // ✅ CONSERVÉ: Votre constructeur original
+        
         public AssignedProductsPage()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🔄 AssignedProductsPage constructeur - DÉBUT");
+                System.Diagnostics.Debug.WriteLine(" AssignedProductsPage constructor - START");
 
                 InitializeComponent();
 
-                // ✅ AJOUT: S'abonner aux changements de langue
+                
                 TranslationService.Instance.CultureChanged += OnCultureChanged;
 
                 _materialManagementService = new MaterialManagementService();
                 _assignments = new ObservableCollection<MaterialManagement>();
                 ProductsCollectionView.ItemsSource = _assignments;
 
-                System.Diagnostics.Debug.WriteLine("✅ AssignedProductsPage constructeur - FIN");
+                System.Diagnostics.Debug.WriteLine("AssignedProductsPage constructor - END");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur constructeur AssignedProductsPage: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"AssignedProductsPage constructor error: {ex.Message}");
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec ajout des traductions
+        
         protected override async void OnAppearing()
         {
+            TranslationService.Instance.ClearCache();
             base.OnAppearing();
 
-            // ✅ AJOUT: Charger les traductions
+            
             await LoadTranslationsAsync();
 
-            // ✅ CONSERVÉ: Votre logique existante
-            System.Diagnostics.Debug.WriteLine("🔄 AssignedProductsPage apparue - chargement automatique");
+           
+            System.Diagnostics.Debug.WriteLine("AssignedProductsPage appeared - automatic loading");
             await LoadAssignedProductsAsync();
         }
 
-        // ✅ AJOUT: Charger les traductions
+        
         private async Task LoadTranslationsAsync()
         {
             try
@@ -57,11 +58,11 @@ namespace TechStockMaui.Views.MaterialManagements
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" Translations loading error:  {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Helper pour récupérer une traduction
+        
         private async Task<string> GetTextAsync(string key, string fallback = null)
         {
             try
@@ -75,70 +76,67 @@ namespace TechStockMaui.Views.MaterialManagements
             }
         }
 
-        // ✅ AJOUT: Mettre à jour tous les textes de l'interface
+       
         private async Task UpdateTextsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes AssignedProductsPage");
+                System.Diagnostics.Debug.WriteLine(" Updating AssignedProductsPage texts");
 
-                // ✅ Titre de la page
+               
                 Title = await GetTextAsync("My Assigned Products", "My Assigned Products");
 
-                // ✅ En-tête
+                
                 if (HeaderTitleLabel != null)
                     HeaderTitleLabel.Text = await GetTextAsync("Products assigned to me", "Products assigned to me");
 
                 if (HeaderDescriptionLabel != null)
                     HeaderDescriptionLabel.Text = await GetTextAsync("Click Sign to confirm product reception", "Click 'Sign' to confirm product reception");
 
-                // ✅ Labels des détails de produit (Note: Ces labels sont dans le DataTemplate, donc difficiles à traduire directement)
-                // Vous pourriez créer des propriétés calculées dans votre modèle MaterialManagement pour les textes traduits
-
-                // ✅ Boutons d'action
+                
                 if (RefreshButton != null)
                     RefreshButton.Text = "🔄 " + await GetTextAsync("Refresh", "Refresh");
 
                 if (BackButton != null)
                     BackButton.Text = "🏠 " + await GetTextAsync("Back", "Back");
 
-                // ✅ Sélecteur de langue
+                
                 if (LanguageLabel != null)
                     LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-                // ✅ Mettre à jour l'indicateur de langue
+                
                 await UpdateLanguageFlag();
 
-                System.Diagnostics.Debug.WriteLine("✅ Textes AssignedProductsPage mis à jour");
+                System.Diagnostics.Debug.WriteLine("AssignedProductsPage texts updated");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" UpdateTextsAsync error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Callback quand la langue change
+      
         private async void OnCultureChanged(object sender, string newCulture)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🌍 AssignedProductsPage - Langue changée vers: {newCulture}");
+                System.Diagnostics.Debug.WriteLine($"  AssignedProductsPage - Language changed to: {newCulture}");
                 await UpdateTextsAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" Language change error: {ex.Message}");
             }
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
+       
         private async Task LoadAssignedProductsAsync()
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🔄 Chargement des produits assignés...");
+                System.Diagnostics.Debug.WriteLine("Loading assigned products...");
 
-                // ✅ Utiliser votre service existant
+                
                 var assignments = await _materialManagementService.GetMyAssignmentsAsync();
 
                 _assignments.Clear();
@@ -147,16 +145,16 @@ namespace TechStockMaui.Views.MaterialManagements
                     foreach (var assignment in assignments)
                     {
                         _assignments.Add(assignment);
-                        System.Diagnostics.Debug.WriteLine($"🔍 Assignment ajouté: Produit={assignment.Product?.Name}, Signé={assignment.IsSignatureValid}");
+                        System.Diagnostics.Debug.WriteLine($" Assignment added: Product={assignment.Product?.Name}, Signed={assignment.IsSignatureValid}");
                     }
-                    System.Diagnostics.Debug.WriteLine($"✅ {_assignments.Count} assignments chargés");
+                    System.Diagnostics.Debug.WriteLine($"{_assignments.Count} assignments loaded");
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("⚠️ Aucun produit assigné trouvé");
+                    System.Diagnostics.Debug.WriteLine(" No assigned products found");
                 }
 
-                // ✅ MODIFIÉ: Message traduit
+                
                 if (!_assignments.Any())
                 {
                     var infoTitle = await GetTextAsync("Information", "Information");
@@ -166,38 +164,38 @@ namespace TechStockMaui.Views.MaterialManagements
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur LoadAssignedProductsAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error LoadAssignedProductsAsync: {ex.Message}");
                 var errorTitle = await GetTextAsync("Error", "Error");
                 var errorMessage = await GetTextAsync("Unable to load assigned products", "Unable to load assigned products");
                 await DisplayAlert(errorTitle, $"{errorMessage}: {ex.Message}", "OK");
             }
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
+       
         private async void OnSignClicked(object sender, EventArgs e)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🔄 OnSignClicked - DÉBUT");
+                System.Diagnostics.Debug.WriteLine("OnSignClicked - BEGIN");
 
                 if (sender is Button button && button.CommandParameter is int assignmentId)
                 {
-                    System.Diagnostics.Debug.WriteLine($"✅ Assignment ID: {assignmentId}");
+                    System.Diagnostics.Debug.WriteLine($"Assignment ID: {assignmentId}");
 
-                    // Récupérer l'assignment correspondant
+                   
                     var assignment = _assignments.FirstOrDefault(a => a.Id == assignmentId);
                     if (assignment == null)
                     {
-                        System.Diagnostics.Debug.WriteLine($"❌ Assignment {assignmentId} introuvable");
+                        System.Diagnostics.Debug.WriteLine($" Assignment {assignmentId} Assignment not found");
                         var errorTitle = await GetTextAsync("Error", "Error");
                         var notFoundMessage = await GetTextAsync("Assignment not found", "Assignment not found");
                         await DisplayAlert(errorTitle, notFoundMessage, "OK");
                         return;
                     }
 
-                    System.Diagnostics.Debug.WriteLine($"✅ Assignment trouvé: {assignment.Product?.Name}");
+                    System.Diagnostics.Debug.WriteLine($" Assignment found: {assignment.Product?.Name}");
 
-                    // ✅ Utiliser vos propriétés calculées existantes
+                    
                     if (assignment.IsSignatureValid)
                     {
                         var infoTitle = await GetTextAsync("Information", "Information");
@@ -206,7 +204,7 @@ namespace TechStockMaui.Views.MaterialManagements
                         return;
                     }
 
-                    // ✅ Messages traduits pour la confirmation
+                    
                     var confirmTitle = await GetTextAsync("Reception Confirmation", "Reception Confirmation");
                     var confirmMessage = await GetTextAsync("Confirm product reception", "Do you confirm that you have received the product") + $" '{assignment.Product?.Name}' ?\n\n" +
                                        await GetTextAsync("By signing you attest possession", "By signing, you attest to having taken possession of this equipment.");
@@ -217,31 +215,31 @@ namespace TechStockMaui.Views.MaterialManagements
 
                     if (confirm)
                     {
-                        System.Diagnostics.Debug.WriteLine("🔄 Utilisateur a confirmé, demande de signature...");
+                        System.Diagnostics.Debug.WriteLine("User confirmed, requesting signature...");
 
-                        // Demander la signature
+                        
                         string signature = await GetUserSignature(assignment);
 
                         if (!string.IsNullOrEmpty(signature))
                         {
-                            System.Diagnostics.Debug.WriteLine($"🔄 Signature reçue: {signature.Substring(0, Math.Min(20, signature.Length))}...");
+                            System.Diagnostics.Debug.WriteLine($"Signature received: {signature.Substring(0, Math.Min(20, signature.Length))}...");
 
-                            // ✅ Utiliser votre service existant
+                            
                             bool success = await _materialManagementService.SignProductAsync(assignmentId, signature);
 
                             if (success)
                             {
-                                System.Diagnostics.Debug.WriteLine("✅ Signature envoyée avec succès");
+                                System.Diagnostics.Debug.WriteLine("Signature sent successfully");
                                 var successTitle = await GetTextAsync("Success", "Success");
                                 var successMessage = await GetTextAsync("Product signed successfully", "Product signed successfully! Thank you for confirming reception.");
                                 await DisplayAlert(successTitle, successMessage, "OK");
 
-                                // Rafraîchir la liste
+                                
                                 await LoadAssignedProductsAsync();
                             }
                             else
                             {
-                                System.Diagnostics.Debug.WriteLine("❌ Échec envoi signature");
+                                System.Diagnostics.Debug.WriteLine("Échec envoi signature");
                                 var errorTitle = await GetTextAsync("Error", "Error");
                                 var saveErrorMessage = await GetTextAsync("Signature save failed", "Failed to save signature. Please try again.");
                                 await DisplayAlert(errorTitle, saveErrorMessage, "OK");
@@ -249,17 +247,17 @@ namespace TechStockMaui.Views.MaterialManagements
                         }
                         else
                         {
-                            System.Diagnostics.Debug.WriteLine("⚠️ Signature annulée par l'utilisateur");
+                            System.Diagnostics.Debug.WriteLine("Signature cancelled by user");
                         }
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("⚠️ Confirmation annulée par l'utilisateur");
+                        System.Diagnostics.Debug.WriteLine("Confirmation cancelled by user");
                     }
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("❌ Sender ou CommandParameter invalide");
+                    System.Diagnostics.Debug.WriteLine("Sender ou CommandParameter invalide");
                     var errorTitle = await GetTextAsync("Error", "Error");
                     var technicalErrorMessage = await GetTextAsync("Technical error during signing", "Technical error during signing");
                     await DisplayAlert(errorTitle, technicalErrorMessage, "OK");
@@ -267,23 +265,23 @@ namespace TechStockMaui.Views.MaterialManagements
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur OnSignClicked: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error OnSignClicked: {ex.Message}");
                 var errorTitle = await GetTextAsync("Error", "Error");
                 var signingErrorMessage = await GetTextAsync("Error during signing", "Error during signing");
                 await DisplayAlert(errorTitle, $"{signingErrorMessage}: {ex.Message}", "OK");
             }
 
-            System.Diagnostics.Debug.WriteLine("🔄 OnSignClicked - FIN");
+            System.Diagnostics.Debug.WriteLine(" OnSignClicked - END");
         }
 
-        // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
+        
         private async Task<string> GetUserSignature(MaterialManagement assignment)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("🔄 Demande de signature utilisateur...");
+                System.Diagnostics.Debug.WriteLine(" Requesting user signature....");
 
-                // ✅ Messages traduits pour la signature
+                
                 var signatureTitle = await GetTextAsync("Electronic Signature", "Electronic Signature");
                 var signaturePrompt = await GetTextAsync("Enter full name to confirm", "To confirm reception of") + $" '{assignment.Product?.Name}', " +
                                      await GetTextAsync("please enter your full name", "please enter your full name") + " :\n\n" +
@@ -296,18 +294,17 @@ namespace TechStockMaui.Views.MaterialManagements
 
                 if (!string.IsNullOrWhiteSpace(signature))
                 {
-                    // ✅ Enrichir la signature avec des infos supplémentaires
                     var enrichedSignature = $"{signature.Trim()} - {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
-                    System.Diagnostics.Debug.WriteLine($"✅ Signature créée: {enrichedSignature}");
+                    System.Diagnostics.Debug.WriteLine($" Signature created: {enrichedSignature}");
                     return enrichedSignature;
                 }
 
-                System.Diagnostics.Debug.WriteLine("⚠️ Signature vide ou annulée");
+                System.Diagnostics.Debug.WriteLine(" Signature empty or cancelled");
                 return null;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur GetUserSignature: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" GetUserSignature error: {ex.Message}");
                 var errorTitle = await GetTextAsync("Error", "Error");
                 var captureErrorMessage = await GetTextAsync("Error during signature capture", "Error during signature capture");
                 await DisplayAlert(errorTitle, captureErrorMessage, "OK");
@@ -315,19 +312,19 @@ namespace TechStockMaui.Views.MaterialManagements
             }
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
+        
         private async void OnRefreshClicked(object sender, EventArgs e)
         {
             await LoadAssignedProductsAsync();
         }
 
-        // ✅ CONSERVÉ: Votre méthode existante inchangée
+        
         private async void OnBackClicked(object sender, EventArgs e)
         {
             await Navigation.PopAsync();
         }
 
-        // ✅ AJOUT: Gestion du changement de langue
+       
         private async void OnLanguageClicked(object sender, EventArgs e)
         {
             try
@@ -358,18 +355,18 @@ namespace TechStockMaui.Views.MaterialManagements
 
                     if (newCulture != null && newCulture != currentCulture)
                     {
-                        System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                        System.Diagnostics.Debug.WriteLine($" Changing to: {newCulture}");
                         await translationService.SetCurrentCultureAsync(newCulture);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" Language change error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Mettre à jour le drapeau de langue
+     
         private async Task UpdateLanguageFlag()
         {
             try
@@ -383,17 +380,17 @@ namespace TechStockMaui.Views.MaterialManagements
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($" Flag update error: {ex.Message}");
             }
         }
 
-        // ✅ AJOUT: Nettoyage
+   
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
         }
 
-        // ✅ AJOUT: Destructeur
+
         ~AssignedProductsPage()
         {
             try

@@ -25,7 +25,7 @@ namespace TechStockMaui.Models
         public DateTime AssignmentDate { get; set; }
         public DateTime SignatureDate { get; set; }
 
-        // Propriétés calculées pour le binding XAML
+       
         [NotMapped]
         public bool IsSignaturePending => string.IsNullOrEmpty(Signature);
 

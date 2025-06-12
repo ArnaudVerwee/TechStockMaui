@@ -7,18 +7,15 @@ public partial class DeleteTypeArticlePage : ContentPage
 {
     private TypeArticleModel _typeArticle;
 
-    // ✅ CONSERVÉ: Votre constructeur original
     public DeleteTypeArticlePage(TypeArticleModel typeArticle)
     {
         InitializeComponent();
 
-        // ✅ AJOUT: S'abonner aux changements de langue
         TranslationService.Instance.CultureChanged += OnCultureChanged;
 
         _typeArticle = typeArticle;
     }
 
-    // ✅ AJOUT: Charger les traductions au démarrage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -26,7 +23,6 @@ public partial class DeleteTypeArticlePage : ContentPage
         LoadTypeArticleData();
     }
 
-    // ✅ AJOUT: Charger les données du type d'article
     private void LoadTypeArticleData()
     {
         if (_typeArticle != null && NameLabel != null)
@@ -35,7 +31,6 @@ public partial class DeleteTypeArticlePage : ContentPage
         }
     }
 
-    // ✅ AJOUT: Charger les traductions
     private async Task LoadTranslationsAsync()
     {
         try
@@ -46,11 +41,10 @@ public partial class DeleteTypeArticlePage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur chargement traductions: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Translations loading error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Helper pour récupérer une traduction
     private async Task<string> GetTextAsync(string key, string fallback = null)
     {
         try
@@ -64,79 +58,67 @@ public partial class DeleteTypeArticlePage : ContentPage
         }
     }
 
-    // ✅ AJOUT: Mettre à jour tous les textes de l'interface
     private async Task UpdateTextsAsync()
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine("🌍 Mise à jour des textes DeleteTypeArticlePage");
+            System.Diagnostics.Debug.WriteLine("Updating DeleteTypeArticlePage texts");
 
-            // ✅ Titre de la page (utilise vos fichiers .resx existants)
             var deleteText = await GetTextAsync("Delete", "Delete");
             var typeArticleText = await GetTextAsync("TypeArticle", "Type Article");
             Title = $"{deleteText} {typeArticleText}";
 
-            // ✅ Titre principal
             if (TitleLabel != null)
                 TitleLabel.Text = $"{deleteText} " + await GetTextAsync("Type Product", "un type de produit");
 
-            // ✅ Question de confirmation (utilise vos fichiers .resx existants)
             if (ConfirmationLabel != null)
                 ConfirmationLabel.Text = await GetTextAsync("Are you sure you want to delete this?", "Are you sure you want to delete this?");
 
-            // ✅ En-tête des informations
             if (TypeInfoHeaderLabel != null)
                 TypeInfoHeaderLabel.Text = await GetTextAsync("Type Article Information", "Informations du type d'article");
 
-            // ✅ Label nom (utilise vos fichiers .resx existants)
             if (NameHeaderLabel != null)
             {
                 var nameText = await GetTextAsync("Name", "Name");
                 NameHeaderLabel.Text = nameText + " :";
             }
 
-            // ✅ Boutons (utilise vos fichiers .resx existants)
             if (DeleteButton != null)
                 DeleteButton.Text = await GetTextAsync("Delete", "Delete");
 
             if (BackButton != null)
                 BackButton.Text = await GetTextAsync("Back to List", "Back to List");
 
-            // ✅ Sélecteur de langue
             if (LanguageLabel != null)
                 LanguageLabel.Text = await GetTextAsync("Language", "Language");
 
-            // ✅ Mettre à jour l'indicateur de langue
             await UpdateLanguageFlag();
 
-            System.Diagnostics.Debug.WriteLine("✅ Textes DeleteTypeArticlePage mis à jour");
+            System.Diagnostics.Debug.WriteLine("DeleteTypeArticlePage texts updated");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur UpdateTextsAsync: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"UpdateTextsAsync error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Callback quand la langue change
     private async void OnCultureChanged(object sender, string newCulture)
     {
         try
         {
-            System.Diagnostics.Debug.WriteLine($"🌍 DeleteTypeArticlePage - Langue changée vers: {newCulture}");
+            System.Diagnostics.Debug.WriteLine($"DeleteTypeArticlePage - Language changed to: {newCulture}");
             await UpdateTextsAsync();
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
         }
     }
 
-    // ✅ MODIFIÉ: Votre méthode existante avec messages traduits
     private async void OnDeleteClicked(object sender, EventArgs e)
     {
         try
         {
-            // ✅ CONSERVÉ: Votre logique existante avec messages traduits
             var confirmationTitle = await GetTextAsync("Confirmation", "Confirmation");
             var confirmDeleteMessage = await GetTextAsync("Do you really want to delete this type", "Voulez-vous vraiment supprimer ce type ?");
             var yes = await GetTextAsync("Yes", "Yes");
@@ -147,30 +129,26 @@ public partial class DeleteTypeArticlePage : ContentPage
             if (!confirmed)
                 return;
 
-            // TODO: Suppression via API
             var successTitle = await GetTextAsync("Success", "Success");
             var deleteSuccessMessage = await GetTextAsync("Type deleted successfully", "Type supprimé avec succès.");
             await DisplayAlert(successTitle, deleteSuccessMessage, "OK");
 
-            // Retour à la liste
             await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur OnDeleteClicked: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"OnDeleteClicked error: {ex.Message}");
             var errorTitle = await GetTextAsync("Error", "Error");
             var deleteErrorMessage = await GetTextAsync("Delete error", "Erreur lors de la suppression");
             await DisplayAlert(errorTitle, $"{deleteErrorMessage}: {ex.Message}", "OK");
         }
     }
 
-    // ✅ CONSERVÉ: Votre méthode existante inchangée
     private async void OnBackClicked(object sender, EventArgs e)
     {
         await Navigation.PopAsync();
     }
 
-    // ✅ AJOUT: Gestion du changement de langue
     private async void OnLanguageClicked(object sender, EventArgs e)
     {
         try
@@ -201,18 +179,17 @@ public partial class DeleteTypeArticlePage : ContentPage
 
                 if (newCulture != null && newCulture != currentCulture)
                 {
-                    System.Diagnostics.Debug.WriteLine($"🌍 Changement vers: {newCulture}");
+                    System.Diagnostics.Debug.WriteLine($"Changing to: {newCulture}");
                     await translationService.SetCurrentCultureAsync(newCulture);
                 }
             }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur changement langue: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Language change error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Mettre à jour le drapeau de langue
     private async Task UpdateLanguageFlag()
     {
         try
@@ -226,17 +203,15 @@ public partial class DeleteTypeArticlePage : ContentPage
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"❌ Erreur mise à jour drapeau: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Flag update error: {ex.Message}");
         }
     }
 
-    // ✅ AJOUT: Nettoyage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
     }
 
-    // ✅ AJOUT: Destructeur
     ~DeleteTypeArticlePage()
     {
         try

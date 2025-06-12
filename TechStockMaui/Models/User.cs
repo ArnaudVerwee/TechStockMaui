@@ -3,12 +3,12 @@ namespace TechStockMaui.Models
 {
     public class User
     {
-        public string UserName { get; set; } = string.Empty;  // ✅ Correspond à l'API
-        public List<string> Roles { get; set; } = new();     // ✅ Correspond à l'API
+        public string UserName { get; set; } = string.Empty;  
+        public List<string> Roles { get; set; } = new();     
 
-        // Propriétés calculées pour compatibilité
-        public string Id => UserName;           // ✅ Pour compatibilité
-        public string Name => UserName;         // ✅ Pour compatibilité
-        public string Email => UserName;        // ✅ Pour compatibilité (UserName contient l'email)
+        
+        public string Id => UserName;           
+        public string Name => UserName;         
+        public string Email => UserName;        
     }
 }
